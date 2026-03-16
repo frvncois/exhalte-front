@@ -30,7 +30,7 @@ function handleRetour() {
         opacity: 0,
         duration: 0.4,
         ease: 'power2.in',
-        onComplete: () => router.push('/'),
+        onComplete: () => { router.push('/') },
     })
 }
 </script>
