@@ -2,6 +2,10 @@
 import { ref, onMounted } from 'vue'
 import { gsap } from 'gsap'
 import { getFwdClones } from '@/transitions/projectTransition'
+import { useProjectStore } from '@/stores/project'
+import { storeToRefs } from 'pinia'
+
+const { type } = storeToRefs(useProjectStore())
 
 const spanRef = ref<HTMLElement | null>(null)
 const titleRef = ref<HTMLElement | null>(null)
@@ -51,7 +55,6 @@ onMounted(() => {
             const infoClone = clones[3 + i * 2 + 1]
             const delay = 0.06 + i * 0.04
             if (coverClone) flyClone(coverClone, cover, delay, true)
-            // Animate actual .info so every child (span, h3…) translates together
             if (infoClone) {
                 const dest = info.getBoundingClientRect()
                 const fromX = parseFloat(infoClone.style.left) - dest.left
@@ -65,8 +68,8 @@ onMounted(() => {
 </script>
 
 <template>
-    <section>
-        <div>
+    <section :class="{ 'is-gallery': type === 'gallery' }">
+        <div CLAS>
             <span ref="spanRef" data-trans="span">01</span>
         </div>
         <div class="details">
@@ -93,6 +96,21 @@ section {
     flex-direction: column;
     padding: 2em;
     gap: 4em;
+}
+
+section.is-gallery {
+    position: sticky;
+    top: 5em;
+    align-self: flex-start;
+    flex-direction: row;
+    .details {
+        display: flex;
+        flex-direction: column;
+        & ul {
+            display: flex;
+            flex-direction: column!important;
+        }
+    }
 }
 
 .details {

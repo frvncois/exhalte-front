@@ -3,11 +3,17 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { captureFwdClones, getFwdClones, getRevClones, getClickedIndex } from '@/transitions/projectTransition'
+import { useProjectStore, type ProjectType } from '@/stores/project'
 
 const router = useRouter()
 const ulEl = ref<HTMLUListElement | null>(null)
+const projectStore = useProjectStore()
+
+// Dev: second project (index 1) is gallery, rest are video
+const projectTypes: ProjectType[] = ['video', 'gallery', 'video', 'video', 'video', 'video']
 
 function handleClick(index: number) {
+    projectStore.setType(projectTypes[index] ?? 'video')
     const lis = Array.from(ulEl.value!.querySelectorAll('li')) as HTMLElement[]
     const li = lis[index]!
     const otherLis = lis.filter((_, i) => i !== index)
