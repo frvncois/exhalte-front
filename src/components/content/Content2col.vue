@@ -24,9 +24,18 @@ onUnmounted(() => observer?.disconnect())
         <div>
             <h2>(Services)</h2>
             <ul>
-                <li><h3>Webdesign</h3></li>
-                <li><h3>Webdevelopment</h3></li>
-                <li><h3>SEO</h3></li>
+                <li><h3>direction creative</h3></li>
+                <li><h3>production</h3></li>
+                <li><h3>conception artistique</h3></li>
+                <li><h3>curation</h3></li>
+                <li><h3>film de marque</h3></li>
+                <li><h3>films d'art</h3></li>
+                <li><h3>films documentaires</h3></li>
+                <li><h3>clips musicaux</h3></li>
+                <li><h3>long metrage</h3></li>
+                <li><h3>campagnes visuelles</h3></li>
+                <li><h3>séries télé</h3></li>
+                <li><h3>prestation événementielles</h3></li>
             </ul>
         </div>
         <div>
