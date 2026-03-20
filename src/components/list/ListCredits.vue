@@ -29,7 +29,7 @@ onUnmounted(() => observer?.disconnect())
 
 <template>
     <section ref="sectionRef">
-        <h3>Awards</h3>
+        <h3>Title</h3>
         <ul>
             <li><h4>Lorem ispum</h4><h5>Dolor sit amet</h5></li>
             <li><h4>Lorem ispum</h4><h5>Dolor sit amet</h5></li>

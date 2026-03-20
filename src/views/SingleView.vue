@@ -23,6 +23,9 @@ const { type } = storeToRefs(useProjectStore())
     <Content1col />
     <GridGallery />
     <ListCredits />
+    <ListCredits />
+    <ListCredits />
+    <ListCredits />
     <ListProjects />
 </template>
 
