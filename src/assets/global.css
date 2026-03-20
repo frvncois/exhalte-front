@@ -23,12 +23,12 @@
 
 @font-face {
     font-family: 'body';
-    src: url(body.otf);
+    src: url(body.woff);
 }
 
 @font-face {
     font-family: 'heading';
-    src: url(heading.otf);
+    src: url(heading.otf) format('opentype');
 }
 
 
