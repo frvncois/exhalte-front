@@ -119,6 +119,7 @@ h1, h2, p {
     font-size: var(--text-small);
     font-family: 'body';
     text-transform: uppercase;
+    line-height: 1;
 }
 ul {
     display: grid;
