@@ -8,6 +8,23 @@ const circlesRef = ref<HTMLElement | null>(null)
 onMounted(() => {
     const lis = ulRef.value?.querySelectorAll('li')
     if (!lis) return
+
+    // Capture original CSS translateX for h3/h4 in each li (in px, before GSAP runs)
+    lis.forEach(li => {
+        const targets = Array.from(li.querySelectorAll<HTMLElement>('h3, h4'))
+        const origX = targets.map(el => {
+            const t = window.getComputedStyle(el).transform
+            return t === 'none' ? 0 : new DOMMatrixReadOnly(t).m41
+        })
+
+        li.addEventListener('mouseenter', () => {
+            gsap.to(targets, { x: 0, duration: 0.5, ease: 'power2.out' })
+        })
+        li.addEventListener('mouseleave', () => {
+            targets.forEach((el, i) => gsap.to(el, { x: origX[i], duration: 0.5, ease: 'power2.out' }))
+        })
+    })
+
     gsap.set(lis, { clipPath: 'inset(0 100% 0 0)' })
 
     const rows = circlesRef.value?.querySelectorAll('div')
@@ -100,6 +117,46 @@ ul {
 
 li {
         padding-top: 4em;
+        &:nth-child(2) {
+            h4 {
+                transform: translateX(2em);
+            }
+        }
+        &:nth-child(3) {
+            text-align: center;
+            h3 {
+                transform: translateX(-10%);
+            }
+            h4 {
+                transform: translateX(2%);
+            }
+        }
+        &:nth-child(4) {
+            text-align: center;
+            h3 {
+                transform: translateX(-10%);
+            }
+            h4 {
+                transform: translateX(2%);
+            }
+        }
+        &:nth-child(5) {
+            text-align: center;
+            h3 {
+                transform: translateX(-10%);
+            }
+            h4 {
+                transform: translateX(10%);
+            }
+        }
+        &:nth-child(6) {
+            h3 {
+                transform: translateX(15%);
+            }
+            h4 {
+                transform: translateX(10%);
+            }
+        }
     }
 
 .circles {

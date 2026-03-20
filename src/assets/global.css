@@ -88,8 +88,8 @@ a {
     position: relative;
 }
 
-nav a.active::before,
-nav a:hover::before {
+header nav a.active::before,
+header nav a:hover::before {
     content: '';
     position: absolute;
     left: -0.6em;

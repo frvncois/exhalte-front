@@ -17,7 +17,7 @@ onMounted(() => {
         const { top } = parent.getBoundingClientRect()
         const scrollRange = parent.offsetHeight - window.innerHeight
         const progress = Math.min(Math.max(-top / scrollRange, 0), 1)
-        svg.style.width = `${100 - progress * 80}%`
+        svg.style.width = `${100 - progress * 90}%`
     }
 
     lenis.on('scroll', onScroll)
@@ -43,7 +43,7 @@ section {
 
 svg {
     width: 100%;
-    height: 100%;
+    height: 80%;
     color: currentColor;
     margin: auto;
 }

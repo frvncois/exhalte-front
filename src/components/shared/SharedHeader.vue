@@ -69,7 +69,7 @@ onUnmounted(() => {
             <RouterLink to="/">Index</RouterLink>
             <RouterLink to="/services">Services</RouterLink>
             <RouterLink to="/contact">Contact</RouterLink>
-            <RouterLink to="/">EN</RouterLink>
+            <RouterLink to="/">FR</RouterLink>
         </nav>
     </header>
     <section>
@@ -79,8 +79,8 @@ onUnmounted(() => {
                 <h2>Artistic Production company</h2>
             </li>
             <li>
-                <p>Movement speak</p>
-                <p>Louder than words</p>
+                <p>Movement is</p>
+                <p>a thought</p>
             </li>
         </ul>
     </section>
