@@ -13,8 +13,8 @@ export const themes: Record<string, { bg: string; color: string; bodyClass?: str
         bodyClass: 'theme-purple',
     },
     '/contact': {
-        bg: 'var(--lime)',
-        color: 'var(--olive)',
-        bodyClass: 'theme-yellow',
+        bg: 'var(--babyblue)',
+        color: 'var(--blue)',
+        bodyClass: 'theme-blue',
     },
 }

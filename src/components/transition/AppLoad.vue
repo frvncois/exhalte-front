@@ -4,7 +4,7 @@ import { ref, onMounted } from 'vue'
 const emit = defineEmits(['ready'])
 import { gsap } from 'gsap'
 
-const phrase = '/Le mouvement plutot que le discours'
+const phrase = '/Le mouvement est une pensée'
 const repeat = phrase.repeat(50)
 
 const show = ref(!document.body.classList.contains('app-loaded'))
@@ -77,6 +77,6 @@ text {
     paint-order: stroke fill;
     stroke: var(--lime);
     text-transform: uppercase;
-    dominant-baseline: middle;
+    dominant-baseline: central;
 }
 </style>

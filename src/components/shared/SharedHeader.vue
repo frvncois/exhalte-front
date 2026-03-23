@@ -79,8 +79,8 @@ onUnmounted(() => {
                 <h2>Artistic Production company</h2>
             </li>
             <li>
-                <p>Movement is</p>
-                <p>a thought</p>
+                <p>Movement</p>
+                <p>is a thought</p>
             </li>
         </ul>
     </section>

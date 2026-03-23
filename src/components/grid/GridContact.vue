@@ -35,7 +35,7 @@ onMounted(() => {
     const rightSpans = Array.from(rows).flatMap(row => [row.querySelectorAll('span')[3], row.querySelectorAll('span')[4]])
 
     const allSpans = circlesRef.value!.querySelectorAll('span')
-    gsap.set(allSpans, { opacity: 0, backgroundColor: 'var(--olive)' })
+    gsap.set(allSpans, { opacity: 0, backgroundColor: 'var(--blue)' })
     gsap.set(leftSpans, { x: '30vw' })
     gsap.set(rightSpans, { x: '-30vw' })
 
@@ -99,10 +99,10 @@ onMounted(() => {
 
 <style scoped>
 section {
-    flex: 1;
+    position: fixed;
+    top: 0;
     display: flex;
     flex-direction: column;
-    position: relative;
     height: calc(100vh - 6em);
     margin: 6em 2em -6em 2em;
 }
@@ -174,7 +174,7 @@ li {
         span {
             height: 0.5em;
             width: 0.5em;
-            border: 1px solid var(--olive);
+            border: 1px solid currentColor;
             border-radius: 10em;
         }
     }

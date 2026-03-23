@@ -6,6 +6,7 @@ import Content2col from '@/components/content/Content2col.vue';
 import ServicesHero from '@/components/single/ServicesHero.vue';
 import ServicesTagline from '@/components/single/ServicesTagline.vue';
 
+
 const mainRef = ref<HTMLElement | null>(null)
 const taglineRef = ref<{ $el: HTMLElement } | null>(null)
 let observer: IntersectionObserver | null = null
