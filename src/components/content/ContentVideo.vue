@@ -2,8 +2,12 @@
 import { ref, onMounted } from 'vue'
 import { gsap } from 'gsap'
 import { getFwdClones } from '@/transitions/projectTransition'
+import { useProjectStore } from '@/stores/project'
+import { storeToRefs } from 'pinia'
+import { coverImage } from '@/api/strapi'
 
 const coverRef = ref<HTMLElement | null>(null)
+const { activeProject } = storeToRefs(useProjectStore())
 
 onMounted(() => {
     const clone = getFwdClones()[0]
@@ -36,7 +40,11 @@ onMounted(() => {
 <template>
     <section>
         <div class="cover" ref="coverRef" data-trans="cover">
-            Video
+            <img
+                v-if="activeProject && coverImage(activeProject)"
+                :src="coverImage(activeProject)!.formats?.medium?.url ?? coverImage(activeProject)!.url"
+                :alt="activeProject.Title"
+            />
         </div>
     </section>
 </template>
@@ -48,5 +56,13 @@ section {
 div {
     height: 80vh;
     background: black;
+    overflow: hidden;
+}
+
+img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 </style>

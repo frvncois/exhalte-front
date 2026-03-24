@@ -1,10 +1,29 @@
-<script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { gsap } from 'gsap'
+import { useRouter } from 'vue-router'
+import { useProjectStore } from '@/stores/project'
+import { storeToRefs } from 'pinia'
+import { slugify, coverImage } from '@/api/strapi'
 
-const sectionRef = ref(null)
-const track = ref(null)
-let observer = null
+const router = useRouter()
+const projectStore = useProjectStore()
+const { activeProject, projects } = storeToRefs(projectStore)
+
+const otherProjects = computed(() =>
+    projects.value
+        .map((p, i) => ({ project: p, index: i + 1 }))
+        .filter(({ project }) => project.documentId !== activeProject.value?.documentId)
+)
+
+function navigate(slug: string) {
+    projectStore.setActiveSlug(slug)
+    router.push(`/projects/${slug}`)
+}
+
+const sectionRef = ref<HTMLElement | null>(null)
+const track = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | null = null
 
 onMounted(() => {
     const lis = track.value?.querySelectorAll('li')
@@ -25,39 +44,39 @@ onMounted(() => {
         observer?.disconnect()
     }, { threshold: 0.1 })
 
-    observer.observe(sectionRef.value)
+    observer.observe(sectionRef.value!)
 })
 
 onUnmounted(() => observer?.disconnect())
+
 let isDragging = false
 let startX = 0
 let scrollLeft = 0
 let dragDistance = 0
 
-function onMouseDown(e) {
+function onMouseDown(e: MouseEvent) {
     isDragging = true
     dragDistance = 0
-    startX = e.pageX - track.value.offsetLeft
-    scrollLeft = track.value.scrollLeft
-    track.value.style.cursor = 'grabbing'
+    startX = e.pageX - track.value!.offsetLeft
+    scrollLeft = track.value!.scrollLeft
+    track.value!.style.cursor = 'grabbing'
 }
 
-function onMouseMove(e) {
+function onMouseMove(e: MouseEvent) {
     if (!isDragging) return
     e.preventDefault()
-    const x = e.pageX - track.value.offsetLeft
+    const x = e.pageX - track.value!.offsetLeft
     const delta = x - startX
     dragDistance = Math.abs(delta)
-    track.value.scrollLeft = scrollLeft - delta
+    track.value!.scrollLeft = scrollLeft - delta
 }
 
-function onMouseUp(e) {
+function onMouseUp() {
     isDragging = false
-    track.value.style.cursor = 'grab'
+    track.value!.style.cursor = 'grab'
 }
 
-function onClick(e) {
-    // Suppress click if it was actually a drag
+function onClick(e: MouseEvent) {
     if (dragDistance > 5) e.stopPropagation()
 }
 </script>
@@ -72,13 +91,23 @@ function onClick(e) {
             @mouseleave="onMouseUp"
             @click.capture="onClick"
         >
-            <li v-for="n in 6" :key="n" @click="$router.push('/single')">
-                <div class="cover"></div>
+            <li
+                v-for="({ project, index }) in otherProjects"
+                :key="project.documentId"
+                @click="navigate(slugify(project.Title))"
+            >
+                <div class="cover">
+                    <img
+                        v-if="coverImage(project)"
+                        :src="coverImage(project)!.formats?.medium?.url ?? coverImage(project)!.url"
+                        :alt="project.Title"
+                    />
+                </div>
                 <div class="details">
-                    <span>01</span>
+                    <span>{{ String(index).padStart(2, '0') }}</span>
                     <div class="title">
-                        <h2>Project Title</h2>
-                        <p>Project Description</p>
+                        <h2>{{ project.Title }}</h2>
+                        <p v-if="project.Subtitle">{{ project.Subtitle }}</p>
                     </div>
                 </div>
             </li>
@@ -122,6 +151,14 @@ li {
     aspect-ratio: 4 / 3;
     width: 100%;
     flex: 1;
+    overflow: hidden;
+}
+
+.cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .details {

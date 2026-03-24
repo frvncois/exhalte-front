@@ -14,7 +14,7 @@ const router = createRouter({
       meta: { hasHeader: true },
     },
     {
-      path: '/single',
+      path: '/projects/:slug',
       name: 'single',
       component: () => import('../views/SingleView.vue'),
     },
@@ -34,13 +34,14 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    if (to.path === '/' && from.path !== '/single') clearRevClones()
+    if (to.path === '/' && !from.path.startsWith('/projects/')) clearRevClones()
 
     Array.from(document.body.classList)
         .filter(c => c.startsWith('theme-'))
         .forEach(c => document.body.classList.remove(c))
 
-    const theme = themes[to.path]
+    const themePath = to.path.startsWith('/projects/') ? '/projects/:slug' : to.path
+    const theme = themes[themePath]
     if (theme?.color) setTimeout(() => {
         document.body.style.color = theme.color
     }, 120)
@@ -59,7 +60,7 @@ router.afterEach((to) => {
     triggerRouteChangeOut()
     window.scrollTo(0, 0)
     document.body.style.color = ''
-    const theme = themes[to.path]
+    const theme = themes[to.path.startsWith('/projects/') ? '/projects/:slug' : to.path]
     Array.from(document.body.classList)
         .filter(c => c.startsWith('theme-'))
         .forEach(c => document.body.classList.remove(c))

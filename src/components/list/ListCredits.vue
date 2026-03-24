@@ -2,6 +2,11 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { gsap } from 'gsap'
 
+defineProps<{
+    title: string
+    items: { label: string; sub?: string | null }[]
+}>()
+
 const sectionRef = ref<HTMLElement | null>(null)
 let observer: IntersectionObserver | null = null
 
@@ -29,16 +34,12 @@ onUnmounted(() => observer?.disconnect())
 
 <template>
     <section ref="sectionRef">
-        <h3>Title</h3>
+        <h3>{{ title }}</h3>
         <ul>
-            <li><h4>Lorem ispum</h4><h5>Dolor sit amet</h5></li>
-            <li><h4>Lorem ispum</h4><h5>Dolor sit amet</h5></li>
-            <li><h4>Lorem ispum</h4><h5>Dolor sit amet</h5></li>
-            <li><h4>Lorem ispum</h4><h5>Dolor sit amet</h5></li>
-            <li><h4>Lorem ispum</h4><h5>Dolor sit amet</h5></li>
-            <li><h4>Lorem ispum</h4><h5>Dolor sit amet</h5></li>
-            <li><h4>Lorem ispum</h4><h5>Dolor sit amet</h5></li>
-            <li><h4>Lorem ispum</h4><h5>Dolor sit amet</h5></li>
+            <li v-for="(item, i) in items" :key="i">
+                <h4>{{ item.label }}</h4>
+                <h5 v-if="item.sub">{{ item.sub }}</h5>
+            </li>
         </ul>
     </section>
 </template>

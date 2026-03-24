@@ -24,15 +24,11 @@ onMounted(() => {
 
     lis.forEach(li => {
         const cover = li.querySelector('.cover')
-        const texts = li.querySelectorAll('p, .cover span')
-
         gsap.set(cover, { clipPath: 'inset(0 0 100% 0)' })
-        gsap.set(texts, { opacity: 0 })
 
         const obs = new IntersectionObserver(([entry]) => {
             if (!entry?.isIntersecting) return
             gsap.to(cover, { clipPath: 'inset(0 0 0% 0)', duration: 1, ease: 'power3.out' })
-            gsap.to(texts, { opacity: 1, duration: 1, ease: 'power2.out', delay: 0.3 })
             obs.disconnect()
         }, { threshold: 0.2 })
 
@@ -46,10 +42,7 @@ onUnmounted(() => observers.forEach(obs => obs.disconnect()))
 const props = defineProps({
     items: {
         type: Array,
-        default: () => Array.from({ length: 9 }, (_, i) => ({
-            number: String(i + 1).padStart(2, '0'),
-            title: 'Project Description',
-        }))
+        default: () => []
     }
 })
 
@@ -86,15 +79,15 @@ function totalRows(count) {
         <ul :style="{ gridTemplateRows: `repeat(${totalRows(items.length)}, var(--cell))` }">
             <li
                 v-for="(item, index) in items"
-                :key="index"
+                :key="item.id ?? index"
                 :style="getGridStyle(index)"
             >
                 <div class="cover">
-                    <span>{{ item.number }}</span>
+                    <img
+                        :src="item.formats?.medium?.url ?? item.url"
+                        :alt="item.alternativeText ?? ''"
+                    />
                 </div>
-                    <div class="title">
-                        <p>{{ item.title }}</p>
-                    </div>
             </li>
         </ul>
     </section>
@@ -115,54 +108,32 @@ ul {
 
 li {
     display: flex;
-    justify-content: end;
-    align-items: end;
-    gap: 1em;
     min-height: 0;
-    &:nth-child(1) .cover{
-        aspect-ratio: 9/12;
-    }
-    &:nth-child(2) .cover{
-        aspect-ratio: 4/5;
-    }
-    &:nth-child(3) .cover{
-        aspect-ratio: 2/3;
-    }
-    &:nth-child(4) .cover{
-        aspect-ratio: 2/3;
-    }
-    &:nth-child(5) .cover{
-        aspect-ratio: 3/4;
-    }
-    &:nth-child(6) .cover{
-        aspect-ratio: 1/1;
-    }
-    &:nth-child(7) .cover{
-        aspect-ratio: 16/9;
-    }
-    &:nth-child(8) .cover{
-        aspect-ratio: 9/16;
-    }
-    &:nth-child(9) .cover{
-        aspect-ratio: 16/9;
-    }
+    &:nth-child(1) .cover{ aspect-ratio: 9/12; }
+    &:nth-child(2) .cover{ aspect-ratio: 4/5; }
+    &:nth-child(3) .cover{ aspect-ratio: 2/3; }
+    &:nth-child(4) .cover{ aspect-ratio: 2/3; }
+    &:nth-child(5) .cover{ aspect-ratio: 3/4; }
+    &:nth-child(6) .cover{ aspect-ratio: 1/1; }
+    &:nth-child(7) .cover{ aspect-ratio: 16/9; }
+    &:nth-child(8) .cover{ aspect-ratio: 9/16; }
+    &:nth-child(9) .cover{ aspect-ratio: 16/9; }
 }
 
 .cover {
     background-color: black;
     flex: 1;
     height: 100%;
-
+    overflow: hidden;
 }
 
-.details {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    font-size: clamp(0.6rem, 1vw, 0.875rem);
+img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
-/* Responsive: collapse to a simple 2-column flow on small screens */
 @media (max-width: 640px) {
     ul {
         display: grid;

@@ -3,7 +3,7 @@ export const themes: Record<string, { bg: string; color: string; bodyClass?: str
         bg: 'var(--white)',
         color: 'var(--black)',
     },
-    '/single': {
+    '/projects/:slug': {
         bg: 'var(--white)',
         color: 'var(--black)',
     },

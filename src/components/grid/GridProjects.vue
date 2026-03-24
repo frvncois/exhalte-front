@@ -1,19 +1,23 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
+import { storeToRefs } from 'pinia'
 import { captureFwdClones, getFwdClones, getRevClones, getClickedIndex } from '@/transitions/projectTransition'
-import { useProjectStore, type ProjectType } from '@/stores/project'
+import { useProjectStore } from '@/stores/project'
+import { slugify, coverImage } from '@/api/strapi'
 
 const router = useRouter()
 const ulEl = ref<HTMLUListElement | null>(null)
 const projectStore = useProjectStore()
-
-// Dev: second project (index 1) is gallery, rest are video
-const projectTypes: ProjectType[] = ['video', 'gallery', 'video', 'video', 'video', 'video']
+const { projects } = storeToRefs(projectStore)
 
 function handleClick(index: number) {
-    projectStore.setType(projectTypes[index] ?? 'video')
+    const project = projects.value[index]
+    if (!project) return
+
+    projectStore.setActiveSlug(slugify(project.Title))
+
     const lis = Array.from(ulEl.value!.querySelectorAll('li')) as HTMLElement[]
     const li = lis[index]!
     const otherLis = lis.filter((_, i) => i !== index)
@@ -48,19 +52,24 @@ function handleClick(index: number) {
         if (p) Object.assign(p.style, { fontSize: 'var(--text-sm)', textTransform: 'uppercase' })
     })
 
-    router.push('/single')
+    router.push(`/projects/${slugify(project.Title)}`)
 }
 
-onMounted(() => {
+onMounted(async () => {
+    await projectStore.fetchProjects()
+
     const clones = getRevClones()
 
     if (!clones.length) {
+        await nextTick()
         const lis = Array.from(ulEl.value!.querySelectorAll('li'))
         gsap.from(lis, { clipPath: 'inset(0 0 100% 0)', duration: 0.7, ease: 'power2.out', stagger: 0.08 })
         return
     }
 
     if (!ulEl.value) return
+
+    await nextTick()
 
     const lis = Array.from(ulEl.value.querySelectorAll('li')) as HTMLElement[]
     const idx = Math.max(0, getClickedIndex())
@@ -136,13 +145,19 @@ onMounted(() => {
 <template>
     <section>
         <ul ref="ulEl">
-            <li v-for="(_, index) in 6" :key="index" @click="handleClick(index)">
-                <div class="cover"></div>
+            <li v-for="(project, index) in projects" :key="project.documentId" @click="handleClick(index)">
+                <div class="cover">
+                    <img
+                        v-if="coverImage(project)"
+                        :src="coverImage(project)!.formats.medium?.url ?? coverImage(project)!.url"
+                        :alt="project.Title"
+                    />
+                </div>
                 <div class="details" style="display:flex;flex-direction:column;justify-content:space-between;flex:1;">
                     <span>{{ String(index + 1).padStart(2, '0') }}</span>
                     <div class="title">
-                        <h2>Project Title</h2>
-                        <p>Lorem ipsum</p>
+                        <h2>{{ project.Title }}</h2>
+                        <p v-if="project.Subtitle">{{ project.Subtitle }}</p>
                     </div>
                 </div>
             </li>
@@ -185,6 +200,14 @@ p {
     background-color: black;
     aspect-ratio: 4/3;
     flex: 1;
+    overflow: hidden;
+}
+
+.cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .details {

@@ -9,8 +9,42 @@ import SharedProject from '@/components/shared/SharedProject.vue';
 import ShareClose from '@/components/shared/ShareClose.vue';
 import { useProjectStore } from '@/stores/project';
 import { storeToRefs } from 'pinia';
+import { useRoute } from 'vue-router';
+import { watch, onMounted, computed } from 'vue';
 
-const { type } = storeToRefs(useProjectStore())
+const route = useRoute()
+const projectStore = useProjectStore()
+const { type, activeProject } = storeToRefs(projectStore)
+
+async function syncProject() {
+    await projectStore.fetchProjects()
+    projectStore.setActiveSlug(route.params.slug as string)
+}
+
+onMounted(syncProject)
+watch(() => route.params.slug, syncProject)
+
+const creditItems = computed(() =>
+    activeProject.value?.Credit.map(c => ({
+        label: c.Title,
+        sub: c.Directory.map((d: { Name: string }) => d.Name).join(' · ') || null,
+    })) ?? []
+)
+
+const remerciementItems = computed(() =>
+    activeProject.value?.Remerciement.map(r => ({
+        label: r.Name,
+        sub: r.Website || null,
+    })) ?? []
+)
+
+const awardsItems = computed(() =>
+    (activeProject.value?.Awards ?? []).map((a: any) => ({ label: String(a) }))
+)
+
+const pressItems = computed(() =>
+    (activeProject.value?.Press ?? []).map((p: any) => ({ label: String(p) }))
+)
 </script>
 
 <template>
@@ -21,11 +55,11 @@ const { type } = storeToRefs(useProjectStore())
         <SharedProject />
     </div>
     <Content1col />
-    <GridGallery />
-    <ListCredits />
-    <ListCredits />
-    <ListCredits />
-    <ListCredits />
+    <GridGallery :items="activeProject?.Gallery ?? []" />
+    <ListCredits v-if="creditItems.length" title="Credits" :items="creditItems" />
+    <ListCredits v-if="awardsItems.length" title="Awards" :items="awardsItems" />
+    <ListCredits v-if="pressItems.length" title="Press" :items="pressItems" />
+    <ListCredits v-if="remerciementItems.length" title="Remerciements" :items="remerciementItems" />
     <ListProjects />
 </template>
 

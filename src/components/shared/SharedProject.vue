@@ -1,15 +1,34 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { gsap } from 'gsap'
+import { useRouter } from 'vue-router'
 import { getFwdClones } from '@/transitions/projectTransition'
 import { useProjectStore } from '@/stores/project'
 import { storeToRefs } from 'pinia'
+import { slugify, coverImage } from '@/api/strapi'
 
-const { type } = storeToRefs(useProjectStore())
+const router = useRouter()
+const { type, activeProject, projects } = storeToRefs(useProjectStore())
+const projectStore = useProjectStore()
 
 const spanRef = ref<HTMLElement | null>(null)
 const titleRef = ref<HTMLElement | null>(null)
 const ulRef = ref<HTMLElement | null>(null)
+
+const activeIndex = computed(() =>
+    projects.value.findIndex(p => p.documentId === activeProject.value?.documentId)
+)
+
+const otherProjects = computed(() =>
+    projects.value
+        .map((p, i) => ({ project: p, index: i + 1 }))
+        .filter(({ project }) => project.documentId !== activeProject.value?.documentId)
+)
+
+function navigate(slug: string) {
+    projectStore.setActiveSlug(slug)
+    router.push(`/projects/${slug}`)
+}
 
 onMounted(() => {
     const clones = getFwdClones()
@@ -69,20 +88,30 @@ onMounted(() => {
 
 <template>
     <section :class="{ 'is-gallery': type === 'gallery' }">
-        <div CLAS>
-            <span ref="spanRef" data-trans="span">01</span>
+        <div>
+            <span ref="spanRef" data-trans="span">{{ String(activeIndex + 1).padStart(2, '0') }}</span>
         </div>
         <div class="details">
             <div class="title" ref="titleRef" data-trans="title">
-                <h2>Project Title</h2>
-                <p>Lorem ipsum</p>
+                <h2>{{ activeProject?.Title }}</h2>
+                <p v-if="activeProject?.Subtitle">{{ activeProject.Subtitle }}</p>
             </div>
             <ul ref="ulRef" data-trans="ul">
-               <li v-for="n in 5" :key="n">
-                    <div class="cover"></div>
+               <li
+                    v-for="({ project, index }) in otherProjects"
+                    :key="project.documentId"
+                    @click="navigate(slugify(project.Title))"
+               >
+                    <div class="cover">
+                        <img
+                            v-if="coverImage(project)"
+                            :src="coverImage(project)!.formats?.medium?.url ?? coverImage(project)!.url"
+                            :alt="project.Title"
+                        />
+                    </div>
                     <div class="info">
-                        <span>0{{ n }}</span>
-                        <h3>Project title</h3>
+                        <span>{{ String(index).padStart(2, '0') }}</span>
+                        <h3>{{ project.Title }}</h3>
                     </div>
                </li>
             </ul>
@@ -160,6 +189,14 @@ p {
     background-color: black;
     aspect-ratio: 4/3;
     flex: 1;
+    overflow: hidden;
+}
+
+.cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .info {
@@ -170,5 +207,4 @@ p {
     padding-bottom: 0.25em;
     position: relative;
 }
-
 </style>
