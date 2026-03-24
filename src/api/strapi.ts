@@ -143,6 +143,14 @@ const PROJECT_POPULATE: Record<string, string> = {
   'populate[Remerciement][fields][1]': 'Website',
 }
 
+export interface Shared {
+  id: number
+  documentId: string
+  Title: string
+  Tagline: string
+  Copyright: string
+}
+
 export function getProjects(): Promise<Project[]> {
   return strapiGet<Project[]>('/projects', PROJECT_POPULATE)
 }
@@ -153,4 +161,8 @@ export function getService(): Promise<Service> {
 
 export function getContact(): Promise<Contact> {
   return strapiGet<Contact>('/contact', { populate: '*' })
+}
+
+export function getShared(): Promise<Shared> {
+  return strapiGet<Shared>('/shared')
 }

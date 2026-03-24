@@ -5,6 +5,7 @@ import { gsap } from 'gsap'
 import MainLogo from '@/assets/MainLogo.vue';
 import { themes } from '@/transitions/themes'
 import { getContact, type Contact } from '@/api/strapi'
+import { useSharedStore } from '@/stores/shared'
 import { registerPageLeave } from '@/transitions/projectTransition'
 
 const props = withDefaults(defineProps<{
@@ -17,6 +18,7 @@ const props = withDefaults(defineProps<{
 })
 
 const contact = ref<Contact | null>(null)
+const sharedStore = useSharedStore()
 
 const footerRef = ref<HTMLElement | null>(null)
 const logoRef = ref<{ $el: SVGElement } | null>(null)
@@ -30,6 +32,7 @@ onBeforeUnmount(() => unregisterLeave?.())
 
 onMounted(async () => {
     try { contact.value = await getContact() } catch {}
+    sharedStore.fetchShared()
 
     if (logoRef.value) {
         const el = logoRef.value.$el
@@ -98,7 +101,7 @@ onUnmounted(() => {
         </address>
         <div class="bottom" ref="bottomRef">
             <div>
-                <p>©2026 all rights reserved</p>
+                <p>{{ sharedStore.shared?.Copyright }}</p>
                 <nav>
                     <RouterLink to="/">Cookies policy</RouterLink>
                     <RouterLink to="/">Legal advice</RouterLink>

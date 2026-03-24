@@ -1,17 +1,24 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { gsap } from 'gsap'
 import MainIcon from '@/assets/MainIcon.vue'
 import {
     getHeaderToHeader, setHeaderToHeader,
     registerHeaderLeave, clearHeaderLeave,
 } from '@/transitions/projectTransition'
+import { useSharedStore } from '@/stores/shared'
 
 const logoRef = ref<HTMLElement | null>(null)
 const navRef = ref<HTMLElement | null>(null)
 const taglineRef = ref<HTMLElement | null>(null)
 
-onMounted(() => {
+const sharedStore = useSharedStore()
+const titleParts = computed(() => (sharedStore.shared?.Title ?? '/').split('/'))
+const taglineParts = computed(() => (sharedStore.shared?.Tagline ?? '/').split('/'))
+
+onMounted(async () => {
+    await sharedStore.fetchShared()
+
     if (getHeaderToHeader()) {
         setHeaderToHeader(false)
         return
@@ -75,12 +82,12 @@ onUnmounted(() => {
     <section>
         <ul ref="taglineRef">
             <li>
-                <h1>Exhalte</h1>
-                <h2>Artistic Production company</h2>
+                <h1>{{ titleParts[0] }}</h1>
+                <h2>{{ titleParts[1] }}</h2>
             </li>
             <li>
-                <p>Movement</p>
-                <p>is a thought</p>
+                <p>{{ taglineParts[0] }}</p>
+                <p>{{ taglineParts[1] }}</p>
             </li>
         </ul>
     </section>

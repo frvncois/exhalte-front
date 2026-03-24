@@ -139,3 +139,17 @@ Each block is a paragraph. Text is in `children[].text`.
 | `Email` | string | Direct email address |
 
 > Fetch endpoint: `GET /api/contact?populate=*`
+
+---
+
+## Shared (single type: `api::shared.shared`)
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | number | |
+| `documentId` | string | |
+| `Title` | string | Studio name, e.g. `"Exhalte/Artistic production company"` |
+| `Tagline` | string | Hero tagline, e.g. `"Movement/is a tought"` |
+| `Copyright` | string | Footer copyright line, e.g. `"©2026 all rights reserved"` |
+
+> Fetch endpoint: `GET /api/shared?populate=*`
