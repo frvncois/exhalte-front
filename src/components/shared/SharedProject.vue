@@ -40,7 +40,7 @@ onMounted(() => {
         if (getRevClones().length) { done(); return }
         const els = [spanRef.value, titleRef.value].filter(Boolean)
         const lis = ulRef.value ? Array.from(ulRef.value.querySelectorAll('li')) : []
-        gsap.to([...els, ...lis], { clipPath: 'inset(0 0 100% 0)', duration: 0.4, stagger: 0.04, ease: 'power2.in', onComplete: done })
+        gsap.timeline({ onComplete: done }).to([...els, ...lis], { clipPath: 'inset(0 0 100% 0)', duration: 0.4, stagger: 0.04, ease: 'power2.in' })
     })
 
     if (!clones.length) {

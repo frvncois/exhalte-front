@@ -66,7 +66,7 @@ onMounted(async () => {
     unregisterLeave = registerPageLeave((done) => {
         if (getFwdClones().length) { done(); return }
         const lis = Array.from(ulEl.value?.querySelectorAll('li') ?? [])
-        gsap.to(lis, { clipPath: 'inset(0 0 100% 0)', duration: 0.4, stagger: 0.05, ease: 'power2.in', onComplete: done })
+        gsap.timeline({ onComplete: done }).to(lis, { clipPath: 'inset(0 0 100% 0)', duration: 0.4, stagger: 0.05, ease: 'power2.in' })
     })
 
     if (!clones.length) {

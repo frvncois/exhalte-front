@@ -26,7 +26,6 @@ onMounted(() => {
 
 onUnmounted(() => {
     window.removeEventListener('scroll', applyTheme)
-    document.body.classList.remove(...themes)
 })
 </script>
 

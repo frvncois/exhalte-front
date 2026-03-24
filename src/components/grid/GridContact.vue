@@ -7,6 +7,7 @@ import { registerPageLeave } from '@/transitions/projectTransition'
 const ulRef = ref<HTMLElement | null>(null)
 const circlesRef = ref<HTMLElement | null>(null)
 const contact = ref<Contact | null>(null)
+let tl: gsap.core.Timeline | null = null
 let unregisterLeave: (() => void) | null = null
 onBeforeUnmount(() => unregisterLeave?.())
 
@@ -45,7 +46,7 @@ async function animate() {
     gsap.set(leftSpans, { x: '30vw' })
     gsap.set(rightSpans, { x: '-30vw' })
 
-    const tl = gsap.timeline({ delay: 1 })
+    tl = gsap.timeline({ delay: 1 })
     tl.to(midSpans, { opacity: 1, duration: 0.5, stagger: 0.08, ease: 'power2.out' }, '-=0.3')
     tl.to(leftSpans, { opacity: 1, x: 0, duration: 1, stagger: 0.06, ease: 'power3.out' }, '-=0.3')
     tl.to(rightSpans, { opacity: 1, x: 0, duration: 1, stagger: 0.06, ease: 'power3.out' }, '<')
@@ -54,13 +55,21 @@ async function animate() {
 }
 
 onMounted(async () => {
+    gsap.set(ulRef.value, { visibility: 'hidden' })
+    gsap.set(circlesRef.value, { visibility: 'hidden' })
     try { contact.value = await getContact() } catch {}
+    gsap.set(ulRef.value, { visibility: 'visible' })
+    gsap.set(circlesRef.value, { visibility: 'visible' })
     animate()
 
     unregisterLeave = registerPageLeave((done) => {
+        tl?.kill()
         const lis = ulRef.value?.querySelectorAll('li')
-        if (!lis?.length) { done(); return }
-        gsap.to(lis, { clipPath: 'inset(0 100% 0 0)', duration: 0.4, stagger: 0.05, ease: 'power2.in', onComplete: done })
+        const allSpans = circlesRef.value?.querySelectorAll('span')
+        const tl2 = gsap.timeline({ onComplete: done })
+        if (allSpans?.length) tl2.to(allSpans, { opacity: 0, duration: 0.3, ease: 'power2.in' }, 0)
+        if (lis?.length) tl2.to(lis, { clipPath: 'inset(0 100% 0 0)', duration: 0.4, stagger: 0.04, ease: 'power2.in' }, 0)
+        if (!allSpans?.length && !lis?.length) done()
     })
 })
 </script>
@@ -94,6 +103,7 @@ onMounted(async () => {
 <style scoped>
 section {
     position: fixed;
+    z-index: 1;
     inset: 0;
     display: flex;
     flex-direction: column;

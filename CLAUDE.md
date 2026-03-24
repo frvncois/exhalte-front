@@ -52,8 +52,25 @@ components/
   content/    # Content containers (1-col, 2-col, gallery, video)
   grid/       # GridProjects (home page project grid)
   single/     # Single project UI (hero, nav)
-  transition/ # AppLoad splash, RouteChange overlay
+  transition/ # AppLoad splash, RouteTransition overlay
 ```
+
+### Data Layer (`src/api/strapi.ts`)
+
+All content is fetched from a **Strapi CMS** backend. Two environment variables are required:
+- `VITE_STRAPI_URL` — base URL of the Strapi instance
+- `VITE_STRAPI_TOKEN` — Bearer token for authenticated requests
+
+The three fetch functions (`getProjects`, `getService`, `getContact`) map to Strapi collection types. Project slugs are derived at runtime via `slugify(title)` — there is no slug field in Strapi; routing depends entirely on this function staying stable.
+
+### Routes
+
+| Path | Name | Theme |
+|------|------|-------|
+| `/` | `home` | hasHeader |
+| `/projects/:slug` | `single` | — |
+| `/services` | `services` | hasHeader |
+| `/contact` | `contact` | hasHeader |
 
 ### Key Libraries
 

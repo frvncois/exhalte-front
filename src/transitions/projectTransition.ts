@@ -79,17 +79,17 @@ export function triggerPageLeave(done: () => void) {
     cbs.forEach(cb => cb(() => { if (++n === cbs.length) done() }))
 }
 
-// RouteChange overlay callback
-let routeChangeCallback: ((done: () => void, bg: string) => void) | null = null
-export function registerRouteChange(cb: (done: () => void, bg: string) => void) { routeChangeCallback = cb }
-export function triggerRouteChange(done: () => void, bg: string) {
-    if (routeChangeCallback) routeChangeCallback(done, bg)
+
+// Route transition overlay
+let routeTransitionCallback: ((done: () => void, bg: string) => void) | null = null
+let routeTransitionOutCallback: (() => void) | null = null
+export function registerRouteTransition(cb: (done: () => void, bg: string) => void) { routeTransitionCallback = cb }
+export function registerRouteTransitionOut(cb: () => void) { routeTransitionOutCallback = cb }
+export function triggerRouteTransition(done: () => void, bg: string) {
+    if (routeTransitionCallback) routeTransitionCallback(done, bg)
     else done()
 }
-
-let routeChangeOutCallback: (() => void) | null = null
-export function registerRouteChangeOut(cb: () => void) { routeChangeOutCallback = cb }
-export function triggerRouteChangeOut() { routeChangeOutCallback?.() }
+export function triggerRouteTransitionOut() { routeTransitionOutCallback?.() }
 
 // Header-to-header flag: skip in/out animation when both routes have SharedHeader
 let headerToHeader = false

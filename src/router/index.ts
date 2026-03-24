@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { triggerHeaderLeave, setHeaderToHeader, clearRevClones, triggerRouteChange, triggerRouteChangeOut, triggerPageLeave, getFwdClones } from '@/transitions/projectTransition'
+import { triggerHeaderLeave, setHeaderToHeader, clearRevClones, clearFwdClones, triggerPageLeave, getFwdClones, getRevClones, triggerRouteTransition, triggerRouteTransitionOut } from '@/transitions/projectTransition'
 import { themes } from '@/transitions/themes'
 
 const router = createRouter({
@@ -33,25 +33,27 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach(async (to, from) => {
-    if (to.path === '/' && !from.path.startsWith('/projects/')) clearRevClones()
-
-    document.body.style.transition = 'none'
+function stripTheme() {
     Array.from(document.body.classList)
         .filter(c => c.startsWith('theme-'))
         .forEach(c => document.body.classList.remove(c))
-    requestAnimationFrame(() => { document.body.style.transition = '' })
+}
+
+router.beforeEach(async (to, from) => {
+    if (to.path === '/' && !from.path.startsWith('/projects/')) clearRevClones()
+    if (!to.path.startsWith('/projects/')) clearFwdClones()
 
     const themePath = to.path.startsWith('/projects/') ? '/projects/:slug' : to.path
     const theme = themes[themePath]
-    if (theme?.color) setTimeout(() => {
-        document.body.style.color = theme.color
-    }, 120)
 
     if (from.meta.hasHeader && to.meta.hasHeader) {
         setHeaderToHeader(true)
         await new Promise<void>(resolve => triggerPageLeave(resolve))
-        await new Promise<void>(resolve => triggerRouteChange(resolve, theme?.bg ?? 'var(--white)'))
+        document.body.style.transition = 'color 0.6s ease'
+        stripTheme()
+        if (theme?.bodyClass) document.body.classList.add(theme.bodyClass)
+        requestAnimationFrame(() => { document.body.style.transition = '' })
+        await new Promise<void>(resolve => triggerRouteTransition(resolve, theme?.transitionBg ?? '#FFFFFF'))
     } else if (from.meta.hasHeader && !to.meta.hasHeader) {
         if (getFwdClones().length) {
             await new Promise<void>(resolve => triggerHeaderLeave(resolve))
@@ -60,18 +62,32 @@ router.beforeEach(async (to, from) => {
                 new Promise<void>(resolve => triggerHeaderLeave(resolve)),
                 new Promise<void>(resolve => triggerPageLeave(resolve)),
             ])
+            document.body.style.transition = 'color 0.6s ease'
+            stripTheme()
+            if (theme?.bodyClass) document.body.classList.add(theme.bodyClass)
+            requestAnimationFrame(() => { document.body.style.transition = '' })
+            await new Promise<void>(resolve => triggerRouteTransition(resolve, theme?.transitionBg ?? '#FFFFFF'))
         }
     } else {
-        await new Promise<void>(resolve => triggerPageLeave(resolve))
+        if (!getRevClones().length) {
+            await new Promise<void>(resolve => triggerPageLeave(resolve))
+            document.body.style.transition = 'color 0.6s ease'
+            stripTheme()
+            if (theme?.bodyClass) document.body.classList.add(theme.bodyClass)
+            requestAnimationFrame(() => { document.body.style.transition = '' })
+            await new Promise<void>(resolve => triggerRouteTransition(resolve, theme?.transitionBg ?? '#FFFFFF'))
+        } else {
+            await new Promise<void>(resolve => triggerPageLeave(resolve))
+        }
     }
 })
 
 router.afterEach((to) => {
-    triggerRouteChangeOut()
+    triggerRouteTransitionOut()
     window.scrollTo(0, 0)
     document.body.style.color = ''
     const theme = themes[to.path.startsWith('/projects/') ? '/projects/:slug' : to.path]
-    document.body.style.transition = 'none'
+    document.body.style.transition = 'color 0.6s ease'
     Array.from(document.body.classList)
         .filter(c => c.startsWith('theme-'))
         .forEach(c => document.body.classList.remove(c))
