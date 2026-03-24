@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { triggerHeaderLeave, setHeaderToHeader, clearRevClones, triggerRouteChange, triggerRouteChangeOut } from '@/transitions/projectTransition'
+import { triggerHeaderLeave, setHeaderToHeader, clearRevClones, triggerRouteChange, triggerRouteChangeOut, triggerPageLeave } from '@/transitions/projectTransition'
 import { themes } from '@/transitions/themes'
 
 const router = createRouter({
@@ -52,7 +52,7 @@ router.beforeEach((to, from, next) => {
     } else if (from.meta.hasHeader && !to.meta.hasHeader) {
         triggerHeaderLeave(() => next())
     } else {
-        next()
+        triggerPageLeave(() => next())
     }
 })
 

@@ -2,7 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { gsap } from 'gsap'
 import { useRouter } from 'vue-router'
-import { getFwdClones } from '@/transitions/projectTransition'
+import { getFwdClones, getRevClones, registerPageLeave } from '@/transitions/projectTransition'
 import { useProjectStore } from '@/stores/project'
 import { storeToRefs } from 'pinia'
 import { slugify, coverImage } from '@/api/strapi'
@@ -32,6 +32,13 @@ function navigate(slug: string) {
 
 onMounted(() => {
     const clones = getFwdClones()
+
+    registerPageLeave((done) => {
+        if (getRevClones().length) { done(); return }
+        const els = [spanRef.value, titleRef.value].filter(Boolean)
+        const lis = ulRef.value ? Array.from(ulRef.value.querySelectorAll('li')) : []
+        gsap.to([...els, ...lis], { clipPath: 'inset(0 0 100% 0)', duration: 0.4, stagger: 0.04, ease: 'power2.in', onComplete: done })
+    })
 
     if (!clones.length) {
         const lis = ulRef.value ? Array.from(ulRef.value.querySelectorAll('li')) : []

@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import { useProjectStore } from '@/stores/project'
 import { storeToRefs } from 'pinia'
 import { slugify, coverImage } from '@/api/strapi'
+import { registerPageLeave } from '@/transitions/projectTransition'
 
 const router = useRouter()
 const projectStore = useProjectStore()
@@ -45,6 +46,12 @@ onMounted(() => {
     }, { threshold: 0.1 })
 
     observer.observe(sectionRef.value!)
+
+    registerPageLeave((done) => {
+        const covers = track.value?.querySelectorAll('.cover')
+        if (!covers?.length) { done(); return }
+        gsap.to(covers, { clipPath: 'inset(0 100% 0 0)', duration: 0.4, stagger: 0.05, ease: 'power2.in', onComplete: done })
+    })
 })
 
 onUnmounted(() => observer?.disconnect())

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { gsap } from 'gsap'
+import { registerPageLeave } from '@/transitions/projectTransition'
 
 defineProps<{
     title: string
@@ -27,6 +28,10 @@ onMounted(() => {
     }, { threshold: 0.2 })
 
     observer.observe(sectionRef.value!)
+
+    registerPageLeave((done) => {
+        gsap.to(sectionRef.value, { opacity: 0, duration: 0.3, ease: 'power2.in', onComplete: done })
+    })
 })
 
 onUnmounted(() => observer?.disconnect())

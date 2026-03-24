@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { gsap } from 'gsap'
 import { useProjectStore } from '@/stores/project'
 import { storeToRefs } from 'pinia'
+import { registerPageLeave } from '@/transitions/projectTransition'
 
 const sectionRef = ref<HTMLElement | null>(null)
 const { activeProject } = storeToRefs(useProjectStore())
@@ -17,6 +18,10 @@ onMounted(() => {
         }
     }, { threshold: 0.2 })
     observer.observe(sectionRef.value!)
+
+    registerPageLeave((done) => {
+        gsap.to(sectionRef.value, { opacity: 0, duration: 0.4, ease: 'power2.in', onComplete: done })
+    })
 })
 
 onUnmounted(() => observer?.disconnect())
