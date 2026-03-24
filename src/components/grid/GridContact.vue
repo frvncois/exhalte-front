@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { gsap } from 'gsap'
+import { getContact, type Contact } from '@/api/strapi'
 
 const ulRef = ref<HTMLElement | null>(null)
 const circlesRef = ref<HTMLElement | null>(null)
+const contact = ref<Contact | null>(null)
 
-onMounted(() => {
+async function animate() {
+    await nextTick()
+
     const lis = ulRef.value?.querySelectorAll('li')
     if (!lis) return
 
-    // Capture original CSS translateX for h3/h4 in each li (in px, before GSAP runs)
     lis.forEach(li => {
         const targets = Array.from(li.querySelectorAll<HTMLElement>('h3, h4'))
         const origX = targets.map(el => {
@@ -45,6 +48,11 @@ onMounted(() => {
     tl.to(rightSpans, { opacity: 1, x: 0, duration: 1, stagger: 0.06, ease: 'power3.out' }, '<')
     tl.to(allSpans, { backgroundColor: 'transparent', duration: 1, ease: 'power2.out' }, '-=0.3')
     tl.to(lis, { clipPath: 'inset(0 0% 0 0)', duration: 0.75, ease: 'power3.out', stagger: 0.06 }, '-=0.5')
+}
+
+onMounted(async () => {
+    try { contact.value = await getContact() } catch {}
+    animate()
 })
 </script>
 
@@ -53,38 +61,15 @@ onMounted(() => {
         <ul ref="ulRef">
             <li>
                 <h2>Address</h2>
-                <p>66 rue de Rome</p>
-                <p>75008 Paris</p>
+                <template v-for="line in (contact?.Address ?? '').split('\n')" :key="line">
+                    <p>{{ line }}</p>
+                </template>
             </li>
-            <li>
-                <h3>Louise Descorps-Declere</h3>
-                <h4>Preoduction Assistant</h4>
-                <p>+33 (0)6 43 57 16 74</p>
-                <p>louise.declere@labellefacon.fr</p>
-            </li>
-            <li>
-                <h3>Marielle Elis</h3>
-                <h4>Founder & Producer</h4>
-                <p>+33 (0)6 86 64 44 28</p>
-                <p>marielle.elis@labellefacon.fr</p>
-            </li>
-            <li>
-                <h3>Virginie Sagan</h3>
-                <h4>Executive Producer</h4>
-                <p>+33 (0)6 26 20 27 61</p>
-                <p>virginie.sagan@labellefacon.fr</p>
-            </li>
-            <li>
-                <h3>Yvan Rougon</h3>
-                <h4>Development Manager</h4>
-                <p>+33 (0)6 62 73 93 08</p>
-                <p>yvan.rougon@labellefacon.fr</p>
-            </li>
-            <li>
-                <h3>Jonathan Vienot</h3>
-                <h4>Line Producer</h4>
-                <p>+33 (0)6 86 94 09 72</p>
-                <p>jonathan.vienot@labellefacon.fr</p>
+            <li v-for="member in contact?.Team" :key="member.id">
+                <h3>{{ member.Name }}</h3>
+                <h4>{{ member.Title }}</h4>
+                <p>{{ member.Phone }}</p>
+                <p>{{ member.Email }}</p>
             </li>
         </ul>
         <div class="circles" ref="circlesRef">

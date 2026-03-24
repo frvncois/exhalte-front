@@ -27,6 +27,36 @@ export interface Directory {
   Website: string | null
 }
 
+export interface ServiceItem {
+  id: number
+  Title: string
+}
+
+export interface Service {
+  id: number
+  documentId: string
+  Intro: DetailsBlock[]
+  Services: ServiceItem[]
+}
+
+export interface TeamMember {
+  id: number
+  Name: string
+  Title: string
+  Phone: string
+  Email: string
+}
+
+export interface Contact {
+  id: number
+  documentId: string
+  Address: string
+  Phone: string
+  Linkedin: string | null
+  Instagram: string | null
+  Team: TeamMember[]
+}
+
 export interface Credit {
   id: number
   Title: string
@@ -115,4 +145,12 @@ const PROJECT_POPULATE: Record<string, string> = {
 
 export function getProjects(): Promise<Project[]> {
   return strapiGet<Project[]>('/projects', PROJECT_POPULATE)
+}
+
+export function getService(): Promise<Service> {
+  return strapiGet<Service>('/service', { populate: '*' })
+}
+
+export function getContact(): Promise<Contact> {
+  return strapiGet<Contact>('/contact', { populate: '*' })
 }

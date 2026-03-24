@@ -1,11 +1,19 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { gsap } from 'gsap'
+import { getService, type Service } from '@/api/strapi'
 
 const sectionRef = ref<HTMLElement | null>(null)
+const service = ref<Service | null>(null)
 let observer: IntersectionObserver | null = null
 
-onMounted(() => {
+onMounted(async () => {
+    try {
+        service.value = await getService()
+    } catch (e) {
+        console.warn('Service fetch failed:', e)
+    }
+
     gsap.set(sectionRef.value, { opacity: 0, x: 40 })
     observer = new IntersectionObserver(([entry]) => {
         if (entry?.isIntersecting) {
@@ -24,23 +32,17 @@ onUnmounted(() => observer?.disconnect())
         <div>
             <h2>(Services)</h2>
             <ul>
-                <li><h3>direction creative</h3></li>
-                <li><h3>production</h3></li>
-                <li><h3>conception artistique</h3></li>
-                <li><h3>curation</h3></li>
-                <li><h3>film de marque</h3></li>
-                <li><h3>films d'art</h3></li>
-                <li><h3>films documentaires</h3></li>
-                <li><h3>clips musicaux</h3></li>
-                <li><h3>long metrage</h3></li>
-                <li><h3>campagnes visuelles</h3></li>
-                <li><h3>séries télé</h3></li>
-                <li><h3>prestation événementielles</h3></li>
+                <li v-for="item in service?.Services" :key="item.id">
+                    <h3>{{ item.Title }}</h3>
+                </li>
             </ul>
         </div>
         <div>
             <h2>(Who we are)</h2>
-            <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.</p>
+            <p
+                v-for="(block, i) in service?.Intro"
+                :key="i"
+            >{{ block.children.map((c: { text: string }) => c.text).join('') }}</p>
         </div>
     </section>
 </template>

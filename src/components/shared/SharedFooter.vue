@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { gsap } from 'gsap'
 import MainLogo from '@/assets/MainLogo.vue';
 import { themes } from '@/transitions/themes'
+import { getContact, type Contact } from '@/api/strapi'
 
 const props = withDefaults(defineProps<{
     logo?: boolean,
@@ -14,6 +15,8 @@ const props = withDefaults(defineProps<{
     address: true,
 })
 
+const contact = ref<Contact | null>(null)
+
 const footerRef = ref<HTMLElement | null>(null)
 const logoRef = ref<{ $el: SVGElement } | null>(null)
 const addressRef = ref<HTMLElement | null>(null)
@@ -22,7 +25,9 @@ const route = useRoute()
 let observer: IntersectionObserver | null = null
 let logoObserver: IntersectionObserver | null = null
 
-onMounted(() => {
+onMounted(async () => {
+    try { contact.value = await getContact() } catch {}
+
     if (logoRef.value) {
         const el = logoRef.value.$el
         gsap.set(el, { clipPath: 'inset(0 0 100% 0)' })
@@ -77,11 +82,11 @@ onUnmounted(() => {
     <footer ref="footerRef">
         <MainLogo v-if="logo" ref="logoRef" />
         <address v-if="address" ref="addressRef">
-            <p>66 rue de Rome<br>750008 Paris</p>
-            <p>+00 123 456 789</p>
+            <p style="white-space: pre-line">{{ contact?.Address }}</p>
+            <p>{{ contact?.Phone }}</p>
             <nav>
-                <a href="https://www.instagram.com/exhalte/">IN</a>
-                <a href="https://www.linkedin.com/company/exhalte">LKN</a>
+                <a :href="contact?.Instagram ?? '#'">IN</a>
+                <a :href="contact?.Linkedin ?? '#'">LKN</a>
             </nav>
         </address>
         <div class="bottom" ref="bottomRef">

@@ -91,3 +91,51 @@
 ```
 
 Each block is a paragraph. Text is in `children[].text`.
+
+---
+
+## Service (single type: `api::service.service`)
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | number | |
+| `documentId` | string | |
+| `Intro` | RichText[] | Introductory text — same rich text block format as `Details` |
+| `Services` | ServiceItem[] | List of service entries (see below) |
+| `locale` | string | e.g. `"en"` |
+
+### ServiceItem (component, used in `Services[]`)
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | number | |
+| `Title` | string | Service name, e.g. `"Creative direction"`, `"Brand films"` |
+
+> Fetch endpoint: `GET /api/service?populate=*`
+
+---
+
+## Contact (single type: `api::contact.contact`)
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | number | |
+| `documentId` | string | |
+| `Address` | string | Multiline string — `\n` for line breaks. e.g. `"66 rue de Rome\n75008 Paris"` |
+| `Phone` | string | General studio phone number |
+| `Linkedin` | string \| null | LinkedIn URL |
+| `Instagram` | string \| null | Instagram URL |
+| `Team` | TeamMember[] | List of team members (see below) |
+| `locale` | string | e.g. `"en"` |
+
+### TeamMember (component, used in `Team[]`)
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | number | |
+| `Name` | string | Full name, e.g. `"Marielle Elis"` |
+| `Title` | string | Job title, e.g. `"Founder & Producer"` |
+| `Phone` | string | Direct phone number |
+| `Email` | string | Direct email address |
+
+> Fetch endpoint: `GET /api/contact?populate=*`
