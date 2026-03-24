@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { triggerHeaderLeave, setHeaderToHeader, clearRevClones, triggerRouteChange, triggerRouteChangeOut, triggerPageLeave } from '@/transitions/projectTransition'
+import { triggerHeaderLeave, setHeaderToHeader, clearRevClones, triggerRouteChange, triggerRouteChangeOut, triggerPageLeave, getFwdClones } from '@/transitions/projectTransition'
 import { themes } from '@/transitions/themes'
 
 const router = createRouter({
@@ -33,12 +33,14 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from) => {
     if (to.path === '/' && !from.path.startsWith('/projects/')) clearRevClones()
 
+    document.body.style.transition = 'none'
     Array.from(document.body.classList)
         .filter(c => c.startsWith('theme-'))
         .forEach(c => document.body.classList.remove(c))
+    requestAnimationFrame(() => { document.body.style.transition = '' })
 
     const themePath = to.path.startsWith('/projects/') ? '/projects/:slug' : to.path
     const theme = themes[themePath]
@@ -48,11 +50,19 @@ router.beforeEach((to, from, next) => {
 
     if (from.meta.hasHeader && to.meta.hasHeader) {
         setHeaderToHeader(true)
-        triggerRouteChange(() => next(), theme?.bg ?? 'var(--white)')
+        await new Promise<void>(resolve => triggerPageLeave(resolve))
+        await new Promise<void>(resolve => triggerRouteChange(resolve, theme?.bg ?? 'var(--white)'))
     } else if (from.meta.hasHeader && !to.meta.hasHeader) {
-        triggerHeaderLeave(() => next())
+        if (getFwdClones().length) {
+            await new Promise<void>(resolve => triggerHeaderLeave(resolve))
+        } else {
+            await Promise.all([
+                new Promise<void>(resolve => triggerHeaderLeave(resolve)),
+                new Promise<void>(resolve => triggerPageLeave(resolve)),
+            ])
+        }
     } else {
-        triggerPageLeave(() => next())
+        await new Promise<void>(resolve => triggerPageLeave(resolve))
     }
 })
 
@@ -61,10 +71,12 @@ router.afterEach((to) => {
     window.scrollTo(0, 0)
     document.body.style.color = ''
     const theme = themes[to.path.startsWith('/projects/') ? '/projects/:slug' : to.path]
+    document.body.style.transition = 'none'
     Array.from(document.body.classList)
         .filter(c => c.startsWith('theme-'))
         .forEach(c => document.body.classList.remove(c))
     if (theme?.bodyClass) document.body.classList.add(theme.bodyClass)
+    requestAnimationFrame(() => { document.body.style.transition = '' })
 })
 
 export default router

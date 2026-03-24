@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, onBeforeUnmount } from 'vue'
 import { gsap } from 'gsap'
 import { registerPageLeave } from '@/transitions/projectTransition'
 
@@ -10,6 +10,8 @@ defineProps<{
 
 const sectionRef = ref<HTMLElement | null>(null)
 let observer: IntersectionObserver | null = null
+let unregisterLeave: (() => void) | null = null
+onBeforeUnmount(() => unregisterLeave?.())
 
 onMounted(() => {
     const h3 = sectionRef.value?.querySelector('h3')
@@ -29,7 +31,7 @@ onMounted(() => {
 
     observer.observe(sectionRef.value!)
 
-    registerPageLeave((done) => {
+    unregisterLeave = registerPageLeave((done) => {
         gsap.to(sectionRef.value, { opacity: 0, duration: 0.3, ease: 'power2.in', onComplete: done })
     })
 })

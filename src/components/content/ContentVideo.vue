@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { gsap } from 'gsap'
 import { getFwdClones, getRevClones, registerPageLeave } from '@/transitions/projectTransition'
 import { useProjectStore } from '@/stores/project'
@@ -8,6 +8,9 @@ import { coverImage } from '@/api/strapi'
 
 const coverRef = ref<HTMLElement | null>(null)
 const { activeProject } = storeToRefs(useProjectStore())
+
+let unregisterLeave: (() => void) | null = null
+onBeforeUnmount(() => unregisterLeave?.())
 
 onMounted(() => {
     const clone = getFwdClones()[0]
@@ -32,8 +35,7 @@ onMounted(() => {
         })
     }
 
-    registerPageLeave((done) => {
-        // rev clones are flying this element back — skip
+    unregisterLeave = registerPageLeave((done) => {
         if (getRevClones().length) { done(); return }
         gsap.to(coverRef.value, { clipPath: 'inset(0 0 100% 0)', duration: 0.5, ease: 'power2.in', onComplete: done })
     })

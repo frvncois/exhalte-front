@@ -1,11 +1,13 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, onBeforeUnmount } from 'vue'
 import { gsap } from 'gsap'
 import lenis from '@/lib/lenis'
 import { registerPageLeave } from '@/transitions/projectTransition'
 
 const sectionRef = ref(null)
 const observers = []
+let unregisterLeave = null
+onBeforeUnmount(() => unregisterLeave?.())
 const PARALLAX_FACTORS = [0.08, -0.06, 0.1, -0.08, 0.06, -0.1, 0.07, -0.05, 0.09]
 
 onMounted(() => {
@@ -41,7 +43,7 @@ onMounted(() => {
 onUnmounted(() => observers.forEach(obs => obs.disconnect()))
 
 onMounted(() => {
-    registerPageLeave((done) => {
+    unregisterLeave = registerPageLeave((done) => {
         const covers = sectionRef.value?.querySelectorAll('.cover')
         if (!covers?.length) { done(); return }
         gsap.to(covers, { clipPath: 'inset(0 0 100% 0)', duration: 0.4, stagger: 0.02, ease: 'power2.in', onComplete: done })

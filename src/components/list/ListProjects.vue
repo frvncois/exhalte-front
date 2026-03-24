@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, onBeforeUnmount, computed } from 'vue'
 import { gsap } from 'gsap'
 import { useRouter } from 'vue-router'
 import { useProjectStore } from '@/stores/project'
@@ -25,6 +25,8 @@ function navigate(slug: string) {
 const sectionRef = ref<HTMLElement | null>(null)
 const track = ref<HTMLElement | null>(null)
 let observer: IntersectionObserver | null = null
+let unregisterLeave: (() => void) | null = null
+onBeforeUnmount(() => unregisterLeave?.())
 
 onMounted(() => {
     const lis = track.value?.querySelectorAll('li')
@@ -47,7 +49,7 @@ onMounted(() => {
 
     observer.observe(sectionRef.value!)
 
-    registerPageLeave((done) => {
+    unregisterLeave = registerPageLeave((done) => {
         const covers = track.value?.querySelectorAll('.cover')
         if (!covers?.length) { done(); return }
         gsap.to(covers, { clipPath: 'inset(0 100% 0 0)', duration: 0.4, stagger: 0.05, ease: 'power2.in', onComplete: done })

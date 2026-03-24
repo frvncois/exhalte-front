@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import { gsap } from 'gsap'
 import { useRouter } from 'vue-router'
 import { getFwdClones, getRevClones, registerPageLeave } from '@/transitions/projectTransition'
@@ -14,6 +14,9 @@ const projectStore = useProjectStore()
 const spanRef = ref<HTMLElement | null>(null)
 const titleRef = ref<HTMLElement | null>(null)
 const ulRef = ref<HTMLElement | null>(null)
+
+let unregisterLeave: (() => void) | null = null
+onBeforeUnmount(() => unregisterLeave?.())
 
 const activeIndex = computed(() =>
     projects.value.findIndex(p => p.documentId === activeProject.value?.documentId)
@@ -33,7 +36,7 @@ function navigate(slug: string) {
 onMounted(() => {
     const clones = getFwdClones()
 
-    registerPageLeave((done) => {
+    unregisterLeave = registerPageLeave((done) => {
         if (getRevClones().length) { done(); return }
         const els = [spanRef.value, titleRef.value].filter(Boolean)
         const lis = ulRef.value ? Array.from(ulRef.value.querySelectorAll('li')) : []

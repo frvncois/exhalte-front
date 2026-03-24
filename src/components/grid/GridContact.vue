@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { gsap } from 'gsap'
 import { getContact, type Contact } from '@/api/strapi'
+import { registerPageLeave } from '@/transitions/projectTransition'
 
 const ulRef = ref<HTMLElement | null>(null)
 const circlesRef = ref<HTMLElement | null>(null)
 const contact = ref<Contact | null>(null)
+let unregisterLeave: (() => void) | null = null
+onBeforeUnmount(() => unregisterLeave?.())
 
 async function animate() {
     await nextTick()
@@ -53,6 +56,12 @@ async function animate() {
 onMounted(async () => {
     try { contact.value = await getContact() } catch {}
     animate()
+
+    unregisterLeave = registerPageLeave((done) => {
+        const lis = ulRef.value?.querySelectorAll('li')
+        if (!lis?.length) { done(); return }
+        gsap.to(lis, { clipPath: 'inset(0 100% 0 0)', duration: 0.4, stagger: 0.05, ease: 'power2.in', onComplete: done })
+    })
 })
 </script>
 
@@ -85,7 +94,7 @@ onMounted(async () => {
 <style scoped>
 section {
     position: fixed;
-    top: 0;
+    inset: 0;
     display: flex;
     flex-direction: column;
     height: calc(100vh - 6em);

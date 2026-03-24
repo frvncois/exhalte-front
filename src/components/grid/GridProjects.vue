@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { storeToRefs } from 'pinia'
-import { captureFwdClones, getFwdClones, getRevClones, getClickedIndex } from '@/transitions/projectTransition'
+import { captureFwdClones, getFwdClones, getRevClones, getClickedIndex, registerPageLeave } from '@/transitions/projectTransition'
 import { useProjectStore } from '@/stores/project'
 import { slugify, coverImage } from '@/api/strapi'
 
@@ -11,6 +11,9 @@ const router = useRouter()
 const ulEl = ref<HTMLUListElement | null>(null)
 const projectStore = useProjectStore()
 const { projects } = storeToRefs(projectStore)
+
+let unregisterLeave: (() => void) | null = null
+onBeforeUnmount(() => unregisterLeave?.())
 
 function handleClick(index: number) {
     const project = projects.value[index]
@@ -59,6 +62,12 @@ onMounted(async () => {
     await projectStore.fetchProjects()
 
     const clones = getRevClones()
+
+    unregisterLeave = registerPageLeave((done) => {
+        if (getFwdClones().length) { done(); return }
+        const lis = Array.from(ulEl.value?.querySelectorAll('li') ?? [])
+        gsap.to(lis, { clipPath: 'inset(0 0 100% 0)', duration: 0.4, stagger: 0.05, ease: 'power2.in', onComplete: done })
+    })
 
     if (!clones.length) {
         await nextTick()

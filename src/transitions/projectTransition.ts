@@ -63,16 +63,17 @@ export function clearRevClones() {
     revClones = []
 }
 
-// Page leave callbacks: registered by components, triggered by router before next()
-const pageLeaveCallbacks: ((done: () => void) => void)[] = []
+// Page leave callbacks: persist while component is mounted, removed on unmount
+type PageLeaveFn = (done: () => void) => void
+const pageLeaveCallbacks = new Set<PageLeaveFn>()
 
-export function registerPageLeave(cb: (done: () => void) => void) {
-    pageLeaveCallbacks.push(cb)
+export function registerPageLeave(cb: PageLeaveFn): () => void {
+    pageLeaveCallbacks.add(cb)
+    return () => pageLeaveCallbacks.delete(cb)
 }
 
 export function triggerPageLeave(done: () => void) {
     const cbs = [...pageLeaveCallbacks]
-    pageLeaveCallbacks.length = 0
     if (!cbs.length) { done(); return }
     let n = 0
     cbs.forEach(cb => cb(() => { if (++n === cbs.length) done() }))

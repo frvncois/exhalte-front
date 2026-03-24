@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import { gsap } from 'gsap'
 import MainLogo from '@/assets/MainLogo.vue';
 import { themes } from '@/transitions/themes'
 import { getContact, type Contact } from '@/api/strapi'
+import { registerPageLeave } from '@/transitions/projectTransition'
 
 const props = withDefaults(defineProps<{
     logo?: boolean,
@@ -24,6 +25,8 @@ const bottomRef = ref<HTMLElement | null>(null)
 const route = useRoute()
 let observer: IntersectionObserver | null = null
 let logoObserver: IntersectionObserver | null = null
+let unregisterLeave: (() => void) | null = null
+onBeforeUnmount(() => unregisterLeave?.())
 
 onMounted(async () => {
     try { contact.value = await getContact() } catch {}
@@ -50,6 +53,10 @@ onMounted(async () => {
             }
         }, { threshold: 0.5 })
         obs.observe(el)
+    })
+
+    unregisterLeave = registerPageLeave((done) => {
+        gsap.to(footerRef.value, { opacity: 0, duration: 0.4, ease: 'power2.in', onComplete: done })
     })
 
     if (!props.theme) return
