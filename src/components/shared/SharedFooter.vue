@@ -204,4 +204,12 @@ svg {
     overflow: hidden;
     height: 0;
 }
+@media (max-width: 768px) {
+    footer { gap: 8em; }
+    svg { margin-top: 8em; }
+    address { font-size: var(--text-sm); }
+    .bottom { flex-direction: column; gap: 2em; align-items: start; }
+    .credits { position: static; align-items: start; }
+    .credits-content { align-items: start; }
+}
 </style>

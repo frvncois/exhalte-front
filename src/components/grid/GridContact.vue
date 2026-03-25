@@ -86,8 +86,8 @@ onMounted(async () => {
             <li v-for="member in contactStore.contact?.Team" :key="member.id">
                 <h3>{{ member.Name }}</h3>
                 <h4>{{ member.Title }}</h4>
-                <p>{{ member.Phone }}</p>
-                <p>{{ member.Email }}</p>
+                <a href="tel:{{ member.Phone }}">{{ member.Phone }}</a>
+                <a href="mailto:{{ member.Email }}">{{ member.Email }}</a>
             </li>
         </ul>
         <div class="circles" ref="circlesRef">
@@ -120,6 +120,8 @@ ul {
 }
 
 li {
+    display: flex;
+  flex-direction: column;
         padding-top: 4em;
         &:nth-child(2) {
             h4 {
@@ -190,7 +192,7 @@ h2, h3 {
     margin-bottom: 0.5em;
 }
 
-h4, p {
+h4, p, a {
     font-family: var(--heading);
 }
 
@@ -200,4 +202,24 @@ li:nth-child(3) { grid-row: 2; grid-column: 3; }
 li:nth-child(4) { grid-row: 3; grid-column: 2; }
 li:nth-child(5) { grid-row: 3; grid-column: 4; }
 li:nth-child(6) { grid-row: 4; grid-column: 3; }
+
+@media (max-width: 768px) {
+    section {
+        position: static;
+        height: auto;
+        margin: 6em 2em 0;
+    }
+    ul {
+        grid-template-columns: 1fr 1fr;
+        padding-bottom: 4em;
+    }
+    li {
+        padding-top: 2em;
+        transform: none !important;
+        text-align: left !important;
+    }
+    li:nth-child(n) { grid-row: auto; grid-column: auto; }
+    li:nth-child(n) h3, li:nth-child(n) h4 { transform: none !important; }
+    .circles { display: none; }
+}
 </style>

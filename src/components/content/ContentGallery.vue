@@ -66,4 +66,8 @@ section {
     height: 80vh;
     background: black;
 }
+@media (max-width: 768px) {
+    section { margin: 0; flex: none; }
+    .cover { height: 56vw; }
+}
 </style>

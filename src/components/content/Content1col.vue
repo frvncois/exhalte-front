@@ -46,6 +46,9 @@ section {
     display: grid;
     grid-template-columns: 1fr 1fr;
 }
+@media (max-width: 768px) {
+    section { grid-template-columns: 1fr; }
+}
 
 div {
     display: flex;

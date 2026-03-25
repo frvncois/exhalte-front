@@ -93,6 +93,10 @@ section {
     overflow: hidden;
     position: relative;
 }
+@media (max-width: 768px) {
+    section { margin: 0; }
+    .cover { height: 56vw; }
+}
 
 img, video {
     width: 100%;

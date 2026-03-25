@@ -190,6 +190,17 @@ ul {
     row-gap: 6em;
     flex: 1;
 }
+@media (max-width: 768px) {
+    section {
+        height: auto;
+        padding-top: 8em;
+        align-items: start;
+    }
+    ul {
+        grid-template-columns: 1fr;
+        row-gap: 3em;
+    }
+}
 
 li {
     display: flex;

@@ -18,6 +18,10 @@ const localeStore = useLocaleStore()
 const titleParts = computed(() => (sharedStore.shared?.Title ?? '/').split('/'))
 const taglineParts = computed(() => (sharedStore.shared?.Tagline ?? '/').split('/'))
 
+const menuOpen = ref(false)
+function toggleMenu() { menuOpen.value = !menuOpen.value }
+function closeMenu() { menuOpen.value = false }
+
 function onLocaleToggle() {
     localeStore.toggle()
 }
@@ -78,12 +82,13 @@ onUnmounted(() => {
                 <MainIcon />
             </RouterLink>
         </span>
-        <nav ref="navRef" @click="onNavClick">
-            <RouterLink to="/">Index</RouterLink>
-            <RouterLink to="/services">Services</RouterLink>
-            <RouterLink to="/contact">Contact</RouterLink>
+        <nav ref="navRef" @click="onNavClick" :class="{ open: menuOpen }">
+            <RouterLink to="/" @click="closeMenu">Index</RouterLink>
+            <RouterLink to="/services" @click="closeMenu">Services</RouterLink>
+            <RouterLink to="/contact" @click="closeMenu">Contact</RouterLink>
             <button @click.stop="onLocaleToggle">{{ localeStore.nextLabel }}</button>
         </nav>
+        <button class="menu-toggle" @click="toggleMenu">{{ menuOpen ? '( close )' : '( menu )' }}</button>
     </header>
     <section>
         <ul ref="taglineRef">
@@ -123,6 +128,34 @@ nav {
 button {
     all: unset;
     cursor: pointer;
+}
+.menu-toggle {
+    display: none;
+}
+@media (max-width: 768px) {
+    nav {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 19;
+        background: var(--light);
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-end;
+        padding: 2em;
+        gap: 0.5em;
+        a:last-child, button {
+            margin-left: 0;
+        }
+    }
+    nav.open {
+        display: flex;
+    }
+    .menu-toggle {
+        display: block;
+        position: relative;
+        z-index: 21;
+    }
 }
 svg {
     height: 2.15em;

@@ -54,6 +54,9 @@ section {
         flex: 2;
     }
 }
+@media (max-width: 768px) {
+    section { flex-direction: column; gap: 2em; }
+}
 h2 {
     font-family: 'body';
     text-transform: uppercase;

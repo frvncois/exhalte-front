@@ -152,6 +152,20 @@ section.is-gallery {
         }
     }
 }
+@media (max-width: 768px) {
+    section, section.is-gallery {
+        position: static;
+        flex-direction: column;
+        gap: 2em;
+    }
+    .details {
+        flex-direction: column;
+        gap: 1em;
+    }
+    ul {
+        flex-direction: column !important;
+    }
+}
 
 .details {
     display: flex;
