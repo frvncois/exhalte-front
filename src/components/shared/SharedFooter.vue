@@ -160,6 +160,8 @@ address {
     text-align: center;
     gap: 0.25em;
     font-size: var(--text-medium);
+    text-transform: uppercase;
+    font-family: 'heading';
 }
 
 nav {
