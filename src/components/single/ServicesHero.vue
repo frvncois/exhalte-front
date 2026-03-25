@@ -48,12 +48,11 @@ section {
     display: flex;
     align-items: center;
     height: 100vh;
-    padding: 0 2em;
 }
 
 svg {
     width: 100%;
-    height: 80%;
+    height: 100%;
     color: currentColor;
     margin: auto;
 }

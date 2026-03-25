@@ -62,8 +62,8 @@ onMounted(() => {
             x: dest.left - parseFloat(clone.style.left),
             y: dest.top - parseFloat(clone.style.top),
             ...(withScale && {
-                scaleX: dest.width / parseFloat(clone.style.width),
-                scaleY: dest.height / parseFloat(clone.style.height),
+                width: dest.width,
+                height: dest.height,
             }),
             duration: 0.8,
             ease: 'power3.inOut',
@@ -115,7 +115,7 @@ onMounted(() => {
                     <div class="cover">
                         <img
                             v-if="coverImage(project)"
-                            :src="coverImage(project)!.formats?.medium?.url ?? coverImage(project)!.url"
+                            :src="coverImage(project)!.formats?.large?.url ?? coverImage(project)!.url"
                             :alt="project.Title"
                         />
                     </div>

@@ -96,8 +96,8 @@ onMounted(async () => {
         gsap.to(clone, {
             x: dest.left - parseFloat(clone.style.left),
             y: dest.top - parseFloat(clone.style.top),
-            scaleX: dest.width / parseFloat(clone.style.width),
-            scaleY: dest.height / parseFloat(clone.style.height),
+            width: dest.width,
+            height: dest.height,
             duration: 0.75,
             ease: 'power3.inOut',
             delay,
@@ -158,7 +158,7 @@ onMounted(async () => {
                 <div class="cover">
                     <img
                         v-if="coverImage(project)"
-                        :src="coverImage(project)!.formats.medium?.url ?? coverImage(project)!.url"
+                        :src="coverImage(project)!.formats?.large?.url ?? coverImage(project)!.url"
                         :alt="project.Title"
                     />
                 </div>

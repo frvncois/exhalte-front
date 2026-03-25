@@ -108,7 +108,7 @@ function onClick(e: MouseEvent) {
                 <div class="cover">
                     <img
                         v-if="coverImage(project)"
-                        :src="coverImage(project)!.formats?.medium?.url ?? coverImage(project)!.url"
+                        :src="coverImage(project)!.formats?.large?.url ?? coverImage(project)!.url"
                         :alt="project.Title"
                     />
                 </div>

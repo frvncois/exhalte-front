@@ -95,7 +95,7 @@ function totalRows(count) {
             >
                 <div class="cover">
                     <img
-                        :src="item.formats?.medium?.url ?? item.url"
+                        :src="item.formats?.large?.url ?? item.url"
                         :alt="item.alternativeText ?? ''"
                     />
                 </div>

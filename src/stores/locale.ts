@@ -16,7 +16,7 @@ export const useLocaleStore = defineStore('locale', () => {
     console.log('[locale] toggling to:', next)
     localStorage.setItem('locale', next)
     console.log('[locale] saved, reloading...')
-    window.location.href = window.location.href
+    window.location.reload()
   }
 
   return { locale, nextLabel, toggle }

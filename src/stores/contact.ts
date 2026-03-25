@@ -11,7 +11,11 @@ export const useContactStore = defineStore('contact', () => {
     const { locale } = useLocaleStore()
     try {
       contact.value = await getContact(locale)
-    } catch {}
+    } catch {
+      if (locale !== 'fr') {
+        try { contact.value = await getContact('fr') } catch {}
+      }
+    }
   }
 
   return { contact, fetchContact }

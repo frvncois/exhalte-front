@@ -11,7 +11,11 @@ export const useSharedStore = defineStore('shared', () => {
     const { locale } = useLocaleStore()
     try {
       shared.value = await getShared(locale)
-    } catch {}
+    } catch {
+      if (locale !== 'fr') {
+        try { shared.value = await getShared('fr') } catch {}
+      }
+    }
   }
 
   return { shared, fetchShared }

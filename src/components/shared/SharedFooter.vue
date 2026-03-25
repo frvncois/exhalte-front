@@ -21,6 +21,23 @@ const contactStore = useContactStore()
 const sharedStore = useSharedStore()
 
 const footerRef = ref<HTMLElement | null>(null)
+const creditsContentRef = ref<HTMLElement | null>(null)
+const parenLeftRef = ref<HTMLElement | null>(null)
+const parenRightRef = ref<HTMLElement | null>(null)
+const creditsOpen = ref(false)
+
+function toggleCredits() {
+    creditsOpen.value = !creditsOpen.value
+    if (creditsOpen.value) {
+        gsap.fromTo(parenLeftRef.value, { opacity: 0, x: -6 }, { opacity: 1, x: 0, duration: 0.35, ease: 'power2.out' })
+        gsap.fromTo(parenRightRef.value, { opacity: 0, x: 6 }, { opacity: 1, x: 0, duration: 0.35, ease: 'power2.out' })
+        gsap.to(creditsContentRef.value, { height: 'auto', duration: 0.5, ease: 'power2.out' })
+    } else {
+        gsap.to(parenLeftRef.value, { opacity: 0, x: -6, duration: 0.25, ease: 'power2.in' })
+        gsap.to(parenRightRef.value, { opacity: 0, x: 6, duration: 0.25, ease: 'power2.in' })
+        gsap.to(creditsContentRef.value, { height: 0, duration: 0.4, ease: 'power2.in' })
+    }
+}
 const logoRef = ref<{ $el: SVGElement } | null>(null)
 const addressRef = ref<HTMLElement | null>(null)
 const bottomRef = ref<HTMLElement | null>(null)
@@ -110,8 +127,8 @@ onUnmounted(() => {
                 </nav>
             </div>
             <div class="credits">
-                <span>[ Credits ]</span>
-                <div>
+                <span class="credits-toggle" @click="toggleCredits"><span ref="parenLeftRef" class="paren-extra">(</span>( Credits )<span ref="parenRightRef" class="paren-extra">)</span></span>
+                <div ref="creditsContentRef" class="credits-content">
                     <a href="https://hayleylim.com/" target="_blank">Branding / Hayley Lim</a>
                     <a href="https://www.lab-a.me/" target="_blank">Web design / Hayley Lim</a>
                     <a href="https://frvncois.com" target="_blank">Web development/ Francois Lemieux</a>
@@ -151,8 +168,9 @@ svg {
 .bottom {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: end;
     width: 100%;
+    position: relative;
     & p, a, span {
         font-size: var(--text-sm);
         text-transform: uppercase;
@@ -162,10 +180,23 @@ svg {
     display: flex;
     flex-direction: column;
     align-items: end;
-    > div {
-        display: flex;
-        flex-direction: column;
-        align-items: end;
-    }
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+.credits-toggle {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+.paren-extra {
+    opacity: 0;
+}
+.credits-content {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    overflow: hidden;
+    height: 0;
 }
 </style>

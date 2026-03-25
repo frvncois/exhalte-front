@@ -27,6 +27,9 @@ export const useProjectStore = defineStore('project', () => {
     try {
       projects.value = await getProjects(locale)
     } catch (e) {
+      if (locale !== 'fr') {
+        try { projects.value = await getProjects('fr') } catch {}
+      }
       error.value = e instanceof Error ? e.message : 'Failed to load projects'
     } finally {
       loading.value = false

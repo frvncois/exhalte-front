@@ -11,7 +11,11 @@ export const useServiceStore = defineStore('service', () => {
     const { locale } = useLocaleStore()
     try {
       service.value = await getService(locale)
-    } catch {}
+    } catch {
+      if (locale !== 'fr') {
+        try { service.value = await getService('fr') } catch {}
+      }
+    }
   }
 
   return { service, fetchService }

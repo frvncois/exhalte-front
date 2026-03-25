@@ -30,8 +30,8 @@ onMounted(() => {
     gsap.to(clone, {
         x: dest.left - parseFloat(clone.style.left),
         y: dest.top - parseFloat(clone.style.top),
-        scaleX: dest.width / parseFloat(clone.style.width),
-        scaleY: dest.height / parseFloat(clone.style.height),
+        width: dest.width,
+        height: dest.height,
         duration: 0.9,
         ease: 'power3.inOut',
         onComplete: () => {
