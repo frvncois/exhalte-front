@@ -108,7 +108,7 @@ header nav a:hover::before {
     content: '';
     position: absolute;
     left: -0.6em;
-    top: 45%;
+    top: 0.7em;
     transform: translateY(-50%);
     width: 0.25em;
     height: 0.25em;

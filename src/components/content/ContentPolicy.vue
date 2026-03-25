@@ -1,20 +1,23 @@
 <script setup lang="ts">
-import type { Policy } from '@/stores/policyContent'
+import { computed } from 'vue'
+import { marked } from 'marked'
+import type { Policy } from '@/api/strapi'
 
-defineProps<{ policy: Policy | null }>()
+const props = defineProps<{ policy: Policy | null }>()
 
-function blockText(children: { text: string }[]): string {
-    return children.map(c => c.text).join('')
-}
+const html = computed(() => {
+    const blocks = props.policy?.Content ?? []
+    const text = blocks.map((block: any) =>
+        (block.children ?? []).map((c: any) => c.text ?? '').join('')
+    ).join('\n\n')
+    return marked(text) as string
+})
 </script>
 
 <template>
     <section>
         <h2>{{ policy?.Title }}</h2>
-        <div v-for="(block, i) in policy?.Content" :key="i">
-            <h3 v-if="block.type === 'heading'">{{ blockText(block.children) }}</h3>
-            <p v-else>{{ blockText(block.children) }}</p>
-        </div>
+        <div class="content" v-html="html" />
     </section>
 </template>
 
@@ -31,13 +34,23 @@ h2 {
     font-size: var(--text-regular);
     text-transform: uppercase;
 }
-h3 {
+.content :deep(h1),
+.content :deep(h2),
+.content :deep(h3) {
     font-size: var(--text-sm);
     text-transform: uppercase;
     margin-bottom: 0.5em;
 }
-p {
+.content :deep(p) {
     font-size: var(--text-sm);
     line-height: 1.6;
+    margin-bottom: 1em;
+}
+.content :deep(ul),
+.content :deep(ol) {
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    padding-left: 1.5em;
+    margin-bottom: 1em;
 }
 </style>

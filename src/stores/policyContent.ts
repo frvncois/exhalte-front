@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { getPolicies, slugify, type Policy } from '@/api/strapi'
+import { getPolicies, slugify } from '@/api/strapi'
+import type { Policy } from '@/api/strapi'
 import { useLocaleStore } from '@/stores/locale'
 
 export const usePolicyStore = defineStore('policyContent', () => {
@@ -25,4 +26,3 @@ export const usePolicyStore = defineStore('policyContent', () => {
   return { policies, fetchPolicies, getBySlug }
 })
 
-export { type Policy }
