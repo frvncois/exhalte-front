@@ -7,14 +7,20 @@ import {
     registerHeaderLeave, clearHeaderLeave,
 } from '@/transitions/projectTransition'
 import { useSharedStore } from '@/stores/shared'
+import { useLocaleStore } from '@/stores/locale'
 
 const logoRef = ref<HTMLElement | null>(null)
 const navRef = ref<HTMLElement | null>(null)
 const taglineRef = ref<HTMLElement | null>(null)
 
 const sharedStore = useSharedStore()
+const localeStore = useLocaleStore()
 const titleParts = computed(() => (sharedStore.shared?.Title ?? '/').split('/'))
 const taglineParts = computed(() => (sharedStore.shared?.Tagline ?? '/').split('/'))
+
+function onLocaleToggle() {
+    localeStore.toggle()
+}
 
 onMounted(async () => {
     await sharedStore.fetchShared()
@@ -76,7 +82,7 @@ onUnmounted(() => {
             <RouterLink to="/">Index</RouterLink>
             <RouterLink to="/services">Services</RouterLink>
             <RouterLink to="/contact">Contact</RouterLink>
-            <RouterLink to="/">FR</RouterLink>
+            <button @click.stop="onLocaleToggle">{{ localeStore.nextLabel }}</button>
         </nav>
     </header>
     <section>
@@ -110,9 +116,13 @@ nav {
     display: flex;
     gap: 2em;
     text-transform: uppercase;
-    a:last-child {
+    a:last-child, button {
         margin-left: 2em;
     }
+}
+button {
+    all: unset;
+    cursor: pointer;
 }
 svg {
     height: 2.15em;

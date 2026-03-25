@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getProjects, slugify, coverImage, type Project, type StrapiMedia } from '@/api/strapi'
+import { useLocaleStore } from '@/stores/locale'
 
 export type ProjectType = 'video' | 'gallery'
 
@@ -20,10 +21,11 @@ export const useProjectStore = defineStore('project', () => {
 
   async function fetchProjects() {
     if (projects.value.length) return
+    const { locale } = useLocaleStore()
     loading.value = true
     error.value = null
     try {
-      projects.value = await getProjects()
+      projects.value = await getProjects(locale)
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to load projects'
     } finally {

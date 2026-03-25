@@ -1,18 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { gsap } from 'gsap'
-import { getService, type Service } from '@/api/strapi'
+import { useServiceStore } from '@/stores/service'
 
 const sectionRef = ref<HTMLElement | null>(null)
-const service = ref<Service | null>(null)
+const serviceStore = useServiceStore()
 let observer: IntersectionObserver | null = null
 
 onMounted(async () => {
-    try {
-        service.value = await getService()
-    } catch (e) {
-        console.warn('Service fetch failed:', e)
-    }
+    await serviceStore.fetchService()
 
     gsap.set(sectionRef.value, { opacity: 0, x: 40 })
     observer = new IntersectionObserver(([entry]) => {
@@ -32,7 +28,7 @@ onUnmounted(() => observer?.disconnect())
         <div>
             <h2>(Services)</h2>
             <ul>
-                <li v-for="item in service?.Services" :key="item.id">
+                <li v-for="item in serviceStore.service?.Services" :key="item.id">
                     <h3>{{ item.Title }}</h3>
                 </li>
             </ul>
@@ -40,7 +36,7 @@ onUnmounted(() => observer?.disconnect())
         <div>
             <h2>(Who we are)</h2>
             <p
-                v-for="(block, i) in service?.Intro"
+                v-for="(block, i) in serviceStore.service?.Intro"
                 :key="i"
             >{{ block.children.map((c: { text: string }) => c.text).join('') }}</p>
         </div>

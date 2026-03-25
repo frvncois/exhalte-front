@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { gsap } from 'gsap'
-import { getContact, type Contact } from '@/api/strapi'
+import { useContactStore } from '@/stores/contact'
 import { registerPageLeave } from '@/transitions/projectTransition'
 
 const ulRef = ref<HTMLElement | null>(null)
 const circlesRef = ref<HTMLElement | null>(null)
-const contact = ref<Contact | null>(null)
+const contactStore = useContactStore()
 let tl: gsap.core.Timeline | null = null
 let unregisterLeave: (() => void) | null = null
 onBeforeUnmount(() => unregisterLeave?.())
@@ -57,7 +57,7 @@ async function animate() {
 onMounted(async () => {
     gsap.set(ulRef.value, { visibility: 'hidden' })
     gsap.set(circlesRef.value, { visibility: 'hidden' })
-    try { contact.value = await getContact() } catch {}
+    await contactStore.fetchContact()
     gsap.set(ulRef.value, { visibility: 'visible' })
     gsap.set(circlesRef.value, { visibility: 'visible' })
     animate()
@@ -79,11 +79,11 @@ onMounted(async () => {
         <ul ref="ulRef">
             <li>
                 <h2>Address</h2>
-                <template v-for="line in (contact?.Address ?? '').split('\n')" :key="line">
+                <template v-for="line in (contactStore.contact?.Address ?? '').split('\n')" :key="line">
                     <p>{{ line }}</p>
                 </template>
             </li>
-            <li v-for="member in contact?.Team" :key="member.id">
+            <li v-for="member in contactStore.contact?.Team" :key="member.id">
                 <h3>{{ member.Name }}</h3>
                 <h4>{{ member.Title }}</h4>
                 <p>{{ member.Phone }}</p>

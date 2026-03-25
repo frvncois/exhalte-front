@@ -151,18 +151,18 @@ export interface Shared {
   Copyright: string
 }
 
-export function getProjects(): Promise<Project[]> {
-  return strapiGet<Project[]>('/projects', PROJECT_POPULATE)
+export function getProjects(locale = 'en'): Promise<Project[]> {
+  return strapiGet<Project[]>('/projects', { ...PROJECT_POPULATE, locale })
 }
 
-export function getService(): Promise<Service> {
-  return strapiGet<Service>('/service', { populate: '*' })
+export function getService(locale = 'en'): Promise<Service> {
+  return strapiGet<Service>('/service', { populate: '*', locale })
 }
 
-export function getContact(): Promise<Contact> {
-  return strapiGet<Contact>('/contact', { populate: '*' })
+export function getContact(locale = 'en'): Promise<Contact> {
+  return strapiGet<Contact>('/contact', { populate: '*', locale })
 }
 
-export function getShared(): Promise<Shared> {
-  return strapiGet<Shared>('/shared')
+export function getShared(locale = 'en'): Promise<Shared> {
+  return strapiGet<Shared>('/shared', { locale })
 }

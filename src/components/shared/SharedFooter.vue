@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import { gsap } from 'gsap'
 import MainLogo from '@/assets/MainLogo.vue';
 import { themes } from '@/transitions/themes'
-import { getContact, type Contact } from '@/api/strapi'
+import { useContactStore } from '@/stores/contact'
 import { useSharedStore } from '@/stores/shared'
 import { registerPageLeave } from '@/transitions/projectTransition'
 
@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<{
     address: true,
 })
 
-const contact = ref<Contact | null>(null)
+const contactStore = useContactStore()
 const sharedStore = useSharedStore()
 
 const footerRef = ref<HTMLElement | null>(null)
@@ -31,7 +31,7 @@ let unregisterLeave: (() => void) | null = null
 onBeforeUnmount(() => unregisterLeave?.())
 
 onMounted(async () => {
-    try { contact.value = await getContact() } catch {}
+    contactStore.fetchContact()
     sharedStore.fetchShared()
 
     if (logoRef.value) {
@@ -92,11 +92,11 @@ onUnmounted(() => {
     <footer ref="footerRef">
         <MainLogo v-if="logo" ref="logoRef" />
         <address v-if="address" ref="addressRef">
-            <p style="white-space: pre-line">{{ contact?.Address }}</p>
-            <p>{{ contact?.Phone }}</p>
+            <p style="white-space: pre-line">{{ contactStore.contact?.Address }}</p>
+            <p>{{ contactStore.contact?.Phone }}</p>
             <nav>
-                <a :href="contact?.Instagram ?? '#'">IN</a>
-                <a :href="contact?.Linkedin ?? '#'">LKN</a>
+                <a :href="contactStore.contact?.Instagram ?? '#'">IN</a>
+                <a :href="contactStore.contact?.Linkedin ?? '#'">LKN</a>
             </nav>
         </address>
         <div class="bottom" ref="bottomRef">
@@ -109,8 +109,13 @@ onUnmounted(() => {
                     <RouterLink to="/">Privacy policy</RouterLink>
                 </nav>
             </div>
-            <div>
+            <div class="credits">
                 <span>[ Credits ]</span>
+                <div>
+                    <a href="https://hayleylim.com/" target="_blank">Branding / Hayley Lim</a>
+                    <a href="https://www.lab-a.me/" target="_blank">Web design / Hayley Lim</a>
+                    <a href="https://frvncois.com" target="_blank">Web development/ Francois Lemieux</a>
+                </div>
             </div>
         </div>
     </footer>
@@ -151,6 +156,16 @@ svg {
     & p, a, span {
         font-size: var(--text-sm);
         text-transform: uppercase;
+    }
+}
+.credits {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    > div {
+        display: flex;
+        flex-direction: column;
+        align-items: end;
     }
 }
 </style>
