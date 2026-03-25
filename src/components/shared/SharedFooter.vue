@@ -161,7 +161,9 @@ address {
     gap: 0.25em;
     font-size: var(--text-medium);
     text-transform: uppercase;
-    font-family: 'heading';
+    p:first-child {
+        font-family: 'heading';
+    }
 }
 
 nav {
