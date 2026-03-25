@@ -12,7 +12,7 @@ onMounted(() => {
         gsap.set(el.value, { backgroundColor: bg, height: 0 })
         gsap.to(el.value, {
             height: '100vh',
-            duration: 0.6,
+            duration: 1,
             ease: 'power2.inOut',
             onComplete: done,
         })

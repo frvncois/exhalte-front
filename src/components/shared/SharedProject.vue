@@ -2,7 +2,7 @@
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import { gsap } from 'gsap'
 import { useRouter } from 'vue-router'
-import { getFwdClones, getRevClones, registerPageLeave } from '@/transitions/projectTransition'
+import { getFwdClones, getRevClones, registerPageLeave, consumeProjectToProject } from '@/transitions/projectTransition'
 import { useProjectStore } from '@/stores/project'
 import { storeToRefs } from 'pinia'
 import { slugify, coverImage } from '@/api/strapi'
@@ -29,7 +29,6 @@ const otherProjects = computed(() =>
 )
 
 function navigate(slug: string) {
-    projectStore.setActiveSlug(slug)
     router.push(`/projects/${slug}`)
 }
 
@@ -44,14 +43,16 @@ onMounted(() => {
     })
 
     if (!clones.length) {
-        const lis = ulRef.value ? Array.from(ulRef.value.querySelectorAll('li')) : []
-        const els = [spanRef.value, titleRef.value, ...lis].filter(Boolean)
-        gsap.from(els, {
-            clipPath: 'inset(0 0 100% 0)',
-            duration: 0.9,
-            ease: 'power3.out',
-            stagger: 0.1,
-        })
+        if (!consumeProjectToProject()) {
+            const lis = ulRef.value ? Array.from(ulRef.value.querySelectorAll('li')) : []
+            const els = [spanRef.value, titleRef.value, ...lis].filter(Boolean)
+            gsap.from(els, {
+                clipPath: 'inset(0 0 100% 0)',
+                duration: 0.9,
+                ease: 'power3.out',
+                stagger: 0.1,
+            })
+        }
         return
     }
 

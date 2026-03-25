@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { triggerHeaderLeave, setHeaderToHeader, clearRevClones, clearFwdClones, triggerPageLeave, getFwdClones, getRevClones, triggerRouteTransition, triggerRouteTransitionOut } from '@/transitions/projectTransition'
+import { triggerHeaderLeave, setHeaderToHeader, clearRevClones, clearFwdClones, triggerPageLeave, getFwdClones, getRevClones, triggerRouteTransition, triggerRouteTransitionOut, setProjectToProject } from '@/transitions/projectTransition'
 import { themes } from '@/transitions/themes'
 
 const router = createRouter({
@@ -40,6 +40,7 @@ function stripTheme() {
 }
 
 router.beforeEach(async (to, from) => {
+    setProjectToProject(from.path.startsWith('/projects/') && to.path.startsWith('/projects/'))
     if (to.path === '/' && !from.path.startsWith('/projects/')) clearRevClones()
     if (!to.path.startsWith('/projects/')) clearFwdClones()
 
@@ -49,10 +50,6 @@ router.beforeEach(async (to, from) => {
     if (from.meta.hasHeader && to.meta.hasHeader) {
         setHeaderToHeader(true)
         await new Promise<void>(resolve => triggerPageLeave(resolve))
-        document.body.style.transition = 'color 0.6s ease'
-        stripTheme()
-        if (theme?.bodyClass) document.body.classList.add(theme.bodyClass)
-        requestAnimationFrame(() => { document.body.style.transition = '' })
         await new Promise<void>(resolve => triggerRouteTransition(resolve, theme?.transitionBg ?? '#FFFFFF'))
     } else if (from.meta.hasHeader && !to.meta.hasHeader) {
         if (getFwdClones().length) {
@@ -62,19 +59,11 @@ router.beforeEach(async (to, from) => {
                 new Promise<void>(resolve => triggerHeaderLeave(resolve)),
                 new Promise<void>(resolve => triggerPageLeave(resolve)),
             ])
-            document.body.style.transition = 'color 0.6s ease'
-            stripTheme()
-            if (theme?.bodyClass) document.body.classList.add(theme.bodyClass)
-            requestAnimationFrame(() => { document.body.style.transition = '' })
             await new Promise<void>(resolve => triggerRouteTransition(resolve, theme?.transitionBg ?? '#FFFFFF'))
         }
     } else {
         if (!getRevClones().length) {
             await new Promise<void>(resolve => triggerPageLeave(resolve))
-            document.body.style.transition = 'color 0.6s ease'
-            stripTheme()
-            if (theme?.bodyClass) document.body.classList.add(theme.bodyClass)
-            requestAnimationFrame(() => { document.body.style.transition = '' })
             await new Promise<void>(resolve => triggerRouteTransition(resolve, theme?.transitionBg ?? '#FFFFFF'))
         } else {
             await new Promise<void>(resolve => triggerPageLeave(resolve))

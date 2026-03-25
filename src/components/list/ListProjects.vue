@@ -18,7 +18,6 @@ const otherProjects = computed(() =>
 )
 
 function navigate(slug: string) {
-    projectStore.setActiveSlug(slug)
     router.push(`/projects/${slug}`)
 }
 

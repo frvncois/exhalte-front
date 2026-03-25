@@ -8,6 +8,6 @@ const viewReady = ref(document.body.classList.contains('app-loaded'))
 
 <template>
     <AppLoad @ready="viewReady = true" />
-    <RouterView v-if="viewReady" />
+    <RouterView v-if="viewReady" :key="$route.fullPath" />
     <RouteTransition />
 </template>

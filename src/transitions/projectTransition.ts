@@ -1,6 +1,10 @@
 // Forward clones: [cover, span, title, cover0, details0, cover1, details1, ...]
 // Reverse clones: [cover, span, title, cover0, info0, cover1, info1, ...]
 
+let projectToProject = false
+export function setProjectToProject(v: boolean) { projectToProject = v }
+export function consumeProjectToProject(): boolean { const v = projectToProject; projectToProject = false; return v }
+
 let fwdClones: HTMLElement[] = []
 let revClones: HTMLElement[] = []
 let clickedIndex = -1

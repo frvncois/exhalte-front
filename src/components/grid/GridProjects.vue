@@ -10,7 +10,7 @@ import { slugify, coverImage } from '@/api/strapi'
 const router = useRouter()
 const ulEl = ref<HTMLUListElement | null>(null)
 const projectStore = useProjectStore()
-const { projects } = storeToRefs(projectStore)
+const { projects, activeProject } = storeToRefs(projectStore)
 
 let unregisterLeave: (() => void) | null = null
 onBeforeUnmount(() => unregisterLeave?.())
@@ -81,7 +81,8 @@ onMounted(async () => {
     await nextTick()
 
     const lis = Array.from(ulEl.value.querySelectorAll('li')) as HTMLElement[]
-    const idx = Math.max(0, getClickedIndex())
+    const activeIdx = projects.value.findIndex(p => p.documentId === activeProject.value?.documentId)
+    const idx = Math.max(0, activeIdx >= 0 ? activeIdx : getClickedIndex())
     const clickedLi = lis[idx]!
     const otherLis = lis.filter((_, i) => i !== idx)
 
