@@ -95,6 +95,11 @@ export function triggerRouteTransition(done: () => void, bg: string) {
 }
 export function triggerRouteTransitionOut() { routeTransitionOutCallback?.() }
 
+// Locale reload callback
+let reloadCallback: (() => void) | null = null
+export function registerReload(cb: () => void) { reloadCallback = cb }
+export function triggerReload() { reloadCallback ? reloadCallback() : window.location.reload() }
+
 // Header-to-header flag: skip in/out animation when both routes have SharedHeader
 let headerToHeader = false
 export function setHeaderToHeader(v: boolean) { headerToHeader = v }

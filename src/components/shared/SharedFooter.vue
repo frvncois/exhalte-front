@@ -6,6 +6,8 @@ import MainLogo from '@/assets/MainLogo.vue';
 import { themes } from '@/transitions/themes'
 import { useContactStore } from '@/stores/contact'
 import { useSharedStore } from '@/stores/shared'
+import { usePolicyStore } from '@/stores/policyContent'
+import { slugify } from '@/api/strapi'
 import { registerPageLeave } from '@/transitions/projectTransition'
 
 const props = withDefaults(defineProps<{
@@ -19,6 +21,7 @@ const props = withDefaults(defineProps<{
 
 const contactStore = useContactStore()
 const sharedStore = useSharedStore()
+const policyStore = usePolicyStore()
 
 const footerRef = ref<HTMLElement | null>(null)
 const creditsContentRef = ref<HTMLElement | null>(null)
@@ -50,6 +53,7 @@ onBeforeUnmount(() => unregisterLeave?.())
 onMounted(async () => {
     contactStore.fetchContact()
     sharedStore.fetchShared()
+    policyStore.fetchPolicies()
 
     if (logoRef.value) {
         const el = logoRef.value.$el
@@ -120,10 +124,11 @@ onUnmounted(() => {
             <div>
                 <p>{{ sharedStore.shared?.Copyright }}</p>
                 <nav>
-                    <RouterLink to="/">Cookies policy</RouterLink>
-                    <RouterLink to="/">Legal advice</RouterLink>
-                    <RouterLink to="/">AI policy</RouterLink>
-                    <RouterLink to="/">Privacy policy</RouterLink>
+                    <RouterLink
+                        v-for="policy in policyStore.policies"
+                        :key="policy.documentId"
+                        :to="`/policy/${slugify(policy.Title)}`"
+                    >{{ policy.Title }}</RouterLink>
                 </nav>
             </div>
             <div class="credits">

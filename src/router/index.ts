@@ -30,6 +30,11 @@ const router = createRouter({
       component: () => import('../views/ContactView.vue'),
       meta: { hasHeader: true },
     },
+    {
+      path: '/policy/:slug',
+      name: 'policy',
+      component: () => import('../views/PrivacyView.vue'),
+    },
   ],
 })
 

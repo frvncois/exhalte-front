@@ -1,13 +1,43 @@
+<script setup lang="ts">
+import type { Policy } from '@/stores/policyContent'
+
+defineProps<{ policy: Policy | null }>()
+
+function blockText(children: { text: string }[]): string {
+    return children.map(c => c.text).join('')
+}
+</script>
+
 <template>
     <section>
-        <h2>Privacy Policy</h2>
-        <div>
-            <h3>Subtitle</h3>
-            <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
-                Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
-                Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
-                Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
-                Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.</p>
+        <h2>{{ policy?.Title }}</h2>
+        <div v-for="(block, i) in policy?.Content" :key="i">
+            <h3 v-if="block.type === 'heading'">{{ blockText(block.children) }}</h3>
+            <p v-else>{{ blockText(block.children) }}</p>
         </div>
     </section>
 </template>
+
+<style scoped>
+section {
+    max-width: 70ch;
+    margin: 0 auto;
+    padding: 16em 2em 4em;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+}
+h2 {
+    font-size: var(--text-regular);
+    text-transform: uppercase;
+}
+h3 {
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    margin-bottom: 0.5em;
+}
+p {
+    font-size: var(--text-sm);
+    line-height: 1.6;
+}
+</style>

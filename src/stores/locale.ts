@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { triggerReload } from '@/transitions/projectTransition'
 
 export type Locale = 'en' | 'fr'
 
@@ -15,8 +16,7 @@ export const useLocaleStore = defineStore('locale', () => {
     const next: Locale = locale.value === 'en' ? 'fr' : 'en'
     console.log('[locale] toggling to:', next)
     localStorage.setItem('locale', next)
-    console.log('[locale] saved, reloading...')
-    window.location.reload()
+    triggerReload()
   }
 
   return { locale, nextLabel, toggle }

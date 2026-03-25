@@ -36,8 +36,9 @@ onMounted(async () => {
     textPathRef.value!.appendChild(animEl)
 
     const tl = gsap.timeline()
-    tl.from(svgRef.value, { opacity: 0, duration: 0.6,  })
-    tl.to(sectionRef.value, { opacity: 0, duration: 0.5,  delay: 1.5, onComplete: () => { show.value = false; emit('ready') } })
+    tl.to(sectionRef.value, { opacity: 1, duration: 0.3, ease: 'power2.out' })
+    tl.from(svgRef.value, { opacity: 0, duration: 0.6 })
+    tl.to(sectionRef.value, { opacity: 0, duration: 0.5, delay: 1.5, onComplete: () => { show.value = false; emit('ready') } })
 })
 </script>
 
@@ -58,6 +59,7 @@ onMounted(async () => {
 section {
     position: fixed;
     inset: 0;
+    opacity: 0;
     background: var(--lime);
     color: var(--olive);
     z-index: 100;

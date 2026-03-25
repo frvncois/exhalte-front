@@ -166,3 +166,14 @@ export function getContact(locale = 'en'): Promise<Contact> {
 export function getShared(locale = 'en'): Promise<Shared> {
   return strapiGet<Shared>('/shared', { locale })
 }
+
+export interface Policy {
+  id: number
+  documentId: string
+  Title: string
+  Content: DetailsBlock[]
+}
+
+export function getPolicies(locale = 'fr'): Promise<Policy[]> {
+  return strapiGet<Policy[]>('/policies', { locale })
+}

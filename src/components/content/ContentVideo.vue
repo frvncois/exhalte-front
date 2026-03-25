@@ -7,16 +7,29 @@ import { storeToRefs } from 'pinia'
 import { coverImage } from '@/api/strapi'
 
 const coverRef = ref<HTMLElement | null>(null)
+const playBtnRef = ref<HTMLElement | null>(null)
+const videoRef = ref<HTMLVideoElement | null>(null)
+const playing = ref(false)
 const { activeProject } = storeToRefs(useProjectStore())
 
 let unregisterLeave: (() => void) | null = null
 onBeforeUnmount(() => unregisterLeave?.())
 
+function play() {
+    if (!activeProject.value?.Video || !videoRef.value) return
+    playing.value = true
+    gsap.to(playBtnRef.value, { opacity: 0, duration: 0.3, ease: 'power2.in' })
+    gsap.to(videoRef.value, { opacity: 1, duration: 0.5, ease: 'power2.out', delay: 0.2 })
+    videoRef.value.play()
+}
+
 onMounted(() => {
     const clone = getFwdClones()[0]
 
     if (!clone) {
-        gsap.from(coverRef.value, { clipPath: 'inset(0 0 100% 0)', duration: 1.2, ease: 'power3.out' })
+        gsap.from(coverRef.value, { clipPath: 'inset(0 0 100% 0)', duration: 1.2, ease: 'power3.out', onComplete: () => {
+            if (activeProject.value?.Video) gsap.from(playBtnRef.value, { opacity: 0, duration: 0.4, ease: 'power2.out' })
+        }})
     } else {
         if (!coverRef.value) return
         const dest = coverRef.value.getBoundingClientRect()
@@ -31,6 +44,7 @@ onMounted(() => {
             onComplete: () => {
                 clone.remove()
                 gsap.set(coverRef.value!, { opacity: 1 })
+                if (activeProject.value?.Video) gsap.from(playBtnRef.value, { opacity: 0, duration: 0.4, ease: 'power2.out' })
             },
         })
     }
@@ -50,6 +64,21 @@ onMounted(() => {
                 :src="coverImage(activeProject)!.formats?.large?.url ?? coverImage(activeProject)!.url"
                 :alt="activeProject.Title"
             />
+            <video
+                v-if="activeProject?.Video"
+                ref="videoRef"
+                :src="activeProject.Video"
+                playsinline
+                controls
+            />
+            <button
+                v-if="activeProject?.Video && !playing"
+                ref="playBtnRef"
+                class="play-btn"
+                @click="play"
+            >
+                ▶
+            </button>
         </div>
     </section>
 </template>
@@ -58,16 +87,41 @@ onMounted(() => {
 section {
     margin: 0 2em;
 }
-div {
+.cover {
     height: 80vh;
     background: black;
     overflow: hidden;
+    position: relative;
 }
 
-img {
+img, video {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
+}
+
+video {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+}
+
+.play-btn {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 4em;
+    color: white;
+    transition: transform 0.2s ease;
+}
+
+.play-btn:hover {
+    transform: scale(1.1);
 }
 </style>
