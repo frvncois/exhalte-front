@@ -158,9 +158,9 @@ address {
     align-items: center;
     flex-direction: column;
     text-align: center;
-    gap: 0.25em;
     font-size: var(--text-medium);
     text-transform: uppercase;
+    line-height: 1.5;
     p:first-child {
         font-family: 'heading';
     }
