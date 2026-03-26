@@ -172,7 +172,8 @@ section.is-gallery {
 }
 
 .title {
-    flex: 1;
+    flex: 1 1 50%;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     justify-content: end;
@@ -180,14 +181,15 @@ section.is-gallery {
 }
 
 ul {
-    flex: 1;
+    flex: 1 0 50%;
     display: flex;
+    justify-content: end;
     gap: 1em;
 }
 
 li {
+    flex: 0 0 auto;
     display: flex;
-    flex: 1;
     gap: 0.75em;
     cursor: pointer;
     transition: transform 0.3s ease;
@@ -201,9 +203,13 @@ h2 {
 h3 {
     font-size: var(--text-regular);
     white-space: nowrap;
-    position: absolute;
-    bottom: 0;
-    display: none;
+    max-width: 0;
+    overflow: hidden;
+    transition: max-width 0.6s ease;
+}
+
+li:hover h3 {
+    max-width: 15ch;
 }
 
 p {
@@ -214,7 +220,8 @@ p {
 .cover {
     background-color: black;
     aspect-ratio: 4/3;
-    flex: 1;
+    height: 6em;
+    flex: 0 0 auto;
     overflow: hidden;
 }
 
