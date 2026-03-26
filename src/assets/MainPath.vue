@@ -5,7 +5,7 @@
    version="1.1"
    id="svg1"
    viewBox="0 0 2560 1440"
-   preserveAspectRatio="xMidYMid meet"
+   preserveAspectRatio="none"
    sodipodi:docname="Exhalte_Logo_Stretch.ai"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onUnmounted, onBeforeUnmount, nextTick } from 'vue'
 import { gsap } from 'gsap'
 import MainPath from '@/assets/MainPath.vue'
 import lenis from '@/lib/lenis'
 import { registerPageLeave } from '@/transitions/projectTransition'
 import { useServiceStore } from '@/stores/service'
 
+const wrapRef = ref<HTMLElement | null>(null)
 const sectionRef = ref<HTMLElement | null>(null)
 const serviceStore = useServiceStore()
 let observer: IntersectionObserver | null = null
@@ -14,12 +15,13 @@ onBeforeUnmount(() => unregisterLeave?.())
 
 onMounted(async () => {
     await serviceStore.fetchService()
+    await nextTick()
 
-    const svg = sectionRef.value?.querySelector('svg') as SVGElement | null
+    const svg = wrapRef.value?.querySelector('svg') as SVGElement | null
     const col = sectionRef.value?.querySelector('.col') as HTMLElement | null
 
     gsap.set(svg, { opacity: 0 })
-    gsap.from(sectionRef.value, { opacity: 0, x: 40, duration: 1, delay: 0.5, ease: 'power3.out' })
+    gsap.from(wrapRef.value, { opacity: 0, x: 40, duration: 1, delay: 0.5, ease: 'power3.out' })
     gsap.to(svg, { opacity: 1, duration: 0.6, ease: 'power2.out', delay: 0.65 })
 
     gsap.set(col, { opacity: 0, x: 40 })
@@ -33,16 +35,17 @@ onMounted(async () => {
 
     unregisterLeave = registerPageLeave((done) => {
         gsap.to(svg, { opacity: 0, duration: 0.3, ease: 'power2.in' })
-        gsap.to(sectionRef.value, { opacity: 0, x: 40, duration: 0.5, ease: 'power3.in', onComplete: done })
+        gsap.to(wrapRef.value, { opacity: 0, x: 40, duration: 0.5, ease: 'power3.in', onComplete: done })
     })
 
-    const onScroll = () => {
+    const naturalHeight = sectionRef.value!.offsetHeight
+    const scrollRange = naturalHeight
+
+    const onScroll = ({ scroll }: { scroll: number }) => {
         if (!sectionRef.value || !svg) return
-        const parent = sectionRef.value.parentElement!
-        const { top } = parent.getBoundingClientRect()
-        const scrollRange = parent.offsetHeight - window.innerHeight
-        const progress = Math.min(Math.max(-top / scrollRange, 0), 1)
-        svg.style.width = `${100 - progress * 90}%`
+        const progress = Math.min(Math.max(scroll / scrollRange, 0), 1)
+        sectionRef.value.style.height = `${naturalHeight * (1 - progress)}px`
+        svg.style.width = `${100 - progress * 65}%`
     }
 
     lenis.on('scroll', onScroll)
@@ -53,10 +56,11 @@ onUnmounted(() => observer?.disconnect())
 </script>
 
 <template>
-    <section ref="sectionRef">
+    <div class="sticky-wrap" ref="wrapRef">
         <div class="hero">
             <MainPath />
         </div>
+        <section ref="sectionRef">
         <div class="col">
             <div>
                 <h2>(Services)</h2>
@@ -75,23 +79,30 @@ onUnmounted(() => observer?.disconnect())
                 >{{ block.children.map((c: { text: string }) => c.text).join('') }}</p>
             </div>
         </div>
-    </section>
+        </section>
+    </div>
 </template>
 
+
 <style scoped>
-section {
+.sticky-wrap {
+    position: sticky;
+    top: 0;
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    height: 100vh;
 }
 
 .hero {
-    position: sticky;
-    top: 0;
-    display: flex;
-    align-items: center;
     flex: 1;
     min-height: 0;
+    display: flex;
+    align-items: center;
+}
+
+section {
+    flex-shrink: 0;
+    overflow: hidden;
 }
 
 svg {

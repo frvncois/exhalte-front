@@ -119,9 +119,7 @@ header {
     transition: color 0.4s ease;
 }
 
-header:has(a[href="/services"]:hover) {
-    color: var(--pink);
-}
+
 nav {
     display: flex;
     gap: 2em;
