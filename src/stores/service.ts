@@ -5,13 +5,16 @@ import { useLocaleStore } from '@/stores/locale'
 
 export const useServiceStore = defineStore('service', () => {
   const service = ref<Service | null>(null)
+  let fetched = false
 
   async function fetchService() {
-    if (service.value) return
+    if (fetched) return
+    fetched = true
     const { locale } = useLocaleStore()
     try {
       service.value = await getService(locale)
     } catch {
+      fetched = false
       if (locale !== 'fr') {
         try { service.value = await getService('fr') } catch {}
       }

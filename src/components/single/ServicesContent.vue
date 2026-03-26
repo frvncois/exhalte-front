@@ -72,7 +72,6 @@ defineExpose({ svgEl })
                     <ul>
                         <li v-for="item in serviceStore.service?.Services" :key="item.id">
                             <h3>{{ item.Title }}</h3>
-                            <!--REMOVE <p>{{ item.Details }}</p>-->
                         </li>
                     </ul>
                 </div>

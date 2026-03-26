@@ -6,13 +6,16 @@ import { useLocaleStore } from '@/stores/locale'
 
 export const usePolicyStore = defineStore('policyContent', () => {
   const policies = ref<Policy[]>([])
+  let fetched = false
 
   async function fetchPolicies() {
-    if (policies.value.length) return
+    if (fetched) return
+    fetched = true
     const { locale } = useLocaleStore()
     try {
       policies.value = await getPolicies(locale)
     } catch {
+      fetched = false
       if (locale !== 'fr') {
         try { policies.value = await getPolicies('fr') } catch {}
       }

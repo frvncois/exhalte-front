@@ -89,8 +89,8 @@ onMounted(async () => {
             <li v-for="member in contactStore.contact?.Team" :key="member.id">
                 <h3>{{ member.Name }}</h3>
                 <h4>{{ member.Title }}</h4>
-                <a href="tel:{{ member.Phone }}">{{ member.Phone }}</a>
-                <a href="mailto:{{ member.Email }}">{{ member.Email }}</a>
+                <a :href="`tel:${member.Phone}`">{{ member.Phone }}</a>
+                <a :href="`mailto:${member.Email}`">{{ member.Email }}</a>
             </li>
         </ul>
         <div class="circles" ref="circlesRef">

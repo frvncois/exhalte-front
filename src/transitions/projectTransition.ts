@@ -1,6 +1,8 @@
 // Forward clones: [cover, span, title, cover0, details0, cover1, details1, ...]
 // Reverse clones: [cover, span, title, cover0, info0, cover1, info1, ...]
 
+import lenis from '@/lib/lenis'
+
 let projectToProject = false
 export function setProjectToProject(v: boolean) { projectToProject = v }
 export function consumeProjectToProject(): boolean { const v = projectToProject; projectToProject = false; return v }
@@ -10,17 +12,15 @@ let revClones: HTMLElement[] = []
 let clickedIndex = -1
 
 function getLenisScrollOffset(): number {
-    const matrix = new DOMMatrix(window.getComputedStyle(document.documentElement).transform)
-    return -matrix.m42
+    return lenis.scroll
 }
 
 function makeFixedClone(el: Element): HTMLElement {
     const rect = el.getBoundingClientRect()
-    const scroll = getLenisScrollOffset()
     const clone = el.cloneNode(true) as HTMLElement
     Object.assign(clone.style, {
         position: 'fixed',
-        top: `${rect.top + scroll}px`,
+        top: `${rect.top}px`,
         left: `${rect.left}px`,
         width: `${rect.width}px`,
         height: `${rect.height}px`,

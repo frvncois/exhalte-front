@@ -10,6 +10,7 @@ export const useProjectStore = defineStore('project', () => {
   const activeSlug = ref<string | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
+  let fetched = false
 
   const activeProject = computed(() =>
     projects.value.find(p => slugify(p.Title) === activeSlug.value) ?? null
@@ -20,13 +21,15 @@ export const useProjectStore = defineStore('project', () => {
   )
 
   async function fetchProjects() {
-    if (projects.value.length) return
+    if (fetched) return
+    fetched = true
     const { locale } = useLocaleStore()
     loading.value = true
     error.value = null
     try {
       projects.value = (await getProjects(locale)).sort((a, b) => (a.Order ?? 0) - (b.Order ?? 0))
     } catch (e) {
+      fetched = false
       if (locale !== 'fr') {
         try { projects.value = (await getProjects('fr')).sort((a, b) => (a.Order ?? 0) - (b.Order ?? 0)) } catch {}
       }

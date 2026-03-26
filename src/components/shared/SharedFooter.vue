@@ -51,10 +51,6 @@ let unregisterLeave: (() => void) | null = null
 onBeforeUnmount(() => unregisterLeave?.())
 
 onMounted(async () => {
-    contactStore.fetchContact()
-    sharedStore.fetchShared()
-    policyStore.fetchPolicies()
-
     if (logoRef.value) {
         const el = logoRef.value
         const svg = el.querySelector('svg')!

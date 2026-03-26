@@ -2,6 +2,10 @@
 import { ref, onMounted } from 'vue'
 import { gsap } from 'gsap'
 import { getFwdClones } from '@/transitions/projectTransition'
+import { useProjectStore } from '@/stores/project'
+import { storeToRefs } from 'pinia'
+
+const { activeProject } = storeToRefs(useProjectStore())
 
 const coverRef = ref<HTMLElement | null>(null)
 const extrasRef = ref<HTMLElement[]>([])
@@ -44,12 +48,17 @@ onMounted(() => {
 
 <template>
     <section>
-        <div class="cover" ref="coverRef" data-trans="cover"></div>
-        <div class="cover" :ref="el => extrasRef[0] = el as HTMLElement"></div>
-        <div class="cover" :ref="el => extrasRef[1] = el as HTMLElement"></div>
-        <div class="cover" :ref="el => extrasRef[2] = el as HTMLElement"></div>
-        <div class="cover" :ref="el => extrasRef[3] = el as HTMLElement"></div>
-        <div class="cover" :ref="el => extrasRef[4] = el as HTMLElement"></div>
+        <div class="cover" ref="coverRef" data-trans="cover">
+            <img v-if="activeProject?.Gallery?.[0]" :src="activeProject.Gallery[0].formats?.large?.url ?? activeProject.Gallery[0].url" :alt="activeProject.Gallery[0].alternativeText ?? ''" />
+        </div>
+        <div
+            v-for="(item, i) in (activeProject?.Gallery?.slice(1) ?? [])"
+            :key="item.id ?? i"
+            class="cover"
+            :ref="el => extrasRef[i] = el as HTMLElement"
+        >
+            <img :src="item.formats?.large?.url ?? item.url" :alt="item.alternativeText ?? ''" />
+        </div>
     </section>
 </template>
 
@@ -65,6 +74,14 @@ section {
 .cover {
     height: 80vh;
     background: black;
+    overflow: hidden;
+}
+
+.cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 @media (max-width: 768px) {
     section { margin: 0; flex: none; }

@@ -135,31 +135,7 @@ button {
 .menu-toggle {
     display: none;
 }
-@media (max-width: 768px) {
-    nav {
-        display: none;
-        position: fixed;
-        inset: 0;
-        z-index: 19;
-        background: var(--light);
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: flex-end;
-        padding: 2em;
-        gap: 0.5em;
-        a:last-child, button {
-            margin-left: 0;
-        }
-    }
-    nav.open {
-        display: flex;
-    }
-    .menu-toggle {
-        display: block;
-        position: relative;
-        z-index: 21;
-    }
-}
+
 svg {
     height: 2.15em;
     transition: transform 0.4s ease;
@@ -187,5 +163,31 @@ ul {
     margin-left: 15vw;
     padding: 2em;
     gap: 4em;
+}
+
+@media (max-width: 768px) {
+    nav {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 19;
+        background: var(--light);
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-end;
+        padding: 2em;
+        gap: 0.5em;
+        a:last-child, button {
+            margin-left: 0;
+        }
+    }
+    nav.open {
+        display: flex;
+    }
+    .menu-toggle {
+        display: block;
+        position: relative;
+        z-index: 21;
+    }
 }
 </style>

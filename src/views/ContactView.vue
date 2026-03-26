@@ -3,6 +3,7 @@ import { onMounted, onUnmounted } from 'vue'
 import SharedHeader from '@/components/shared/SharedHeader.vue';
 import SharedFooter from '@/components/shared/SharedFooter.vue';
 import GridContact from '@/components/grid/GridContact.vue';
+import lenis from '@/lib/lenis'
 
 const themes = ['theme-blue', 'theme-purple', 'theme-yellow', 'theme-gray'] as const
 
@@ -21,11 +22,11 @@ function applyTheme() {
 
 onMounted(() => {
     setTimeout(applyTheme, 150)
-    window.addEventListener('scroll', applyTheme)
+    lenis.on('scroll', applyTheme)
 })
 
 onUnmounted(() => {
-    window.removeEventListener('scroll', applyTheme)
+    lenis.off('scroll', applyTheme)
 })
 </script>
 

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { triggerHeaderLeave, setHeaderToHeader, clearRevClones, clearFwdClones, triggerPageLeave, getFwdClones, getRevClones, triggerRouteTransition, triggerRouteTransitionOut, setProjectToProject } from '@/transitions/projectTransition'
 import { themes } from '@/transitions/themes'
+import lenis from '@/lib/lenis'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,6 +35,7 @@ const router = createRouter({
       path: '/policy/:slug',
       name: 'policy',
       component: () => import('../views/PrivacyView.vue'),
+      meta: { hasHeader: true },
     },
   ],
 })
@@ -78,6 +80,7 @@ router.beforeEach(async (to, from) => {
 
 router.afterEach((to) => {
     triggerRouteTransitionOut()
+    lenis.start()
     window.scrollTo(0, 0)
     document.body.style.color = ''
     const theme = themes[to.path.startsWith('/projects/') ? '/projects/:slug' : to.path]

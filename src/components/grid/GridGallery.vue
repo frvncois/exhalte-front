@@ -1,22 +1,18 @@
-<script setup>
+<script setup lang="ts">
 import { ref, watch, nextTick, onMounted, onUnmounted, onBeforeUnmount } from 'vue'
 import { gsap } from 'gsap'
 import lenis from '@/lib/lenis'
 import { registerPageLeave } from '@/transitions/projectTransition'
 import SharedLightbox from '@/components/shared/SharedLightbox.vue'
+import type { StrapiMedia } from '@/api/strapi'
 
-const lightboxRef = ref(null)
+const lightboxRef = ref<InstanceType<typeof SharedLightbox> | null>(null)
 
-const props = defineProps({
-    items: {
-        type: Array,
-        default: () => []
-    }
-})
+const props = defineProps<{ items: StrapiMedia[] }>()
 
-const sectionRef = ref(null)
-const observers = []
-let unregisterLeave = null
+const sectionRef = ref<HTMLElement | null>(null)
+const observers: { disconnect: () => void }[] = []
+let unregisterLeave: (() => void) | null = null
 onBeforeUnmount(() => unregisterLeave?.())
 const PARALLAX_FACTORS = [0.08, -0.06, 0.1, -0.08, 0.06, -0.1, 0.07, -0.05, 0.09]
 
@@ -81,7 +77,7 @@ const POSITIONS = [
 
 const BLOCK_ROWS = 12
 
-function getGridStyle(index) {
+function getGridStyle(index: number) {
     const patternIndex = index % POSITIONS.length
     const cycle = Math.floor(index / POSITIONS.length)
     const [rs, cs, re, ce] = POSITIONS[patternIndex]
@@ -89,7 +85,7 @@ function getGridStyle(index) {
     return { gridArea: `${rs + offset} / ${cs} / ${re + offset} / ${ce}` }
 }
 
-function totalRows(count) {
+function totalRows(count: number) {
     return Math.ceil(count / POSITIONS.length) * BLOCK_ROWS
 }
 
@@ -105,7 +101,7 @@ const ALT_POSITIONS = [
     { bottom: '0', left:  '0' },
 ]
 
-function getAltStyle(index) {
+function getAltStyle(index: number) {
     return ALT_POSITIONS[index % ALT_POSITIONS.length]
 }
 </script>
