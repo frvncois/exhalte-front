@@ -87,6 +87,7 @@ onUnmounted(() => {
             <RouterLink to="/" @click="closeMenu">Index</RouterLink>
             <RouterLink to="/services" @click="closeMenu">Services</RouterLink>
             <RouterLink to="/contact" @click="closeMenu">Contact</RouterLink>
+            <button @click.stop="onLocaleToggle">{{ localeStore.nextLabel }}</button>
         </nav>
     </header>
     <section>
@@ -116,8 +117,12 @@ header {
     z-index: 20;
     padding: 2em;
     transition: color 0.4s ease;
-        span:hover svg {
+    span:hover svg {
         transform: scaleX(1.1);
+    }
+    button {
+        all: unset;
+        cursor: pointer;
     }
 }
 nav {
@@ -127,10 +132,6 @@ nav {
     a:last-child, button {
         margin-left: 2em;
     }
-}
-button {
-    all: unset;
-    cursor: pointer;
 }
 svg {
     height: 2.15em;
