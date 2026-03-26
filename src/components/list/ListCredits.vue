@@ -70,7 +70,7 @@ h5 {
 ul {
     display: flex;
     flex-wrap: wrap;
-    column-gap: 4em;
+    column-gap: 1.5em;
 }
 
 li {
@@ -82,6 +82,7 @@ li {
 li::after {
   content: '⬤';
   font-size: var(--text-xs);
+  margin-left: 1em;
 }
 
 li:last-child::after {

@@ -32,7 +32,7 @@ onMounted(() => {
         y: dest.top - parseFloat(clone.style.top),
         width: dest.width,
         height: dest.height,
-        duration: 0.9,
+        duration: 1.4,
         ease: 'power3.inOut',
         onComplete: () => {
             clone.remove()

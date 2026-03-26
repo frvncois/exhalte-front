@@ -66,7 +66,7 @@ onMounted(() => {
                 width: dest.width,
                 height: dest.height,
             }),
-            duration: 0.8,
+            duration: 1.4,
             ease: 'power3.inOut',
             delay,
             onComplete: () => { clone.remove(); gsap.set(el, { opacity: 1 }) },

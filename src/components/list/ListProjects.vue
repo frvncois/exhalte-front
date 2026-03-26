@@ -177,6 +177,16 @@ li {
     flex: 1;
 }
 
+li:hover .details span,
+li:hover .details .title {
+    opacity: 0.5;
+}
+
+.details span,
+.details .title {
+    transition: opacity 0.4s ease;
+}
+
 @media (max-width: 768px) {
     ul {
         --visible: 1.25;
