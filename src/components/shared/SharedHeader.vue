@@ -159,6 +159,12 @@ button {
 }
 svg {
     height: 2.15em;
+    transition: transform 0.4s ease;
+    transform-origin: left center;
+}
+
+header span:hover svg {
+    transform: scaleX(1.1);
 }
 section {
     position: absolute;
