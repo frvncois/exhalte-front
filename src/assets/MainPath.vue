@@ -4,9 +4,8 @@
 <svg
    version="1.1"
    id="svg1"
-   width="2560"
-   height="1440"
    viewBox="0 0 2560 1440"
+   preserveAspectRatio="xMidYMid meet"
    sodipodi:docname="Exhalte_Logo_Stretch.ai"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"

@@ -3,6 +3,9 @@ import { ref, watch, nextTick, onMounted, onUnmounted, onBeforeUnmount } from 'v
 import { gsap } from 'gsap'
 import lenis from '@/lib/lenis'
 import { registerPageLeave } from '@/transitions/projectTransition'
+import SharedLightbox from '@/components/shared/SharedLightbox.vue'
+
+const lightboxRef = ref(null)
 
 const props = defineProps({
     items: {
@@ -98,6 +101,7 @@ function totalRows(count) {
                 v-for="(item, index) in items"
                 :key="item.id ?? index"
                 :style="getGridStyle(index)"
+                @click="lightboxRef?.open(index)"
             >
                 <div class="cover">
                     <span class="index">({{ String(index + 1).padStart(2, '0') }})</span>
@@ -109,6 +113,7 @@ function totalRows(count) {
             </li>
         </ul>
     </section>
+    <SharedLightbox ref="lightboxRef" :items="items" />
 </template>
 
 <style scoped>
@@ -127,6 +132,7 @@ ul {
 li {
     display: flex;
     min-height: 0;
+    cursor: pointer;
     &:nth-child(1) .cover{ aspect-ratio: 9/12; }
     &:nth-child(2) .cover{ aspect-ratio: 4/5; }
     &:nth-child(3) .cover{ aspect-ratio: 2/3; }

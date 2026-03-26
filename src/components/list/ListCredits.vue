@@ -71,6 +71,7 @@ ul {
     display: flex;
     flex-wrap: wrap;
     column-gap: 1.5em;
+    max-width: 70vw;
 }
 
 li {

@@ -67,6 +67,16 @@ const pressItems = computed(() =>
 .is-video {
     display: flex;
     flex-direction: column;
+    height: calc(100vh - 6em);
+}
+
+.is-video :deep(section:first-child) {
+    flex: 1;
+    min-height: 0;
+}
+
+.is-video :deep(section:last-child) {
+    flex-shrink: 0;
 }
 .is-gallery {
     display: flex;

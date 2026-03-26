@@ -99,7 +99,7 @@ onMounted(async () => {
             y: dest.top - parseFloat(clone.style.top),
             width: dest.width,
             height: dest.height,
-            duration: 0.75,
+            duration: 1.4,
             ease: 'power3.inOut',
             delay,
             onComplete: () => { clone.remove(); onDone?.() },
@@ -114,13 +114,14 @@ onMounted(async () => {
     ;[
         { clone: clones[1]!, el: clickedSpan },
         { clone: clones[2]!, el: clickedTitle },
-    ].forEach(({ clone, el }) => {
+    ].forEach(({ clone, el }, i) => {
         const dest = el.getBoundingClientRect()
         gsap.to(clone, {
             x: dest.left - parseFloat(clone.style.left),
             y: dest.top - parseFloat(clone.style.top),
-            duration: 0.75,
+            duration: 1.4,
             ease: 'power3.inOut',
+            delay: i * 0.04,
             onComplete: () => { clone.remove(); gsap.set(el, { opacity: 1 }) },
         })
     })
@@ -134,7 +135,7 @@ onMounted(async () => {
 
         // Cover: hide and reveal when clone lands
         if (coverClone) {
-            flyTo(coverClone, cover.getBoundingClientRect(), i * 0.04,
+            flyTo(coverClone, cover.getBoundingClientRect(), 0.06 + i * 0.04,
                 () => gsap.set(cover, { opacity: 1 }))
         } else {
             gsap.set(cover, { opacity: 1 })
@@ -146,7 +147,7 @@ onMounted(async () => {
             const fromX = parseFloat(infoClone.style.left) - dest.left
             const fromY = parseFloat(infoClone.style.top)  - dest.top
             infoClone.remove()
-            gsap.from(details, { x: fromX, y: fromY, duration: 0.75, ease: 'power3.inOut', delay: i * 0.04 })
+            gsap.from(details, { x: fromX, y: fromY, duration: 1.2, ease: 'power3.inOut', delay: 0.06 + i * 0.04 })
         }
     })
 })

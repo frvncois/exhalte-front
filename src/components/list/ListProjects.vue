@@ -127,7 +127,7 @@ function onClick(e: MouseEvent) {
 section {
     overflow: hidden;
     width: 100vw;
-    padding: 2em;
+    padding: 6em 2em;
 }
 
 ul {

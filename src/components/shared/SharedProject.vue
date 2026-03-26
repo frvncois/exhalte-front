@@ -175,6 +175,7 @@ section.is-gallery {
     flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content: end;
     gap: 0.25em;
 }
 

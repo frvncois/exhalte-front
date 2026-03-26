@@ -5,32 +5,34 @@ import { getFwdClones, getRevClones, registerPageLeave } from '@/transitions/pro
 import { useProjectStore } from '@/stores/project'
 import { storeToRefs } from 'pinia'
 import { coverImage } from '@/api/strapi'
+import SharedLightbox from '@/components/shared/SharedLightbox.vue'
 
 const coverRef = ref<HTMLElement | null>(null)
+const imgRef = ref<HTMLImageElement | null>(null)
 const playBtnRef = ref<HTMLElement | null>(null)
-const videoRef = ref<HTMLVideoElement | null>(null)
-const playing = ref(false)
+const lightboxRef = ref<InstanceType<typeof SharedLightbox> | null>(null)
 const { activeProject } = storeToRefs(useProjectStore())
 
 let unregisterLeave: (() => void) | null = null
 onBeforeUnmount(() => unregisterLeave?.())
 
 function play() {
-    if (!activeProject.value?.Video || !videoRef.value) return
-    playing.value = true
-    videoRef.value.src = activeProject.value.Video
-    gsap.to(playBtnRef.value, { opacity: 0, duration: 0.3, ease: 'power2.in' })
-    gsap.to(videoRef.value, { opacity: 1, duration: 0.5, ease: 'power2.out', delay: 0.2 })
-    videoRef.value.play()
+    if (!activeProject.value?.Video) return
+    lightboxRef.value?.openVideo(activeProject.value.Video)
+}
+
+function afterReveal() {
+    if (activeProject.value?.Video) {
+        gsap.from(playBtnRef.value, { opacity: 0, duration: 0.4, ease: 'power2.out' })
+    }
+    gsap.to(imgRef.value, { opacity: 0.75, duration: 0.5, ease: 'power2.out' })
 }
 
 onMounted(() => {
     const clone = getFwdClones()[0]
 
     if (!clone) {
-        gsap.from(coverRef.value, { clipPath: 'inset(0 0 100% 0)', duration: 1.2, ease: 'power3.out', onComplete: () => {
-            if (activeProject.value?.Video) gsap.from(playBtnRef.value, { opacity: 0, duration: 0.4, ease: 'power2.out' })
-        }})
+        gsap.from(coverRef.value, { clipPath: 'inset(0 0 100% 0)', duration: 1.2, ease: 'power3.out', onComplete: afterReveal })
     } else {
         if (!coverRef.value) return
         const dest = coverRef.value.getBoundingClientRect()
@@ -45,12 +47,14 @@ onMounted(() => {
             onComplete: () => {
                 clone.remove()
                 gsap.set(coverRef.value!, { opacity: 1 })
-                if (activeProject.value?.Video) gsap.from(playBtnRef.value, { opacity: 0, duration: 0.4, ease: 'power2.out' })
+                afterReveal()
             },
         })
     }
 
     unregisterLeave = registerPageLeave((done) => {
+        gsap.to(playBtnRef.value, { opacity: 0, duration: 0.2, ease: 'power2.in' })
+        gsap.to(imgRef.value, { opacity: 1, duration: 0.2, ease: 'power2.in' })
         if (getRevClones().length) { done(); return }
         gsap.to(coverRef.value, { clipPath: 'inset(0 0 100% 0)', duration: 0.5, ease: 'power2.in', onComplete: done })
     })
@@ -61,71 +65,75 @@ onMounted(() => {
     <section>
         <div class="cover" ref="coverRef" data-trans="cover">
             <img
+                ref="imgRef"
                 v-if="activeProject && coverImage(activeProject)"
                 :src="coverImage(activeProject)!.formats?.large?.url ?? coverImage(activeProject)!.url"
                 :alt="activeProject.Title"
             />
-            <video
-                v-if="activeProject?.Video"
-                ref="videoRef"
-                playsinline
-                controls
-            />
             <button
-                v-if="activeProject?.Video && !playing"
+                v-if="activeProject?.Video"
                 ref="playBtnRef"
                 class="play-btn"
                 @click="play"
             >
-                ▶
+                <span>▶</span>
+                <span class="label">Play</span>
             </button>
         </div>
     </section>
+    <SharedLightbox ref="lightboxRef" :items="[]" />
 </template>
 
 <style scoped>
 section {
     margin: 0 2em;
+    height: 100%;
 }
 .cover {
-    height: 80vh;
-    background: black;
+    background: var(--black);
     overflow: hidden;
     position: relative;
+    height: 100%;
 }
 @media (max-width: 768px) {
     section { margin: 0; }
     .cover { height: 56vw; }
 }
 
-img, video {
+img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
 
-video {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-}
-
 .play-btn {
     position: absolute;
     inset: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 0.25em;
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 4em;
     color: white;
     transition: transform 0.2s ease;
 }
 
+.play-btn span:first-child {
+    font-size: 3em;
+    line-height: 1;
+}
+
+.label {
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
 .play-btn:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 </style>

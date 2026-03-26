@@ -2,8 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { gsap } from 'gsap'
 import SharedHeader from '@/components/shared/SharedHeader.vue';
-import Content2col from '@/components/content/Content2col.vue';
-import ServicesHero from '@/components/single/ServicesHero.vue';
+import ServicesContent from '@/components/single/ServicesContent.vue';
 import ServicesTagline from '@/components/single/ServicesTagline.vue';
 
 
@@ -33,8 +32,7 @@ onUnmounted(() => observer?.disconnect())
 <template>
     <SharedHeader />
     <main ref="mainRef">
-        <ServicesHero />
-        <Content2col />
+        <ServicesContent />
         <ServicesTagline ref="taglineRef" />
     </main>
 </template>

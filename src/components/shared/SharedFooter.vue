@@ -130,7 +130,7 @@ onUnmounted(() => {
             </nav>
         </address>
         <div class="bottom" ref="bottomRef">
-            <div>
+            <div class="policies">
                 <p>{{ sharedStore.shared?.Copyright }}</p>
                 <nav>
                     <RouterLink
@@ -213,6 +213,10 @@ svg {
     position: absolute;
     right: 0;
     bottom: 0;
+}
+
+.policies {
+    font-size: 0.75em;
 }
 .credits-toggle {
     cursor: pointer;

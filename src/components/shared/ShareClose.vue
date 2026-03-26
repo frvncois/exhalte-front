@@ -12,6 +12,11 @@ onMounted(() => {
 })
 
 function handleRetour() {
+    const playBtn = document.querySelector('[data-trans="cover"] .play-btn') as HTMLElement | null
+    const coverImg = document.querySelector('[data-trans="cover"] img') as HTMLElement | null
+    if (playBtn) gsap.set(playBtn, { opacity: 0 })
+    if (coverImg) gsap.set(coverImg, { opacity: 1 })
+
     const cover = document.querySelector('[data-trans="cover"]')
     const span = document.querySelector('[data-trans="span"]')
     const title = document.querySelector('[data-trans="title"]')
@@ -43,12 +48,16 @@ function handleRetour() {
 
 <style scoped>
 section {
-    position: relative;
+    position: sticky;
+    top: 0;
     z-index: 12;
-    padding: 2.5em;
+    height: 6em;
     text-align: center;
     text-transform: uppercase;
     background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 button {
     background: none;
