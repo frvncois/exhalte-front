@@ -37,16 +37,4 @@ onMounted(() => {
     <AppLoad @ready="viewReady = true" />
     <RouterView v-if="viewReady" :key="$route.fullPath" />
     <RouteTransition />
-    <div ref="reloadOverlayRef" class="reload-overlay" />
 </template>
-
-<style scoped>
-.reload-overlay {
-    position: fixed;
-    inset: 0;
-    background: var(--lime);
-    opacity: 0;
-    pointer-events: none;
-    z-index: 200;
-}
-</style>
