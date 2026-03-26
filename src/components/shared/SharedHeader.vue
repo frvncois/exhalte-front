@@ -123,6 +123,7 @@ header {
     button {
         all: unset;
         cursor: pointer;
+        display: none;
     }
 }
 nav {
