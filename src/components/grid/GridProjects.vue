@@ -6,6 +6,7 @@ import { storeToRefs } from 'pinia'
 import { captureFwdClones, getFwdClones, getRevClones, getClickedIndex, registerPageLeave } from '@/transitions/projectTransition'
 import { useProjectStore } from '@/stores/project'
 import { slugify, coverImage } from '@/api/strapi'
+import lenis from '@/lib/lenis'
 
 const router = useRouter()
 const ulEl = ref<HTMLUListElement | null>(null)
@@ -19,6 +20,7 @@ function handleClick(index: number) {
     const project = projects.value[index]
     if (!project) return
 
+    lenis.stop()
     projectStore.setActiveSlug(slugify(project.Title))
 
     const lis = Array.from(ulEl.value!.querySelectorAll('li')) as HTMLElement[]

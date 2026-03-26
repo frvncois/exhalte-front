@@ -11,6 +11,7 @@ import { useProjectStore } from '@/stores/project';
 import { storeToRefs } from 'pinia';
 import { useRoute } from 'vue-router';
 import { watch, onMounted, computed } from 'vue';
+import lenis from '@/lib/lenis';
 
 const route = useRoute()
 const projectStore = useProjectStore()
@@ -21,7 +22,7 @@ async function syncProject() {
     projectStore.setActiveSlug(route.params.slug as string)
 }
 
-onMounted(syncProject)
+onMounted(() => { lenis.start(); syncProject() })
 watch(() => route.params.slug, syncProject)
 
 const creditItems = computed(() =>
