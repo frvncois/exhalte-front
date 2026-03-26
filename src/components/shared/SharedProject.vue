@@ -74,7 +74,7 @@ onMounted(() => {
     }
 
     if (clones[1] && spanRef.value)  flyClone(clones[1], spanRef.value)
-    if (clones[2] && titleRef.value) flyClone(clones[2], titleRef.value, 0.04)
+    if (clones[2] && titleRef.value) flyClone(clones[2], titleRef.value, 0.04, true)
 
     if (ulRef.value) {
         const ulLis = Array.from(ulRef.value.querySelectorAll('li')) as HTMLElement[]

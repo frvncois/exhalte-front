@@ -38,10 +38,9 @@ function handleClick(index: number) {
 
     const fwdClones = getFwdClones()
 
-    // Hide p in the clicked title clone — SingleView doesn't show it
+    // Fix title clone: GridProjects has no justify-content, SharedProject has justify-content: end
     const titleClone = fwdClones[2]
-    const pInTitle = titleClone?.querySelector('p') as HTMLElement | null
-    if (pInTitle) pInTitle.style.display = 'none'
+    if (titleClone) titleClone.style.justifyContent = 'flex-end'
 
     // Fix lost scoped styles in other lis' details clones
     otherLis.forEach((_, i) => {
@@ -110,21 +109,32 @@ onMounted(async () => {
     flyTo(clones[0]!, clickedCover.getBoundingClientRect(), 0,
         () => gsap.set(clickedCover, { opacity: 1 }))
 
-    // [1] span, [2] title → clicked li text (position only, no scale)
-    ;[
-        { clone: clones[1]!, el: clickedSpan },
-        { clone: clones[2]!, el: clickedTitle },
-    ].forEach(({ clone, el }, i) => {
-        const dest = el.getBoundingClientRect()
-        gsap.to(clone, {
-            x: dest.left - parseFloat(clone.style.left),
-            y: dest.top - parseFloat(clone.style.top),
+    // [1] span → position only
+    if (clones[1]) {
+        const dest = clickedSpan.getBoundingClientRect()
+        gsap.to(clones[1], {
+            x: dest.left - parseFloat(clones[1].style.left),
+            y: dest.top - parseFloat(clones[1].style.top),
             duration: 1.4,
             ease: 'power3.inOut',
-            delay: i * 0.04,
-            onComplete: () => { clone.remove(); gsap.set(el, { opacity: 1 }) },
+            onComplete: () => { clones[1]!.remove(); gsap.set(clickedSpan, { opacity: 1 }) },
         })
-    })
+    }
+
+    // [2] title → animate position + resize so justify-content: end flows naturally (no instant jump)
+    if (clones[2]) {
+        const dest = clickedTitle.getBoundingClientRect()
+        gsap.to(clones[2], {
+            x: dest.left - parseFloat(clones[2].style.left),
+            y: dest.top - parseFloat(clones[2].style.top),
+            width: dest.width,
+            height: dest.height,
+            duration: 1.4,
+            ease: 'power3.inOut',
+            delay: 0.04,
+            onComplete: () => { clones[2]!.remove(); gsap.set(clickedTitle, { opacity: 1 }) },
+        })
+    }
 
     // [3+] interleaved: cover + info per other li
     otherLis.forEach((li, i) => {
