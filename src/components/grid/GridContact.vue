@@ -17,7 +17,7 @@ async function animate() {
     const lis = ulRef.value?.querySelectorAll('li')
     if (!lis) return
 
-    lis.forEach(li => {
+    lis.forEach((li, liIndex) => {
         const targets = Array.from(li.querySelectorAll<HTMLElement>('h3, h4'))
         const origX = targets.map(el => {
             const t = window.getComputedStyle(el).transform
@@ -25,7 +25,10 @@ async function animate() {
         })
 
         li.addEventListener('mouseenter', () => {
-            gsap.to(targets, { x: 0, duration: 0.5, ease: 'power2.out' })
+            targets.forEach((el, i) => {
+                const hoverX = (liIndex === 1 || liIndex === 2) && el.tagName === 'H3' ? '2em' : 0
+                gsap.to(el, { x: hoverX, duration: 0.5, ease: 'power2.out' })
+            })
         })
         li.addEventListener('mouseleave', () => {
             targets.forEach((el, i) => gsap.to(el, { x: origX[i], duration: 0.5, ease: 'power2.out' }))
@@ -121,20 +124,18 @@ ul {
 
 li {
     display: flex;
-  flex-direction: column;
-        padding-top: 4em;
+    flex-direction: column;
+    padding-top: 4em;
         &:nth-child(2) {
             h4 {
                 transform: translateX(2em);
             }
         }
         &:nth-child(3) {
-            text-align: center;
-            h3 {
-                transform: translateX(-10%);
-            }
+            position: relative;
+            top: -5.5em;
             h4 {
-                transform: translateX(2%);
+                transform: translateX(2em);
             }
         }
         &:nth-child(4) {
@@ -149,7 +150,7 @@ li {
         &:nth-child(5) {
             text-align: center;
             h3 {
-                transform: translateX(-10%);
+                transform: translateX(-20%);
             }
             h4 {
                 transform: translateX(10%);
@@ -194,6 +195,10 @@ h2, h3 {
 
 h4, p, a {
     font-family: var(--heading);
+}
+
+h4 {
+    max-width: 29ch;
 }
 
 li:nth-child(1) { grid-row: 1; grid-column: 1; }

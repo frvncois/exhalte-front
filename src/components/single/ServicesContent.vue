@@ -8,6 +8,7 @@ import { useServiceStore } from '@/stores/service'
 
 const wrapRef = ref<HTMLElement | null>(null)
 const sectionRef = ref<HTMLElement | null>(null)
+const svgEl = ref<SVGElement | null>(null)
 const serviceStore = useServiceStore()
 let observer: IntersectionObserver | null = null
 let unregisterLeave: (() => void) | null = null
@@ -18,6 +19,7 @@ onMounted(async () => {
     await nextTick()
 
     const svg = wrapRef.value?.querySelector('svg') as SVGElement | null
+    svgEl.value = svg
     const col = sectionRef.value?.querySelector('.col') as HTMLElement | null
 
     gsap.set(svg, { opacity: 0 })
@@ -45,7 +47,7 @@ onMounted(async () => {
         if (!sectionRef.value || !svg) return
         const progress = Math.min(Math.max(scroll / scrollRange, 0), 1)
         sectionRef.value.style.height = `${naturalHeight * (1 - progress)}px`
-        svg.style.width = `${100 - progress * 65}%`
+        svg.style.transform = `scale(${1 - progress * 0.8})`
     }
 
     lenis.on('scroll', onScroll)
@@ -53,6 +55,8 @@ onMounted(async () => {
 })
 
 onUnmounted(() => observer?.disconnect())
+
+defineExpose({ svgEl })
 </script>
 
 <template>
@@ -63,13 +67,16 @@ onUnmounted(() => observer?.disconnect())
         <section ref="sectionRef">
         <div class="col">
             <div>
-                <h2>(Services)</h2>
-                <ul>
-                    <li v-for="item in serviceStore.service?.Services" :key="item.id">
-                        <h3>{{ item.Title }}</h3>
-                        <p>{{ item.Details }}</p>
-                    </li>
-                </ul>
+                <div>
+                    <h2>(Services)</h2>
+                    <ul>
+                        <li v-for="item in serviceStore.service?.Services" :key="item.id">
+                            <h3>{{ item.Title }}</h3>
+                            <!--REMOVE <p>{{ item.Details }}</p>-->
+                        </li>
+                    </ul>
+                </div>
+                <h2>Newsletter ></h2>
             </div>
             <div>
                 <h2>({{ serviceStore.service?.Title }})</h2>
@@ -89,6 +96,7 @@ onUnmounted(() => observer?.disconnect())
     position: sticky;
     top: 0;
     height: 100vh;
+    padding-bottom: 2em;
     display: flex;
     flex-direction: column;
 }
@@ -98,6 +106,7 @@ onUnmounted(() => observer?.disconnect())
     min-height: 0;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 section {
@@ -117,18 +126,24 @@ svg {
     display: flex;
     div:first-child {
         flex: 1;
-    }
-    div:last-child {
-        flex: 2;
-    }
-    ul {
         display: flex;
         flex-direction: column;
         gap: 1em;
     }
+    div:last-child {
+        flex: 2;
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+    }
+    ul {
+        display: flex;
+        flex-direction: column;
+    }
     li p {
         font-size: var(--font-sm);
         max-width: 45ch;
+        margin-left: 2em;
     }
 }
 
@@ -140,7 +155,6 @@ h2 {
     font-family: 'body';
     text-transform: uppercase;
     font-size: 1em;
-    margin-bottom: 2em;
 }
 
 h3 {

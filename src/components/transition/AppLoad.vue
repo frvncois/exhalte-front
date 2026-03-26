@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
+import { gsap } from 'gsap'
+import MainLogo from '@/assets/MainLogo.vue'
 
 const emit = defineEmits(['ready'])
-import { gsap } from 'gsap'
 
 const phrase = ' / Le mouvement est une pensée'
-const repeat = phrase.repeat(50)
-
+const COPIES = 14
 const show = ref(!document.body.classList.contains('app-loaded'))
 const sectionRef = ref<HTMLElement | null>(null)
 const svgRef = ref<SVGSVGElement | null>(null)
-const textPathRef = ref<SVGTextPathElement | null>(null)
+const group1Ref = ref<SVGGElement | null>(null)
+const group2Ref = ref<SVGGElement | null>(null)
+const splashRef = ref<HTMLElement | null>(null)
+const offsets = ref<number[]>([])
 
 onMounted(async () => {
     if (!show.value || !svgRef.value) return
@@ -24,61 +27,128 @@ onMounted(async () => {
     testEl.style.visibility = 'hidden'
     testEl.textContent = phrase
     svgRef.value.appendChild(testEl)
-    const oneRepeatLength = testEl.getComputedTextLength()
     svgRef.value.removeChild(testEl)
 
-    const animEl = document.createElementNS('http://www.w3.org/2000/svg', 'animate')
-    animEl.setAttribute('attributeName', 'startOffset')
-    animEl.setAttribute('from', String(-oneRepeatLength * 5))
-    animEl.setAttribute('to', String(-oneRepeatLength * 5 + oneRepeatLength))
-    animEl.setAttribute('dur', '5s')
-    animEl.setAttribute('repeatCount', 'indefinite')
-    textPathRef.value!.appendChild(animEl)
+    const pathEl = svgRef.value.querySelector('#textPath') as SVGPathElement
+    const pathLength = pathEl.getTotalLength()
+
+    offsets.value = Array.from({ length: COPIES }, (_, i) => (i / COPIES) * pathLength)
+    await nextTick()
+
+    const pathEl2 = svgRef.value.querySelector('#textPath2') as SVGPathElement
+    const pathLength2 = pathEl2.getTotalLength()
+
+    const tp1 = Array.from(group1Ref.value!.querySelectorAll('textPath'))
+    const tp2 = Array.from(group2Ref.value!.querySelectorAll('textPath'))
 
     const tl = gsap.timeline()
     tl.to(sectionRef.value, { opacity: 1, duration: 0.3, ease: 'power2.out' })
     tl.from(svgRef.value, { opacity: 0, duration: 0.6 })
-    tl.to(sectionRef.value, { opacity: 0, duration: 0.5, delay: 3, onComplete: () => { show.value = false; emit('ready') } })
+    tl.to(tp1, {
+        attr: { startOffset: (_i: number) => offsets.value[_i]! + pathLength },
+        duration: 6,
+        ease: 'power2.in'
+    }, '+=0.2')
+    tl.to(tp2, {
+        attr: { startOffset: (_i: number) => offsets.value[_i]! - pathLength2 },
+        duration: 6,
+        ease: 'power2.in'
+    }, '<')
+    const logoSvg = splashRef.value!.querySelector('svg')
+    const pEl = splashRef.value!.querySelector('p')
+    tl.to(sectionRef.value, { backgroundColor: 'var(--pink)', color: 'var(--medium)', duration: 0.8, ease: 'power2.inOut' })
+    tl.to(splashRef.value, { opacity: 1, duration: 0.8, ease: 'power2.out' }, '<')
+    tl.fromTo(logoSvg, { clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)', duration: 1, ease: 'power3.out' }, '<')
+    tl.from(pEl, { opacity: 0, y: 10, duration: 0.8, ease: 'power2.out' }, '-=0.6')
+
+    const exit = () => {
+        sectionRef.value?.removeEventListener('click', exit)
+        gsap.to(sectionRef.value, { opacity: 0, duration: 0.5, ease: 'power2.in', onComplete: () => { show.value = false; emit('ready') } })
+    }
+    sectionRef.value?.addEventListener('click', exit)
 })
 </script>
 
 <template>
     <section v-if="show" ref="sectionRef">
-        <svg ref="svgRef" viewBox="0 0 658 472" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-            <defs>
-                <path id="textPath" d="M328.408 0.0610046C323.408 40.7277 276.308 122.061 127.908 122.061C-57.5919 122.061 -25.5919 29.061 127.908 29.061C281.408 29.061 328.408 111.561 328.408 155.061C328.408 198.561 280.908 281.061 127.908 281.061C-25.0919 281.061 -49.5919 187.561 127.908 187.561C305.408 187.561 328.408 302.061 328.408 316.561C328.408 331.061 305.408 445.061 127.908 445.061C-49.5919 445.061 -29.0919 351.061 127.908 351.061C284.908 351.061 328.408 440.561 328.408 470.561H329.501C329.501 440.561 373.001 351.061 530.001 351.061C687.001 351.061 707.501 445.061 530.001 445.061C352.501 445.061 329.501 331.061 329.501 316.561C329.501 302.061 352.501 187.561 530.001 187.561C707.501 187.561 683.001 281.061 530.001 281.061C377.001 281.061 329.501 198.561 329.501 155.061C329.501 111.561 376.501 29.061 530.001 29.061C683.501 29.061 715.501 122.061 530.001 122.061C381.601 122.061 334.501 40.7277 329.501 0.0610046"/>
-            </defs>
-            <text>
-                <textPath ref="textPathRef" href="#textPath">{{ repeat }}</textPath>
-            </text>
-        </svg>
+        <div class="lines">
+            <svg ref="svgRef" viewBox="0 0 658 472" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                    <path id="textPath" d="M328.408 0.0610046C323.408 40.7277 276.308 122.061 127.908 122.061C-57.5919 122.061 -25.5919 29.061 127.908 29.061C281.408 29.061 328.408 101.5 328.408 155.061C328.408 208.622 280.908 281.061 127.908 281.061C-25.0919 281.061 -49.5919 187.561 127.908 187.561C294 187.561 328.408 272.122 328.408 316.561C328.408 361 289 445.061 127.908 445.061C-49.5919 445.061 -29.0919 351.061 127.908 351.061C284.908 351.061 328.408 440.561 328.408 470.561" />
+                    <path id="textPath2" d="M329.592 0.0610046C334.592 40.7277 381.692 122.061 530.092 122.061C715.5919 122.061 683.5919 29.061 530.092 29.061C376.592 29.061 329.592 101.5 329.592 155.061C329.592 208.622 377.092 281.061 530.092 281.061C683.0919 281.061 707.5919 187.561 530.092 187.561C364 187.561 329.592 272.122 329.592 316.561C329.592 361 369 445.061 530.092 445.061C707.5919 445.061 687.0919 351.061 530.092 351.061C373.092 351.061 329.592 440.561 329.592 470.561" />
+                </defs>
+                <g ref="group1Ref" transform="translate(-5, 0)">
+                    <text v-for="(offset, i) in offsets" :key="i">
+                        <textPath href="#textPath" :startOffset="offset">{{ phrase }}</textPath>
+                    </text>
+                </g>
+                <g ref="group2Ref" transform="translate(5, 0)">
+                    <text v-for="(offset, i) in offsets" :key="i">
+                        <textPath href="#textPath2" :startOffset="offset">{{ phrase }}</textPath>
+                    </text>
+                </g>
+            </svg>
+        </div>
+        <div class="splash" ref="splashRef">
+            <MainLogo/>
+            <div>
+                <p>Bienvenue<br>Welcome</p>
+            </div>
+        </div>
     </section>
 </template>
 
 <style scoped>
-section {
-    position: fixed;
-    inset: 0;
-    opacity: 0;
-    background: var(--lime);
-    color: var(--olive);
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-svg {
-    width: 100%;
-    height: 100%;
-}
-text {
-    font-family: 'body';
-    font-size: 10px;
-    fill: var(--olive);
-    stroke-width: 2px;
-    paint-order: stroke fill;
-    stroke: var(--lime);
-    text-transform: uppercase;
-    dominant-baseline: central;
-}
+    section {
+        position: fixed;
+        inset: 0;
+        opacity: 0;
+        background: var(--framboise);
+        color: var(--pink);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    text {
+        font-family: 'body';
+        font-size: 10px;
+        fill: var(--pink);
+        stroke-width: 2px;
+        paint-order: stroke fill;
+        stroke: var(--framboise);
+        text-transform: uppercase;
+        dominant-baseline: hanging;
+    }
+    .lines {
+        position: fixed;
+        inset: 0;
+            svg {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    .splash {
+        position: fixed;
+        inset: 0;
+        padding: 4em;
+        opacity: 0;
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        > div {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            p {
+                font-size: var(--text-medium);
+                font-family: heading;
+            }
+        }
+    }
 </style>

@@ -60,6 +60,7 @@ function handleClick(index: number) {
 }
 
 onMounted(async () => {
+    gsap.set(ulEl.value, { visibility: 'hidden' })
     await projectStore.fetchProjects()
 
     const clones = getRevClones()
@@ -72,6 +73,7 @@ onMounted(async () => {
 
     if (!clones.length) {
         await nextTick()
+        gsap.set(ulEl.value, { visibility: 'visible' })
         const lis = Array.from(ulEl.value!.querySelectorAll('li'))
         gsap.from(lis, { clipPath: 'inset(0 0 100% 0)', duration: 0.7, ease: 'power2.out', stagger: 0.08 })
         return
@@ -80,6 +82,7 @@ onMounted(async () => {
     if (!ulEl.value) return
 
     await nextTick()
+    gsap.set(ulEl.value, { visibility: 'visible' })
 
     const lis = Array.from(ulEl.value.querySelectorAll('li')) as HTMLElement[]
     const activeIdx = projects.value.findIndex(p => p.documentId === activeProject.value?.documentId)

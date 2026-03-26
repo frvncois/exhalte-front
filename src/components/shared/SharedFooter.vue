@@ -201,6 +201,7 @@ svg {
     align-items: end;
     width: 100%;
     position: relative;
+    font-size: 0.75em;
     & p, a, span {
         font-size: var(--text-sm);
         text-transform: uppercase;
@@ -215,9 +216,6 @@ svg {
     bottom: 0;
 }
 
-.policies {
-    font-size: 0.75em;
-}
 .credits-toggle {
     cursor: pointer;
     display: flex;

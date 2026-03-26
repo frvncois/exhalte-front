@@ -92,6 +92,22 @@ function getGridStyle(index) {
 function totalRows(count) {
     return Math.ceil(count / POSITIONS.length) * BLOCK_ROWS
 }
+
+const ALT_POSITIONS = [
+    { bottom: '0', right: '0' },
+    { top: '0',    right: '0' },
+    { bottom: '0', right: '0' },
+    { top: '0',    left:  '0' },
+    { bottom: '0', left:  '0' },
+    { bottom: '0', right: '0' },
+    { bottom: '0', left:  '0' },
+    { bottom: '0', left:  '0' },
+    { bottom: '0', left:  '0' },
+]
+
+function getAltStyle(index) {
+    return ALT_POSITIONS[index % ALT_POSITIONS.length]
+}
 </script>
 
 <template>
@@ -109,6 +125,7 @@ function totalRows(count) {
                         :src="item.formats?.large?.url ?? item.url"
                         :alt="item.alternativeText ?? ''"
                     />
+                    <span v-if="item.alternativeText" class="alt" :style="getAltStyle(index)">{{ item.alternativeText }}</span>
                 </div>
             </li>
         </ul>
@@ -126,7 +143,7 @@ section {
 ul {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    gap: 2em;
+    gap: 10em;
 }
 
 li {
@@ -160,6 +177,15 @@ li {
     text-transform: uppercase;
     pointer-events: none;
     z-index: 1;
+}
+
+.alt {
+    position: absolute;
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    pointer-events: none;
+    z-index: 1;
+    padding: 0.5em;
 }
 
 img {
