@@ -86,6 +86,7 @@ export interface Project {
   Type: 'Video' | 'Gallery'
   Title: string
   Subtitle: string | null
+  Order: number | null
   Video: string | null
   Details: DetailsBlock[]
   Cover: StrapiMedia | null
@@ -113,7 +114,7 @@ export function slugify(title: string): string {
 
 /** Returns Cover if present, otherwise the first Gallery image. */
 export function coverImage(project: Project): StrapiMedia | null {
-  return project.Cover ?? project.Gallery[0] ?? null
+  return project.Cover ?? project.Gallery?.[0] ?? null
 }
 
 // ─── Fetch ────────────────────────────────────────────────────────────────────

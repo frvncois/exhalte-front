@@ -25,10 +25,10 @@ export const useProjectStore = defineStore('project', () => {
     loading.value = true
     error.value = null
     try {
-      projects.value = (await getProjects(locale)).sort((a, b) => a.Title.localeCompare(b.Title))
+      projects.value = (await getProjects(locale)).sort((a, b) => (a.Order ?? 0) - (b.Order ?? 0))
     } catch (e) {
       if (locale !== 'fr') {
-        try { projects.value = (await getProjects('fr')).sort((a, b) => a.Title.localeCompare(b.Title)) } catch {}
+        try { projects.value = (await getProjects('fr')).sort((a, b) => (a.Order ?? 0) - (b.Order ?? 0)) } catch {}
       }
       error.value = e instanceof Error ? e.message : 'Failed to load projects'
     } finally {

@@ -116,6 +116,11 @@ header {
     right: 0;
     z-index: 20;
     padding: 2em;
+    transition: color 0.4s ease;
+}
+
+header:has(a[href="/services"]:hover) {
+    color: var(--pink);
 }
 nav {
     display: flex;
