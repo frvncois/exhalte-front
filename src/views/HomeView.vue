@@ -11,4 +11,4 @@ import AppLoad from '@/components/transition/AppLoad.vue';
     <GridProjects />
     <SharedFooter theme="theme-pink" />
     <AppLoad/>
-</template>
+</template>x

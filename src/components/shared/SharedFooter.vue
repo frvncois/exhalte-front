@@ -41,7 +41,7 @@ function toggleCredits() {
         gsap.to(creditsContentRef.value, { height: 0, duration: 0.4, ease: 'power2.in' })
     }
 }
-const logoRef = ref<{ $el: SVGElement } | null>(null)
+const logoRef = ref<HTMLElement | null>(null)
 const addressRef = ref<HTMLElement | null>(null)
 const bottomRef = ref<HTMLElement | null>(null)
 const route = useRoute()
@@ -56,11 +56,18 @@ onMounted(async () => {
     policyStore.fetchPolicies()
 
     if (logoRef.value) {
-        const el = logoRef.value.$el
-        gsap.set(el, { clipPath: 'inset(0 0 100% 0)' })
+        const el = logoRef.value
+        const svg = el.querySelector('svg')!
+        const h = svg.getBoundingClientRect().height
+        gsap.set(el, { clipPath: `inset(0 0 ${h}px 0)` })
         logoObserver = new IntersectionObserver(([entry]) => {
             if (entry?.isIntersecting) {
-                gsap.to(el, { clipPath: 'inset(0 0 0% 0)', duration: 2, delay: 0.5, ease: 'power3.out' })
+                gsap.to(el, {
+                    clipPath: 'inset(0 0 0px 0)',
+                    duration: 2,
+                    delay: 0.5,
+                    ease: 'power3.out',
+                })
                 logoObserver?.disconnect()
             }
         }, { threshold: 0.1 })
@@ -111,7 +118,9 @@ onUnmounted(() => {
 
 <template>
     <footer ref="footerRef">
-        <MainLogo v-if="logo" ref="logoRef" />
+        <div v-if="logo" ref="logoRef" class="logo">
+            <MainLogo />
+        </div>
         <address v-if="address" ref="addressRef">
             <p style="white-space: pre-line">{{ contactStore.contact?.Address }}</p>
             <p>{{ contactStore.contact?.Phone }}</p>
@@ -169,9 +178,21 @@ address {
 nav {
     display: flex;
     gap: 1rem;
+    a {
+        transition: opacity 0.4s ease;
+    }
+    & a:hover {
+        opacity: 0.65;
+    }
 }
-svg {
+.logo {
     margin-top: 16em;
+    height: 100%;
+    width: 100%;
+}
+
+svg {
+    display: block;
 }
 
 .bottom {
@@ -210,7 +231,7 @@ svg {
 }
 @media (max-width: 768px) {
     footer { gap: 8em; }
-    svg { margin-top: 8em; }
+    .logo { margin-top: 8em; }
     address { font-size: var(--text-sm); }
     .bottom { flex-direction: column; gap: 2em; align-items: start; }
     .credits { position: static; align-items: start; }

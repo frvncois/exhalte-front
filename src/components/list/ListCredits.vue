@@ -70,16 +70,21 @@ h5 {
 ul {
     display: flex;
     flex-wrap: wrap;
-    column-gap: 2em;
+    column-gap: 4em;
 }
 
 li {
-    display: flex;
-    align-items: center;
-    gap: 2em;
-    &:after {
-        content:'⬤';
-        font-size: var(--text-xs);
-    }
+  display: flex;
+  align-items: center;
+  gap: 2em;
+}
+
+li::after {
+  content: '⬤';
+  font-size: var(--text-xs);
+}
+
+li:last-child::after {
+  content: none;
 }
 </style>

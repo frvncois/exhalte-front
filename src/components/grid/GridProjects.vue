@@ -189,7 +189,11 @@ ul {
     column-gap: 2em;
     row-gap: 6em;
     flex: 1;
+    li {
+        cursor: pointer;
+    }
 }
+
 @media (max-width: 768px) {
     section {
         height: auto;
@@ -236,6 +240,11 @@ p {
     flex-direction: column;
     justify-content: space-between;
     flex: 1;
+    transition: opacity 0.4s ease;
+}
+
+li:hover .details {
+    opacity: 0.5;
 }
 
 .title {

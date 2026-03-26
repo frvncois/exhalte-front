@@ -18,6 +18,7 @@ onBeforeUnmount(() => unregisterLeave?.())
 function play() {
     if (!activeProject.value?.Video || !videoRef.value) return
     playing.value = true
+    videoRef.value.src = activeProject.value.Video
     gsap.to(playBtnRef.value, { opacity: 0, duration: 0.3, ease: 'power2.in' })
     gsap.to(videoRef.value, { opacity: 1, duration: 0.5, ease: 'power2.out', delay: 0.2 })
     videoRef.value.play()
@@ -67,7 +68,6 @@ onMounted(() => {
             <video
                 v-if="activeProject?.Video"
                 ref="videoRef"
-                :src="activeProject.Video"
                 playsinline
                 controls
             />

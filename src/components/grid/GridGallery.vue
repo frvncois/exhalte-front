@@ -1,8 +1,15 @@
 <script setup>
-import { ref, onMounted, onUnmounted, onBeforeUnmount } from 'vue'
+import { ref, watch, nextTick, onMounted, onUnmounted, onBeforeUnmount } from 'vue'
 import { gsap } from 'gsap'
 import lenis from '@/lib/lenis'
 import { registerPageLeave } from '@/transitions/projectTransition'
+
+const props = defineProps({
+    items: {
+        type: Array,
+        default: () => []
+    }
+})
 
 const sectionRef = ref(null)
 const observers = []
@@ -10,9 +17,15 @@ let unregisterLeave = null
 onBeforeUnmount(() => unregisterLeave?.())
 const PARALLAX_FACTORS = [0.08, -0.06, 0.1, -0.08, 0.06, -0.1, 0.07, -0.05, 0.09]
 
-onMounted(() => {
+let initialized = false
+
+watch(() => props.items, async (newItems) => {
+    if (!newItems.length || initialized) return
+    initialized = true
+    await nextTick()
+
     const lis = sectionRef.value?.querySelectorAll('li')
-    if (!lis) return
+    if (!lis?.length) return
 
     const onScroll = () => {
         lis.forEach((li, i) => {
@@ -31,14 +44,14 @@ onMounted(() => {
 
         const obs = new IntersectionObserver(([entry]) => {
             if (!entry?.isIntersecting) return
-            gsap.to(cover, { clipPath: 'inset(0 0 0% 0)', duration: 1, ease: 'power3.out' })
+            gsap.to(cover, { clipPath: 'inset(0 0 0% 0)', duration: 2, ease: 'power3.out' })
             obs.disconnect()
-        }, { threshold: 0.2 })
+        }, { threshold: 0.6 })
 
         obs.observe(li)
         observers.push(obs)
     })
-})
+}, { immediate: true })
 
 onUnmounted(() => observers.forEach(obs => obs.disconnect()))
 
@@ -50,24 +63,17 @@ onMounted(() => {
     })
 })
 
-const props = defineProps({
-    items: {
-        type: Array,
-        default: () => []
-    }
-})
-
 // Grid positions per 12-column × 12-row block [rowStart, colStart, rowEnd, colEnd]
 const POSITIONS = [
     [1,  1,  2,  4],
     [2,  4,  4,  8],
     [3,  9,  5,  13],
-    [5,  5,  7,  7],
+    [5,  4,  7,  7],
     [6,  9,  7,  12],
     [7,  2,  9,  4],
     [8,  7,  10, 12],
     [10, 4,  12, 7],
-    [11, 11, 13, 12],
+    [11, 9, 13, 12],
 ]
 
 const BLOCK_ROWS = 12
@@ -94,6 +100,7 @@ function totalRows(count) {
                 :style="getGridStyle(index)"
             >
                 <div class="cover">
+                    <span class="index">({{ String(index + 1).padStart(2, '0') }})</span>
                     <img
                         :src="item.formats?.large?.url ?? item.url"
                         :alt="item.alternativeText ?? ''"
@@ -132,10 +139,21 @@ li {
 }
 
 .cover {
-    background-color: black;
     flex: 1;
     height: 100%;
     overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+}
+
+.index {
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    pointer-events: none;
+    z-index: 1;
 }
 
 img {
