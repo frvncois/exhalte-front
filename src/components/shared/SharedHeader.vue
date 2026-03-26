@@ -163,6 +163,9 @@ button {
 @media (max-width: 900px) {
     header {
         padding: 4em 1em 0em 1em;
+        button {
+            display: inline;
+        }
     }
     section {
         position: relative;
@@ -177,9 +180,6 @@ button {
     }
     nav {
         display: none;
-    }
-    button {
-        display: inline;
     }
 }
 </style>
