@@ -30,12 +30,18 @@ export interface Directory {
 export interface ServiceItem {
   id: number
   Title: string
+  Details: string
 }
 
 export interface Service {
   id: number
   documentId: string
+  Title: string
   Intro: DetailsBlock[]
+  Tagline01: string
+  Tagline02: string
+  Tagline03: string
+  Tagline04: string
   Services: ServiceItem[]
 }
 

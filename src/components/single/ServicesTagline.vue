@@ -1,6 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import lenis from '@/lib/lenis'
+import { useServiceStore } from '@/stores/service'
+import { storeToRefs } from 'pinia'
+
+const { service } = storeToRefs(useServiceStore())
+const taglines = computed(() => [
+    service.value?.Tagline01 ?? '',
+    service.value?.Tagline02 ?? '',
+    service.value?.Tagline03 ?? '',
+    service.value?.Tagline04 ?? '',
+])
 
 const sectionRef = ref<HTMLElement | null>(null)
 
@@ -50,9 +60,7 @@ onMounted(() => {
                         <path id="cp1" d="M 10,50 a 40,40 0 1,1 80,0 40,40 0 1,1 -80,0" />
                     </defs>
                     <text :font-size="fontSizes[0]" fill="currentColor">
-                        <textPath href="#cp1" startOffset="0%">
-                            Lorem ipsum dolor sit amet
-                        </textPath>
+                        <textPath href="#cp1" startOffset="0%">{{ taglines[0] }}</textPath>
                     </text>
                 </svg>
 
@@ -61,9 +69,7 @@ onMounted(() => {
                         <path id="cp2" d="M 10,50 a 40,40 0 1,1 80,0 40,40 0 1,1 -80,0" />
                     </defs>
                     <text :font-size="fontSizes[1]" fill="currentColor">
-                        <textPath href="#cp2" startOffset="0%">
-                            Lorem ipsum dolor sit amet
-                        </textPath>
+                        <textPath href="#cp2" startOffset="0%">{{ taglines[1] }}</textPath>
                     </text>
                 </svg>
 
@@ -72,9 +78,7 @@ onMounted(() => {
                         <path id="cp3" d="M 10,50 a 40,40 0 1,1 80,0 40,40 0 1,1 -80,0" />
                     </defs>
                     <text :font-size="fontSizes[2]" fill="currentColor">
-                        <textPath href="#cp3" startOffset="0%">
-                            Aliquam ac orci nisl. Nulla eget convallis velit, id tincidunt massa. Aenean suscipit lacus orci
-                        </textPath>
+                        <textPath href="#cp3" startOffset="0%">{{ taglines[2] }}</textPath>
                     </text>
                 </svg>
 
@@ -83,9 +87,7 @@ onMounted(() => {
                         <path id="cp4" d="M 10,50 a 40,40 0 1,1 80,0 40,40 0 1,1 -80,0" />
                     </defs>
                     <text :font-size="fontSizes[3]" fill="currentColor">
-                        <textPath href="#cp4" startOffset="0%">
-                            Aliquam id consectetur turpis, non laoreet tellus
-                        </textPath>
+                        <textPath href="#cp4" startOffset="0%">{{ taglines[3] }}</textPath>
                     </text>
                 </svg>
             </div>

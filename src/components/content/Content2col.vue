@@ -30,11 +30,12 @@ onUnmounted(() => observer?.disconnect())
             <ul>
                 <li v-for="item in serviceStore.service?.Services" :key="item.id">
                     <h3>{{ item.Title }}</h3>
+                    <p>{{ item.Details }}</p>
                 </li>
             </ul>
         </div>
         <div>
-            <h2>(Who we are)</h2>
+            <h2>({{ serviceStore.service?.Title }})</h2>
             <p
                 v-for="(block, i) in serviceStore.service?.Intro"
                 :key="i"
@@ -52,6 +53,15 @@ section {
     }
     div:last-child {
         flex: 2;
+    }
+    ul {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+    }
+    li p {
+        font-size: var(--font-sm);
+        max-width: 45ch;
     }
 }
 @media (max-width: 768px) {

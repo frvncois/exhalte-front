@@ -100,7 +100,12 @@ Each block is a paragraph. Text is in `children[].text`.
 |-------|------|-------|
 | `id` | number | |
 | `documentId` | string | |
+| `Title` | string | Section heading, e.g. `"Who we are"` |
 | `Intro` | RichText[] | Introductory text — same rich text block format as `Details` |
+| `Tagline01` | string | e.g. `"Le mouvement est une pensée"` |
+| `Tagline02` | string | e.g. `"Movement is a thought"` |
+| `Tagline03` | string | e.g. `"Raconter le monde à travers les corps"` |
+| `Tagline04` | string | e.g. `"Telling the world through bodies"` |
 | `Services` | ServiceItem[] | List of service entries (see below) |
 | `locale` | string | e.g. `"en"` |
 
@@ -109,7 +114,8 @@ Each block is a paragraph. Text is in `children[].text`.
 | Field | Type | Notes |
 |-------|------|-------|
 | `id` | number | |
-| `Title` | string | Service name, e.g. `"Creative direction"`, `"Brand films"` |
+| `Title` | string | Service name, e.g. `"Studio Créatif"`, `"Production"` |
+| `Details` | string | Short description of the service |
 
 > Fetch endpoint: `GET /api/service?populate=*`
 
