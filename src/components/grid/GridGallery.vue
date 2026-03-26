@@ -28,7 +28,7 @@ watch(() => props.items, async (newItems) => {
 
     const onScroll = () => {
         lis.forEach((li, i) => {
-            const factor = PARALLAX_FACTORS[i % PARALLAX_FACTORS.length]
+            const factor = PARALLAX_FACTORS[i % PARALLAX_FACTORS.length]!
             const rect = li.getBoundingClientRect()
             const center = rect.top + rect.height / 2 - window.innerHeight / 2
             gsap.set(li, { y: center * factor })
@@ -63,7 +63,7 @@ onMounted(() => {
 })
 
 // Grid positions per 12-column × 12-row block [rowStart, colStart, rowEnd, colEnd]
-const POSITIONS = [
+const POSITIONS: [number, number, number, number][] = [
     [1,  1,  2,  4],
     [2,  4,  4,  8],
     [3,  9,  5,  13],
@@ -80,7 +80,7 @@ const BLOCK_ROWS = 12
 function getGridStyle(index: number) {
     const patternIndex = index % POSITIONS.length
     const cycle = Math.floor(index / POSITIONS.length)
-    const [rs, cs, re, ce] = POSITIONS[patternIndex]
+    const [rs, cs, re, ce] = POSITIONS[patternIndex]!
     const offset = cycle * BLOCK_ROWS
     return { gridArea: `${rs + offset} / ${cs} / ${re + offset} / ${ce}` }
 }

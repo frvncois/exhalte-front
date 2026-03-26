@@ -179,7 +179,7 @@ onMounted(async () => {
                         :alt="project.Title"
                     />
                 </div>
-                <div class="details" style="display:flex;flex-direction:column;justify-content:space-between;flex:1;">
+                <div class="details">
                     <span>{{ String(index + 1).padStart(2, '0') }}</span>
                     <div class="title">
                         <h2>{{ project.Title }}</h2>
@@ -206,26 +206,11 @@ ul {
     row-gap: 6em;
     flex: 1;
     li {
+        display: flex;
+        gap: 1rem;
+        position: relative;
         cursor: pointer;
     }
-}
-
-@media (max-width: 768px) {
-    section {
-        height: auto;
-        padding-top: 8em;
-        align-items: start;
-    }
-    ul {
-        grid-template-columns: 1fr;
-        row-gap: 3em;
-    }
-}
-
-li {
-    display: flex;
-    gap: 1rem;
-    position: relative;
 }
 
 h2, h3 {
@@ -238,17 +223,17 @@ p {
 }
 
 .cover {
-    background-color: black;
+    background-color: var(--black);
     aspect-ratio: 4/3;
     flex: 1;
-    overflow: hidden;
-}
-
-.cover img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+    overflow: hidden;
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
 }
 
 .details {
@@ -267,5 +252,36 @@ li:hover .details {
     display: flex;
     flex-direction: column;
     gap: 0.25em;
+}
+
+
+
+
+@media (max-width: 900px) {
+    section {
+        align-items: start;
+        padding: 1em;
+        margin-top: 16vh;
+        height: auto;
+    }
+    ul {
+       display: flex;
+       flex-direction: column;
+       li {
+            flex-direction: column-reverse;
+            align-items: flex-start;
+            gap: 0.5em;
+       }
+    }
+    .details {
+        flex-direction: row;
+        gap: 1em;
+        > span {
+            margin-top: 0.15em;
+        }
+    }
+    .cover {
+        aspect-ratio: 16/9;
+    }
 }
 </style>

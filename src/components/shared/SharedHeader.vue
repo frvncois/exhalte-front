@@ -77,6 +77,7 @@ onUnmounted(() => {
 
 <template>
     <header>
+        <button @click="toggleMenu">{{ menuOpen ? '( close )' : '( menu )' }}</button>
         <span ref="logoRef">
             <RouterLink to="/">
                 <MainIcon />
@@ -86,9 +87,7 @@ onUnmounted(() => {
             <RouterLink to="/" @click="closeMenu">Index</RouterLink>
             <RouterLink to="/services" @click="closeMenu">Services</RouterLink>
             <RouterLink to="/contact" @click="closeMenu">Contact</RouterLink>
-            <button @click.stop="onLocaleToggle">{{ localeStore.nextLabel }}</button>
         </nav>
-        <button class="menu-toggle" @click="toggleMenu">{{ menuOpen ? '( close )' : '( menu )' }}</button>
     </header>
     <section>
         <ul ref="taglineRef">
@@ -117,9 +116,10 @@ header {
     z-index: 20;
     padding: 2em;
     transition: color 0.4s ease;
+        span:hover svg {
+        transform: scaleX(1.1);
+    }
 }
-
-
 nav {
     display: flex;
     gap: 2em;
@@ -132,23 +132,21 @@ button {
     all: unset;
     cursor: pointer;
 }
-.menu-toggle {
-    display: none;
-}
-
 svg {
     height: 2.15em;
     transition: transform 0.4s ease;
     transform-origin: left center;
 }
-
-header span:hover svg {
-    transform: scaleX(1.1);
-}
 section {
     position: absolute;
     inset: 0 0 auto 0;
     z-index: 18;
+    ul {
+        display: flex;
+        margin-left: 15vw;
+        padding: 2em;
+        gap: 6em;
+    }
 }
 h1, h2, p {
     font-size: var(--text-small);
@@ -156,38 +154,30 @@ h1, h2, p {
     text-transform: uppercase;
     line-height: 1;
 }
-ul {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: 70ch;
-    margin-left: 15vw;
-    padding: 2em;
-    gap: 4em;
+button {
+    display: none;
 }
 
-@media (max-width: 768px) {
-    nav {
-        display: none;
-        position: fixed;
-        inset: 0;
-        z-index: 19;
-        background: var(--light);
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: flex-end;
-        padding: 2em;
-        gap: 0.5em;
-        a:last-child, button {
+@media (max-width: 900px) {
+    header {
+        padding: 4em 1em 0em 1em;
+    }
+    section {
+        position: relative;
+        ul {
+            display: flex;
+            flex-direction: column;
+            gap: 2em;
+            margin-top: 8em;
             margin-left: 0;
+            padding: 1em;
         }
     }
-    nav.open {
-        display: flex;
+    nav {
+        display: none;
     }
-    .menu-toggle {
-        display: block;
-        position: relative;
-        z-index: 21;
+    button {
+        display: inline;
     }
 }
 </style>
