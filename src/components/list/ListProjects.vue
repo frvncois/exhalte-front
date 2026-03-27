@@ -193,7 +193,7 @@ li:hover .details .title {
     transition: opacity 0.4s ease;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     ul {
         --visible: 1.25;
     }

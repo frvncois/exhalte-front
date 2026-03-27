@@ -253,6 +253,9 @@ defineExpose({ taglineEl: taglineWrapRef })
         flex-direction: column;
         gap: 4em;
         padding: 1em;
+        p {
+            font-size: var(--text-sm);
+        }
     }
 }
 </style>
