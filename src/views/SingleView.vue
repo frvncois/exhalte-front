@@ -69,7 +69,7 @@ const pressItems = computed(() =>
     .is-video {
         display: flex;
         flex-direction: column;
-        height: calc(100vh - 6em);
+        height: 100vh;
     }
 
     .is-video :deep(section:first-child) {

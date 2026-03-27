@@ -9,7 +9,6 @@ import { slugify, coverImage } from '@/api/strapi'
 
 const router = useRouter()
 const { type, activeProject, projects } = storeToRefs(useProjectStore())
-const projectStore = useProjectStore()
 
 const spanRef = ref<HTMLElement | null>(null)
 const titleRef = ref<HTMLElement | null>(null)
@@ -42,12 +41,22 @@ onMounted(() => {
         gsap.timeline({ onComplete: done }).to([...els, ...lis], { clipPath: 'inset(0 0 100% 0)', duration: 0.4, stagger: 0.04, ease: 'power2.in' })
     })
 
-    if (type.value === 'gallery' && ulRef.value) {
+    if (ulRef.value?.closest('section.is-gallery')) {
         const galleryLis = Array.from(ulRef.value.querySelectorAll('li')) as HTMLElement[]
         galleryLis.forEach(li => {
             const h3 = li.querySelector('h3') as HTMLElement | null
             const w = h3 ? h3.offsetWidth : 0
             li.style.setProperty('--h3-w', `-${w}px`)
+        })
+    } else if (ulRef.value) {
+        const nonGalleryLis = Array.from(ulRef.value.querySelectorAll('li')) as HTMLElement[]
+        nonGalleryLis.forEach(li => {
+            const h3 = li.querySelector('h3') as HTMLElement | null
+            const info = li.querySelector('.info') as HTMLElement | null
+            if (h3 && info) {
+                info.style.setProperty('--info-base-w', `${info.offsetWidth}px`)
+                info.style.setProperty('--h3-info-w', `${h3.offsetWidth}px`)
+            }
         })
     }
 
@@ -117,7 +126,7 @@ onMounted(() => {
                     <p v-if="activeProject?.Subtitle">{{ activeProject.Subtitle }}</p>
                 </div>
             </div>
-            <div class="slot">
+            <div v-if="type === 'gallery'" class="slot">
                 <slot />
             </div>
             <ul ref="ulRef" data-trans="ul">
@@ -133,7 +142,7 @@ onMounted(() => {
                                 :alt="project.Title"
                             />
                         </div>
-                        <div class="info">
+                        <div :class="['info', { 'info--expandable': type !== 'gallery' }]">
                             <span>{{ String(index).padStart(2, '0') }}</span>
                             <h3>{{ project.Title }}</h3>
                         </div>
@@ -200,20 +209,6 @@ section.is-gallery {
         }
     }
 }
-@media (max-width: 900px) {
-    section, section.is-gallery {
-        position: static;
-        flex-direction: column;
-        gap: 2em;
-    }
-    .details {
-        flex-direction: column;
-        gap: 1em;
-    }
-    ul {
-        flex-direction: column !important;
-    }
-}
 
 .details {
     display: flex;
@@ -254,11 +249,11 @@ h3 {
     transition: opacity 0.4s ease;
 }
 
-li {
+section.is-gallery li {
     transition: transform 0.4s ease;
 }
 
-li:hover {
+section.is-gallery li:hover {
     transform: translateX(var(--h3-w, 0px));
 }
 
@@ -293,5 +288,37 @@ p {
     gap: 0.25em;
     padding-bottom: 0.25em;
     position: relative;
+
+    &.info--expandable {
+        width: var(--info-base-w, max-content);
+        overflow: hidden;
+        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    li:hover &.info--expandable {
+        width: var(--h3-info-w, max-content);
+    }
+    & h3 {
+        position: absolute;
+        bottom: 0;
+    }
+}
+
+
+
+
+@media (max-width: 900px) {
+    section, section.is-gallery {
+        position: static;
+        flex-direction: column;
+        gap: 2em;
+    }
+    .details {
+        flex-direction: column;
+        gap: 1em;
+    }
+    ul {
+        flex-direction: column !important;
+    }
 }
 </style>

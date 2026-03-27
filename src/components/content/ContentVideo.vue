@@ -86,7 +86,7 @@ onMounted(() => {
 
 <style scoped>
 section {
-    margin: 0 2em;
+    margin: 5em 2em 0;
     height: 100%;
 }
 .cover {

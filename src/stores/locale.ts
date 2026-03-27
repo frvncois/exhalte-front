@@ -16,6 +16,7 @@ export const useLocaleStore = defineStore('locale', () => {
     const next: Locale = locale.value === 'en' ? 'fr' : 'en'
     console.log('[locale] toggling to:', next)
     localStorage.setItem('locale', next)
+    sessionStorage.setItem('skip-appload', '1')
     triggerReload()
   }
 

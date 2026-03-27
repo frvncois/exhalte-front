@@ -8,9 +8,11 @@ import { useServiceStore } from '@/stores/service'
 import { useContactStore } from '@/stores/contact'
 import { useSharedStore } from '@/stores/shared'
 import { usePolicyStore } from '@/stores/policyContent'
-import { registerReload, triggerPageLeave } from '@/transitions/projectTransition'
+import { registerReload, triggerPageLeave, triggerHeaderLeave } from '@/transitions/projectTransition'
 
-const viewReady = ref(document.body.classList.contains('app-loaded'))
+const skipAppLoad = sessionStorage.getItem('skip-appload') === '1'
+if (skipAppLoad) sessionStorage.removeItem('skip-appload')
+const viewReady = ref(skipAppLoad || document.body.classList.contains('app-loaded'))
 const reloadOverlayRef = ref<HTMLElement | null>(null)
 
 useProjectStore().fetchProjects()
@@ -21,7 +23,10 @@ usePolicyStore().fetchPolicies()
 
 onMounted(() => {
     registerReload(() => {
-        triggerPageLeave(() => {
+        Promise.all([
+            new Promise<void>(resolve => triggerHeaderLeave(resolve)),
+            new Promise<void>(resolve => triggerPageLeave(resolve)),
+        ]).then(() => {
             gsap.to(reloadOverlayRef.value, {
                 opacity: 1,
                 duration: 0.5,
@@ -34,7 +39,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <AppLoad @ready="viewReady = true" />
+    <AppLoad v-if="!skipAppLoad" @ready="viewReady = true" />
     <RouterView v-if="viewReady" :key="$route.fullPath" />
     <RouteTransition />
 </template>

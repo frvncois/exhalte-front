@@ -49,21 +49,21 @@ onMounted(() => {
 <template>
     <section>
         <div class="cover" ref="coverRef" data-trans="cover">
-            <template v-if="activeProject?.Slideshow?.[0]">
+            <template v-if="activeProject?.Cover">
                 <video
-                    v-if="activeProject.Slideshow[0].mime?.startsWith('video/')"
-                    :src="activeProject.Slideshow[0].url"
+                    v-if="activeProject.Cover.mime?.startsWith('video/')"
+                    :src="activeProject.Cover.url"
                     autoplay loop muted playsinline
                 />
                 <img
                     v-else
-                    :src="activeProject.Slideshow[0].formats?.large?.url ?? activeProject.Slideshow[0].url"
-                    :alt="activeProject.Slideshow[0].alternativeText ?? ''"
+                    :src="activeProject.Cover.formats?.large?.url ?? activeProject.Cover.url"
+                    :alt="activeProject.Cover.alternativeText ?? ''"
                 />
             </template>
         </div>
         <div
-            v-for="(item, i) in (activeProject?.Slideshow?.slice(1) ?? [])"
+            v-for="(item, i) in (activeProject?.Slideshow ?? [])"
             :key="item.id ?? i"
             class="cover"
             :ref="el => extrasRef[i] = el as HTMLElement"

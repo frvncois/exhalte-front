@@ -32,10 +32,10 @@ watch(() => props.open, (isOpen) => {
         const links = Array.from(linksRef.value?.children ?? [])
         const bottom = Array.from(bottomRef.value?.children ?? [])
         gsap.set(el, { display: 'flex', clipPath: 'inset(0 0 100% 0)' })
-        gsap.to(el, { clipPath: 'inset(0 0 0% 0)', duration: 0.6, ease: 'power3.out' })
+        gsap.to(el, { clipPath: 'inset(0 0 0% 0)', duration: 1, ease: 'power4.out' })
         gsap.fromTo([...links, ...bottom],
             { opacity: 0, y: 16 },
-            { opacity: 1, y: 0, duration: 0.5, stagger: 0.07, ease: 'power2.out', delay: 0.25 }
+            { opacity: 1, y: 0, duration: 1, stagger: 0.07, ease: 'power4.out', delay: 0.25 }
         )
     } else {
         clipOut(() => gsap.set(el, { display: 'none' }))
@@ -47,7 +47,7 @@ function clipOut(onComplete?: () => void) {
     if (!el) { onComplete?.(); return }
     gsap.to(el, {
         clipPath: 'inset(0 0 100% 0)',
-        duration: 0.5,
+        duration: 1,
         ease: 'power3.in',
         onComplete,
     })
@@ -65,7 +65,7 @@ function navigate(to: string) {
 
 <template>
     <Teleport to="body">
-        <nav ref="navRef" class="shared-nav">
+        <nav ref="navRef">
             <div class="top" ref="linksRef">
                 <a @click.prevent="navigate('/')">Index</a>
                 <a @click.prevent="navigate('/services')">Services</a>
@@ -81,8 +81,10 @@ function navigate(to: string) {
                 </div>
                 <div class="actions">
                     <button @click="localeStore.toggle()">{{ localeStore.nextLabel }}</button>
-                    <a :href="contactStore.contact?.Instagram ?? '#'" target="_blank">Instagram</a>
-                    <a :href="contactStore.contact?.Linkedin ?? '#'" target="_blank">LinkedIn</a>
+                    <div>
+                        <a :href="contactStore.contact?.Instagram ?? '#'" target="_blank">In</a>
+                        <a :href="contactStore.contact?.Linkedin ?? '#'" target="_blank">Lkn</a>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -90,7 +92,7 @@ function navigate(to: string) {
 </template>
 
 <style scoped>
-.shared-nav {
+nav {
     position: fixed;
     inset: 0;
     z-index: 19;
@@ -100,16 +102,16 @@ function navigate(to: string) {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 6em 2em 3em;
+    padding: 8em 1em 2em;
+    color: var(--white);
 }
 
 .top {
     display: flex;
     flex-direction: column;
-    gap: 0.25em;
+    gap: 1em;
     a {
-        font-family: 'heading';
-        font-size: clamp(2.5rem, 10vw, 6rem);
+        font-family: 'body';
         text-transform: uppercase;
         cursor: pointer;
         line-height: 1;
@@ -130,17 +132,18 @@ function navigate(to: string) {
 }
 
 .info {
-    font-size: var(--text-sm);
     text-transform: uppercase;
-    line-height: 1.5;
+    display: flex;
+    justify-content: space-between;
+    line-height: 1;
 }
 
 .actions {
     display: flex;
     gap: 1.5em;
     align-items: center;
-    font-size: var(--text-sm);
     text-transform: uppercase;
+    justify-content: space-between;
     button {
         all: unset;
         cursor: pointer;
@@ -150,6 +153,10 @@ function navigate(to: string) {
     a {
         transition: opacity 0.2s ease;
         &:hover { opacity: 0.5; }
+    }
+    div {
+        display: flex;
+        gap: 2em;
     }
 }
 </style>
