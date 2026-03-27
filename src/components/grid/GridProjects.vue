@@ -211,6 +211,7 @@ ul {
 
 h2, h3 {
     font-size: var(--text-regular);
+    white-space: nowrap;
 }
 
 p {
