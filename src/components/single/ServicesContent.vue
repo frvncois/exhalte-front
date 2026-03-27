@@ -11,7 +11,6 @@ const wrapRef = ref<HTMLElement | null>(null)
 const sectionRef = ref<HTMLElement | null>(null)
 const svgEl = ref<SVGElement | null>(null)
 const taglineWrapRef = ref<HTMLElement | null>(null)
-const taglineSectionRef = ref<HTMLElement | null>(null)
 const serviceStore = useServiceStore()
 let observer: IntersectionObserver | null = null
 let unregisterLeave: (() => void) | null = null
@@ -46,6 +45,10 @@ onMounted(async () => {
     svgEl.value = svg
     const col = sectionRef.value?.querySelector('.col') as HTMLElement | null
 
+    const colHeight = col?.offsetHeight ?? 0
+    const heroHeight = window.innerHeight - colHeight
+    if (wrapRef.value) wrapRef.value.style.height = `${heroHeight}px`
+
     gsap.set(svg, { opacity: 0 })
     gsap.from(wrapRef.value, { opacity: 0, x: 40, duration: 1, delay: 0.5, ease: 'power3.out' })
     gsap.to(svg, { opacity: 1, duration: 0.6, ease: 'power2.out', delay: 0.65 })
@@ -64,21 +67,18 @@ onMounted(async () => {
         gsap.to(wrapRef.value, { opacity: 0, x: 40, duration: 0.5, ease: 'power3.in', onComplete: done })
     })
 
-    const naturalHeight = sectionRef.value!.offsetHeight
-    const contentScrollRange = naturalHeight
-
     const onContentScroll = ({ scroll }: { scroll: number }) => {
-        if (!sectionRef.value || !svg) return
-        const progress = Math.min(Math.max(scroll / contentScrollRange, 0), 1)
-        sectionRef.value.style.height = `${naturalHeight * (1 - progress)}px`
-        svg.style.transform = `scale(${1 - progress * 0.8})`
+        if (!wrapRef.value || !col) return
+        const progress = Math.min(Math.max(scroll / colHeight, 0), 1)
+        col.style.transform = `translateY(${progress * 100}%)`
+        col.style.opacity = `${1 - progress}`
+        wrapRef.value.style.height = `${heroHeight + progress * colHeight}px`
     }
 
     const onTaglineScroll = () => {
-        if (!taglineSectionRef.value) return
-        const parent = taglineSectionRef.value.parentElement!
-        const { top } = parent.getBoundingClientRect()
-        const scrollRange = parent.offsetHeight - window.innerHeight
+        if (!taglineWrapRef.value) return
+        const { top } = taglineWrapRef.value.getBoundingClientRect()
+        const scrollRange = taglineWrapRef.value.offsetHeight - window.innerHeight
         if (scrollRange <= 0) return
         const p = Math.min(Math.max(-top / scrollRange, 0), 1)
 
@@ -106,8 +106,8 @@ defineExpose({ taglineEl: taglineWrapRef })
 </script>
 
 <template>
-    <section>
-        <div class="hero">
+    <section ref="sectionRef">
+        <div ref="wrapRef" class="hero">
             <MainPath />
         </div>
         <div class="col">
@@ -219,31 +219,23 @@ defineExpose({ taglineEl: taglineWrapRef })
 
 
 .hero {
-    flex: 1;
-    min-height: 0;
+    position: sticky;
+    top: 0;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .tagline {
-    height: 100vh;
+    height: 400vh;
     position: relative;
-}
-
-.tagline section {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .items {
-    position: relative;
+    position: sticky;
+    top: 0;
     height: 100vh;
-    top: -2.5em;
     width: 100%;
     display: flex;
     align-items: center;

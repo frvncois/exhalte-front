@@ -84,9 +84,12 @@ const pressItems = computed(() =>
         display: flex;
         flex-direction: row;
     }
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
         .is-gallery {
             flex-direction: column;
+        }
+        .is-video {
+            flex-direction: column-reverse;
         }
     }
 </style>

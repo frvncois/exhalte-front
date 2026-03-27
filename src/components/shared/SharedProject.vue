@@ -220,7 +220,6 @@ section.is-gallery {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 0.25em;
 }
 
 ul {
@@ -312,13 +311,17 @@ p {
         position: static;
         flex-direction: column;
         gap: 2em;
+        padding: 8em 1em 2em;
     }
     .details {
-        flex-direction: column;
+        flex-direction: column-reverse;
+        gap: 6em;
+    }
+    .left {
+        display: flex;
+        flex-direction: row;   
         gap: 1em;
     }
-    ul {
-        flex-direction: column !important;
-    }
+
 }
 </style>
