@@ -52,22 +52,22 @@ import { registerPageLeave } from '@/transitions/projectTransition'
 
     onMounted(async () => {
         if (logoRef.value) {
-            const el = logoRef.value
-            const svg = el.querySelector('svg')!
-            const h = svg.getBoundingClientRect().height
-            gsap.set(el, { clipPath: `inset(0 0 ${h}px 0)` })
-            logoObserver = new IntersectionObserver(([entry]) => {
-                if (entry?.isIntersecting) {
-                    gsap.to(el, {
-                        clipPath: 'inset(0 0 0px 0)',
-                        duration: 2,
-                        delay: 0.5,
-                        ease: 'power3.out',
-                    })
-                    logoObserver?.disconnect()
-                }
-            }, { threshold: 0.1 })
-            logoObserver.observe(el)
+            const svg = logoRef.value.querySelector('svg') as SVGElement | null
+            if (svg) {
+                gsap.set(svg, { clipPath: 'inset(0 0 100% 0)' })
+                logoObserver = new IntersectionObserver(([entry]) => {
+                    if (entry?.isIntersecting) {
+                        gsap.to(svg, {
+                            clipPath: 'inset(0 0 0% 0)',
+                            duration: 2,
+                            delay: 0.5,
+                            ease: 'power3.out',
+                        })
+                        logoObserver?.disconnect()
+                    }
+                }, { threshold: 0.1 })
+                logoObserver.observe(logoRef.value)
+            }
         }
 
         const fadeEls = [addressRef.value, bottomRef.value].filter(Boolean) as HTMLElement[]

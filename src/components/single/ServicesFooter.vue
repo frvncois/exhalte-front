@@ -5,6 +5,7 @@ import MainLogo from '@/assets/MainLogo.vue';
 
 <template>
     <section>
+        <RouterLink to="/contact">( Contact us )</RouterLink>
         <MainLogo/>
     </section>
 </template>
@@ -12,6 +13,10 @@ import MainLogo from '@/assets/MainLogo.vue';
 
 <style scoped>
 section {
-    padding: 3em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8em;
+    padding: 2em;
 }
 </style>

@@ -64,7 +64,7 @@ h4, h5 {
 }
 
 h5 {
-    color: var(--medium);
+    color: var(--gray);
 }
 
 ul {

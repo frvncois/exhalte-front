@@ -5,17 +5,33 @@ import { gsap } from 'gsap'
 import { captureRevClones } from '@/transitions/projectTransition'
 
 const router = useRouter()
+const sectionRef = ref<HTMLElement | null>(null)
 const buttonRef = ref<HTMLElement | null>(null)
 
 onMounted(() => {
-    gsap.from(buttonRef.value, { opacity: 0, duration: 0.5, ease: 'power2.out' })
+    gsap.from(sectionRef.value, { y: '-100%', duration: 0.8, ease: 'power3.out' })
+    gsap.from(buttonRef.value, { opacity: 0, duration: 0.4, ease: 'power2.out', delay: 0.35 })
 })
 
 function handleRetour() {
     const playBtn = document.querySelector('[data-trans="cover"] .play-btn') as HTMLElement | null
-    const coverImg = document.querySelector('[data-trans="cover"] img') as HTMLElement | null
+    const coverEl = document.querySelector('[data-trans="cover"]') as HTMLElement | null
+    const coverImg = coverEl?.querySelector('img') as HTMLImageElement | null
+    const coverVideo = coverEl?.querySelector('video') as HTMLVideoElement | null
     if (playBtn) gsap.set(playBtn, { opacity: 0 })
     if (coverImg) gsap.set(coverImg, { opacity: 1 })
+
+    // Force the cover media to fill its container before cloning, so the reverse
+    // transition clone scales cleanly (same as the grid item's fill behaviour).
+    // The original is immediately hidden behind the clone, so no visual change is seen.
+    if (coverEl) {
+        const media = coverImg ?? coverVideo
+        if (media) {
+            const h = coverEl.getBoundingClientRect().height
+            coverEl.style.height = `${h}px`
+            Object.assign(media.style, { width: '100%', height: '100%', objectFit: 'cover' })
+        }
+    }
 
     const cover = document.querySelector('[data-trans="cover"]')
     const span = document.querySelector('[data-trans="span"]')
@@ -31,17 +47,18 @@ function handleRetour() {
         captureRevClones([cover, span, title, ...ulElements])
     }
 
-    gsap.to(buttonRef.value, {
-        opacity: 0,
-        duration: 0.4,
-        ease: 'power2.in',
+    gsap.to(buttonRef.value, { opacity: 0, duration: 0.2, ease: 'power2.in' })
+    gsap.to(sectionRef.value, {
+        y: '-100%',
+        duration: 0.5,
+        ease: 'power3.in',
         onComplete: () => { router.push('/') },
     })
 }
 </script>
 
 <template>
-    <section>
+    <section ref="sectionRef">
         <button ref="buttonRef" @click="handleRetour">[x] retour</button>
     </section>
 </template>

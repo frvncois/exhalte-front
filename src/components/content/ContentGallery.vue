@@ -1,53 +1,108 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { gsap } from 'gsap'
-import { getFwdClones } from '@/transitions/projectTransition'
+import { getFwdClones, registerPageLeave } from '@/transitions/projectTransition'
 import { useProjectStore } from '@/stores/project'
 import { storeToRefs } from 'pinia'
 
 const { activeProject } = storeToRefs(useProjectStore())
 
+const sectionRef = ref<HTMLElement | null>(null)
 const coverRef = ref<HTMLElement | null>(null)
 const extrasRef = ref<HTMLElement[]>([])
+const observers: { disconnect: () => void }[] = []
+let unregisterLeave: (() => void) | null = null
+
+onBeforeUnmount(() => {
+    unregisterLeave?.()
+    observers.forEach(obs => obs.disconnect())
+})
+
+let coverDone = false
+const pendingAnimations: (() => void)[] = []
+
+function onCoverDone() {
+    coverDone = true
+    pendingAnimations.forEach(fn => fn())
+    pendingAnimations.length = 0
+}
+
+// waitForCover: hide immediately, but hold the reveal until onCoverDone fires
+function observeCover(cover: HTMLElement, duration = 2, onComplete?: () => void, waitForCover = false) {
+    gsap.set(cover, { clipPath: 'inset(0 0 100% 0)' })
+    const obs = new IntersectionObserver(([entry]) => {
+        if (!entry?.isIntersecting) return
+        obs.disconnect()
+        const animate = () => gsap.to(cover, { clipPath: 'inset(0 0 0% 0)', duration, ease: 'power3.out', onComplete })
+        if (!waitForCover || coverDone) {
+            animate()
+        } else {
+            pendingAnimations.push(animate)
+        }
+    }, { threshold: 0.75 })
+    obs.observe(cover)
+    observers.push(obs)
+}
+
+// Observe extras as soon as data is available — hides them before any paint,
+// but holds the reveal until the cover animation completes
+let extrasObserved = false
+watch(activeProject, async (val) => {
+    if (!val || extrasObserved) return
+    extrasObserved = true
+    await nextTick()
+    extrasRef.value.forEach(cover => observeCover(cover, 2, undefined, true))
+}, { immediate: true })
 
 onMounted(() => {
-    gsap.from(extrasRef.value, {
-        opacity: 0,
-        duration: 0.7,
-        ease: 'power2.out',
-        stagger: 0.1,
-        delay: 0.5,
+    unregisterLeave = registerPageLeave((done) => {
+        const covers = sectionRef.value?.querySelectorAll('.cover')
+        if (!covers?.length) { done(); return }
+        gsap.timeline({ onComplete: done })
+            .to(covers, { clipPath: 'inset(100% 0 0% 0)', duration: 0.4, stagger: 0.04, ease: 'power2.in' })
     })
 
     const clone = getFwdClones()[0]
 
     if (!clone) {
-        gsap.from(coverRef.value, { clipPath: 'inset(0 0 100% 0)', duration: 1.2, ease: 'power3.out' })
+        if (coverRef.value) observeCover(coverRef.value, 1.2, onCoverDone, false)
         return
     }
 
     if (!coverRef.value) return
 
-    const dest = coverRef.value.getBoundingClientRect()
-
     gsap.set(coverRef.value, { opacity: 0 })
-    gsap.to(clone, {
-        x: dest.left - parseFloat(clone.style.left),
-        y: dest.top - parseFloat(clone.style.top),
-        width: dest.width,
-        height: dest.height,
-        duration: 1.4,
-        ease: 'power3.inOut',
-        onComplete: () => {
-            clone.remove()
-            gsap.set(coverRef.value!, { opacity: 1 })
-        },
-    })
+
+    const runAnimation = () => {
+        if (!coverRef.value) return
+        const dest = coverRef.value.getBoundingClientRect()
+        gsap.to(clone, {
+            x: dest.left - parseFloat(clone.style.left),
+            y: dest.top - parseFloat(clone.style.top),
+            width: dest.width,
+            height: dest.height,
+            duration: 1.4,
+            ease: 'power3.inOut',
+            onComplete: () => {
+                clone.remove()
+                gsap.set(coverRef.value!, { opacity: 1 })
+                onCoverDone()
+            },
+        })
+    }
+
+    const img = coverRef.value.querySelector('img') as HTMLImageElement | null
+    if (img && !img.complete) {
+        img.addEventListener('load', runAnimation, { once: true })
+        img.addEventListener('error', runAnimation, { once: true })
+    } else {
+        requestAnimationFrame(runAnimation)
+    }
 })
 </script>
 
 <template>
-    <section>
+    <section ref="sectionRef">
         <div class="cover" ref="coverRef" data-trans="cover">
             <template v-if="activeProject?.Cover">
                 <video
@@ -80,7 +135,7 @@ onMounted(() => {
 
 <style scoped>
 section {
-    margin: 5em 2em;
+    margin: 6.25em 2em;
     display: flex;
     flex-direction: column;
     align-items: center;

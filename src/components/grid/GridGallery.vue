@@ -45,7 +45,7 @@ watch(() => props.items, async (newItems) => {
             if (!entry?.isIntersecting) return
             gsap.to(cover, { clipPath: 'inset(0 0 0% 0)', duration: 2, ease: 'power3.out' })
             obs.disconnect()
-        }, { threshold: 0.6 })
+        }, { threshold: 0.75 })
 
         obs.observe(li)
         observers.push(obs)
@@ -58,7 +58,7 @@ onMounted(() => {
     unregisterLeave = registerPageLeave((done) => {
         const covers = sectionRef.value?.querySelectorAll('.cover')
         if (!covers?.length) { done(); return }
-        gsap.timeline({ onComplete: done }).to(covers, { clipPath: 'inset(0 0 100% 0)', duration: 0.4, stagger: 0.02, ease: 'power2.in' })
+        gsap.timeline({ onComplete: done }).to(covers, { clipPath: 'inset(100% 0 0% 0)', duration: 0.4, stagger: 0.02, ease: 'power2.in' })
     })
 })
 
@@ -191,17 +191,14 @@ img {
     display: block;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 900px) {
     ul {
-        display: grid;
         grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: none !important;
         gap: 1rem;
     }
 
     li {
         grid-area: auto !important;
-        min-height: 200px;
     }
 }
 </style>
