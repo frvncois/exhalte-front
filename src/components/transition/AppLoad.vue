@@ -2,6 +2,8 @@
 import { ref, onMounted, nextTick } from 'vue'
 import { gsap } from 'gsap'
 import MainLogo from '@/assets/MainLogo.vue'
+import MainIcon from '@/assets/MainIcon.vue'
+import SharedHeader from '../shared/SharedHeader.vue'
 
 const emit = defineEmits(['ready'])
 
@@ -54,12 +56,10 @@ onMounted(async () => {
         duration: 6,
         ease: 'power2.in'
     }, '<')
-    const logoSvg = splashRef.value!.querySelector('svg')
-    const pEl = splashRef.value!.querySelector('p')
-    tl.to(sectionRef.value, { backgroundColor: 'var(--pink)', color: 'var(--medium)', duration: 0.8, ease: 'power2.inOut' })
+    const logoSvg = splashRef.value!.querySelector(':scope > svg')
+    tl.to(sectionRef.value, { backgroundColor: 'var(--medium)', color: 'var(--pink)', duration: 0.8, ease: 'power2.inOut' })
     tl.to(splashRef.value, { opacity: 1, duration: 0.8, ease: 'power2.out' }, '<')
     tl.fromTo(logoSvg, { clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)', duration: 1, ease: 'power3.out' }, '<')
-    tl.from(pEl, { opacity: 0, y: 10, duration: 0.8, ease: 'power2.out' }, '-=0.6')
 
     const exit = () => {
         sectionRef.value?.removeEventListener('click', exit)
@@ -90,10 +90,8 @@ onMounted(async () => {
             </svg>
         </div>
         <div class="splash" ref="splashRef">
+            <SharedHeader/>
             <MainLogo/>
-            <div>
-                <p>Bienvenue<br>Welcome</p>
-            </div>
         </div>
     </section>
 </template>
@@ -133,13 +131,13 @@ onMounted(async () => {
     .splash {
         position: fixed;
         inset: 0;
-        padding: 4em;
+        padding: 2em;
         opacity: 0;
         display: flex;
-        align-items: flex-start;
         flex-direction: column;
         align-items: center;
-        justify-content: space-between;
+        justify-content: end;
+
         > div {
             flex: 1;
             display: flex;
@@ -151,4 +149,8 @@ onMounted(async () => {
             }
         }
     }
+    .splash :deep(section) {
+      position: absolute;
+      top: 0;                          
+  }   
 </style>

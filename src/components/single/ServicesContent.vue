@@ -194,7 +194,7 @@ defineExpose({ taglineEl: taglineWrapRef })
 }
 
 .hero svg {
-    width: 100%;
+    width: 90%;
     height: 100%;
     display: block;
     color: currentColor;

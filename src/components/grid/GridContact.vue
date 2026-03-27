@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { storeToRefs } from 'pinia'
 import { gsap } from 'gsap'
 import { useContactStore } from '@/stores/contact'
+import { useLocaleStore } from '@/stores/locale'
 import { registerPageLeave } from '@/transitions/projectTransition'
 
 const ulRef = ref<HTMLElement | null>(null)
 const circlesRef = ref<HTMLElement | null>(null)
 const contactStore = useContactStore()
+const { locale } = storeToRefs(useLocaleStore())
 let tl: gsap.core.Timeline | null = null
 let unregisterLeave: (() => void) | null = null
 onBeforeUnmount(() => unregisterLeave?.())
@@ -63,7 +66,7 @@ onMounted(async () => {
     <section>
         <ul ref="ulRef">
             <li>
-                <h2>Address</h2>
+                <h2>{{ locale === 'fr' ? 'Addresse' : 'Address' }}</h2>
                 <template v-for="line in (contactStore.contact?.Address ?? '').split('\n')" :key="line">
                     <p>{{ line }}</p>
                 </template>

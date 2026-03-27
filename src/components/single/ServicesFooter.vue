@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { gsap } from 'gsap'
+import { storeToRefs } from 'pinia'
+import { useLocaleStore } from '@/stores/locale'
 import MainLogo from '@/assets/MainLogo.vue'
+
+const { locale } = storeToRefs(useLocaleStore())
 
 const parenLeftRef = ref<HTMLElement | null>(null)
 const parenRightRef = ref<HTMLElement | null>(null)
@@ -24,7 +28,7 @@ function onLeave() {
 <template>
     <section>
         <RouterLink to="/contact" @mouseenter="onEnter" @mouseleave="onLeave">
-            <span ref="parenLeftRef">(</span>( Contact us )<span ref="parenRightRef">)</span>
+            <span ref="parenLeftRef">(</span>( {{ locale === 'fr' ? 'Contactez-nous' : 'Contact us' }} )<span ref="parenRightRef">)</span>
         </RouterLink>
         <MainLogo />
     </section>
