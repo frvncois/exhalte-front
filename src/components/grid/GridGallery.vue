@@ -34,8 +34,10 @@ watch(() => props.items, async (newItems) => {
             gsap.set(li, { y: center * factor })
         })
     }
-    lenis.on('scroll', onScroll)
-    observers.push({ disconnect: () => lenis.off('scroll', onScroll) })
+    if (window.innerWidth > 900) {
+        lenis.on('scroll', onScroll)
+        observers.push({ disconnect: () => lenis.off('scroll', onScroll) })
+    }
 
     lis.forEach(li => {
         const cover = li.querySelector('.cover')
@@ -121,7 +123,6 @@ function getAltStyle(index: number) {
                         :src="item.formats?.large?.url ?? item.url"
                         :alt="item.alternativeText ?? ''"
                     />
-                    <span v-if="item.alternativeText" class="alt" :style="getAltStyle(index)">{{ item.alternativeText }}</span>
                 </div>
             </li>
         </ul>

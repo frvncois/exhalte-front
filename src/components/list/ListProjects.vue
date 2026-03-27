@@ -50,8 +50,11 @@ onMounted(() => {
 
     unregisterLeave = registerPageLeave((done) => {
         const covers = track.value?.querySelectorAll('.cover')
+        const details = track.value?.querySelectorAll('.details')
         if (!covers?.length) { done(); return }
-        gsap.timeline({ onComplete: done }).to(covers, { clipPath: 'inset(0 100% 0 0)', duration: 0.4, stagger: 0.05, ease: 'power2.in' })
+        const tl = gsap.timeline({ onComplete: done })
+        tl.to(covers, { clipPath: 'inset(0 100% 0 0)', duration: 0.4, stagger: 0.05, ease: 'power2.in' }, 0)
+        if (details?.length) tl.to(details, { opacity: 0, duration: 0.3, ease: 'power2.in' }, 0)
     })
 })
 

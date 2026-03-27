@@ -47,7 +47,9 @@ function stripTheme() {
 }
 
 router.beforeEach(async (to, from) => {
-    setProjectToProject(from.path.startsWith('/projects/') && to.path.startsWith('/projects/'))
+    const isP2P = from.path.startsWith('/projects/') && to.path.startsWith('/projects/')
+    setProjectToProject(isP2P)
+    if (isP2P) clearFwdClones()
     if (to.path === '/' && !from.path.startsWith('/projects/')) clearRevClones()
     if (!to.path.startsWith('/projects/')) clearFwdClones()
 
@@ -80,7 +82,7 @@ router.beforeEach(async (to, from) => {
 
 router.afterEach((to) => {
     triggerRouteTransitionOut()
-    lenis.start()
+    if (!getFwdClones().length && !getRevClones().length) lenis.start()
     window.scrollTo(0, 0)
     document.body.style.color = ''
     const theme = themes[to.path.startsWith('/projects/') ? '/projects/:slug' : to.path]

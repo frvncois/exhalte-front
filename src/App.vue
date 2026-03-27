@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { gsap } from 'gsap'
 import AppLoad from '@/components/transition/AppLoad.vue'
 import RouteTransition from '@/components/transition/RouteTransition.vue'
+import ShareClose from '@/components/shared/ShareClose.vue'
 import { useProjectStore } from '@/stores/project'
 import { useServiceStore } from '@/stores/service'
 import { useContactStore } from '@/stores/contact'
@@ -40,6 +41,7 @@ onMounted(() => {
 
 <template>
     <AppLoad v-if="!skipAppLoad" @ready="viewReady = true" />
+    <ShareClose v-if="viewReady && $route.name === 'single'" />
     <RouterView v-if="viewReady" :key="$route.fullPath" />
     <RouteTransition />
 </template>

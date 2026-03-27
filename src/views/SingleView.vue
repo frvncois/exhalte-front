@@ -6,12 +6,10 @@ import GridGallery from '@/components/grid/GridGallery.vue';
 import ListCredits from '@/components/list/ListCredits.vue';
 import ListProjects from '@/components/list/ListProjects.vue';
 import SharedProject from '@/components/shared/SharedProject.vue';
-import ShareClose from '@/components/shared/ShareClose.vue';
 import { useProjectStore } from '@/stores/project';
 import { storeToRefs } from 'pinia';
 import { useRoute } from 'vue-router';
 import { watch, onMounted, computed } from 'vue';
-import lenis from '@/lib/lenis';
 
 const route = useRoute()
 const projectStore = useProjectStore()
@@ -22,7 +20,7 @@ async function syncProject() {
     projectStore.setActiveSlug(route.params.slug as string)
 }
 
-onMounted(() => { lenis.start(); syncProject() })
+onMounted(() => { syncProject() })
 watch(() => route.params.slug, syncProject)
 
 const creditItems = computed(() =>
@@ -49,7 +47,6 @@ const pressItems = computed(() =>
 </script>
 
 <template>
-    <ShareClose />
     <div :class="type === 'gallery' ? 'is-gallery' : 'is-video'">
         <ContentVideo v-if="type !== 'gallery'" />
         <SharedProject>

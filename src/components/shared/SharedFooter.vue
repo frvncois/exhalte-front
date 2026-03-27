@@ -234,6 +234,12 @@ import { registerPageLeave } from '@/transitions/projectTransition'
             align-items: center;
             justify-content: center;
             text-align: center;
+            gap: 2em;
+            nav {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0;
+            }
         }
         .credits {
             position: relative;
@@ -241,6 +247,10 @@ import { registerPageLeave } from '@/transitions/projectTransition'
             left: auto;
             bottom: auto;
             align-items: center;
+            div {
+                align-items: center;
+            }
         }
+
     }
 </style>

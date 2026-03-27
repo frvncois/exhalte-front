@@ -2,6 +2,9 @@
 import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { gsap } from 'gsap'
 import { getFwdClones, registerPageLeave } from '@/transitions/projectTransition'
+import lenis from '@/lib/lenis'
+
+const hasFwdClone = !!getFwdClones()[0]
 import { useProjectStore } from '@/stores/project'
 import { storeToRefs } from 'pinia'
 
@@ -87,6 +90,7 @@ onMounted(() => {
                 clone.remove()
                 gsap.set(coverRef.value!, { opacity: 1 })
                 onCoverDone()
+                lenis.start()
             },
         })
     }
@@ -103,7 +107,7 @@ onMounted(() => {
 
 <template>
     <section ref="sectionRef">
-        <div class="cover" ref="coverRef" data-trans="cover">
+        <div class="cover" ref="coverRef" :style="hasFwdClone ? { opacity: 0 } : {}" data-trans="cover">
             <template v-if="activeProject?.Cover">
                 <video
                     v-if="activeProject.Cover.mime?.startsWith('video/')"

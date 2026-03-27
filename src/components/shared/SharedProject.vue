@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed, watch, nextTick } from 'vue'
 import { gsap } from 'gsap'
 import { useRouter } from 'vue-router'
 import { getFwdClones, getRevClones, registerPageLeave, consumeProjectToProject } from '@/transitions/projectTransition'
@@ -16,6 +16,24 @@ const ulRef = ref<HTMLElement | null>(null)
 
 let unregisterLeave: (() => void) | null = null
 onBeforeUnmount(() => unregisterLeave?.())
+
+// Project-to-project navigation: skip initial load (oldVal is null), animate on change
+watch(activeProject, async (newVal, oldVal) => {
+    if (!newVal || !oldVal) return
+    await nextTick()
+
+    const lis = ulRef.value ? Array.from(ulRef.value.querySelectorAll('li')) : []
+    const covers = lis.map(li => li.querySelector('.cover')).filter(Boolean) as HTMLElement[]
+    const infos = lis.map(li => li.querySelector('.info')).filter(Boolean) as HTMLElement[]
+    const textEls = [spanRef.value, titleRef.value, ...infos].filter(Boolean) as HTMLElement[]
+
+    // Clear clip-path left on li elements by the leave animation
+    gsap.set(lis, { clipPath: 'none' })
+    gsap.set([spanRef.value, titleRef.value], { clipPath: 'none' })
+
+    gsap.from(covers, { clipPath: 'inset(0 0 100% 0)', duration: 0.9, ease: 'power3.out', stagger: 0.08 })
+    gsap.from(textEls, { opacity: 0, duration: 0.6, ease: 'power2.out', stagger: 0.05 })
+})
 
 const activeIndex = computed(() =>
     projects.value.findIndex(p => p.documentId === activeProject.value?.documentId)
@@ -222,6 +240,12 @@ section.is-gallery {
     justify-content: center;
 }
 
+.left {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
 ul {
     flex: 1 0 50%;
     display: flex;
@@ -319,9 +343,23 @@ p {
     }
     .left {
         display: flex;
-        flex-direction: row;   
+        flex-direction: row;
         gap: 1em;
     }
-
+    ul {
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+        justify-content: start;
+        scrollbar-width: none;
+        padding-bottom: 0.5em;
+        &::-webkit-scrollbar { display: none; }
+    }
+    li {
+        scroll-snap-align: start;
+        flex: 0 0 auto;
+        width: 60vw;
+    }
 }
 </style>

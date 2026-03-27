@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { gsap } from 'gsap'
 import { captureRevClones } from '@/transitions/projectTransition'
+import lenis from '@/lib/lenis'
 
 const router = useRouter()
 const sectionRef = ref<HTMLElement | null>(null)
@@ -14,6 +15,7 @@ onMounted(() => {
 })
 
 function handleRetour() {
+    lenis.stop()
     const playBtn = document.querySelector('[data-trans="cover"] .play-btn') as HTMLElement | null
     const coverEl = document.querySelector('[data-trans="cover"]') as HTMLElement | null
     const coverImg = coverEl?.querySelector('img') as HTMLImageElement | null

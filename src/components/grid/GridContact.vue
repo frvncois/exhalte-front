@@ -36,6 +36,7 @@ async function animate() {
     })
 
     gsap.set(lis, { clipPath: 'inset(0 100% 0 0)' })
+    gsap.to(lis, { clipPath: 'inset(0 0% 0 0)', duration: 0.75, ease: 'power3.out', stagger: 0.06, delay: 0.2 })
 
     const rows = circlesRef.value?.querySelectorAll('div')
     if (!rows) return
@@ -54,7 +55,6 @@ async function animate() {
     tl.to(leftSpans, { opacity: 1, x: 0, duration: 1, stagger: 0.06, ease: 'power3.out' }, '-=0.3')
     tl.to(rightSpans, { opacity: 1, x: 0, duration: 1, stagger: 0.06, ease: 'power3.out' }, '<')
     tl.to(allSpans, { backgroundColor: 'transparent', duration: 1, ease: 'power2.out' }, '-=0.3')
-    tl.to(lis, { clipPath: 'inset(0 0% 0 0)', duration: 0.75, ease: 'power3.out', stagger: 0.06 }, '-=0.5')
 }
 
 onMounted(async () => {

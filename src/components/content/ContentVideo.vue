@@ -2,6 +2,9 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { gsap } from 'gsap'
 import { getFwdClones, getRevClones, registerPageLeave } from '@/transitions/projectTransition'
+import lenis from '@/lib/lenis'
+
+const hasFwdClone = !!getFwdClones()[0]
 import { useProjectStore } from '@/stores/project'
 import { storeToRefs } from 'pinia'
 import { coverImage } from '@/api/strapi'
@@ -36,7 +39,6 @@ onMounted(() => {
     } else {
         if (!coverRef.value) return
         const dest = coverRef.value.getBoundingClientRect()
-        gsap.set(coverRef.value, { opacity: 0 })
         gsap.to(clone, {
             x: dest.left - parseFloat(clone.style.left),
             y: dest.top - parseFloat(clone.style.top),
@@ -48,6 +50,7 @@ onMounted(() => {
                 clone.remove()
                 gsap.set(coverRef.value!, { opacity: 1 })
                 afterReveal()
+                lenis.start()
             },
         })
     }
@@ -63,7 +66,7 @@ onMounted(() => {
 
 <template>
     <section>
-        <div class="cover" ref="coverRef" data-trans="cover">
+        <div class="cover" ref="coverRef" :style="hasFwdClone ? { opacity: 0 } : {}" data-trans="cover">
             <img
                 ref="imgRef"
                 v-if="activeProject && coverImage(activeProject)"

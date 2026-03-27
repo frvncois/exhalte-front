@@ -1,21 +1,21 @@
 export const themes: Record<string, { bg: string; transitionBg?: string; color: string; bodyClass?: string }> = {
     '/': {
-        bg: '#FFFFFF',
+        bg: '#f9f9f9',
         color: 'var(--black)',
     },
     '/projects/:slug': {
-        bg: '#FFFFFF',
+        bg: '#f9f9f9',
         color: 'var(--black)',
     },
     '/services': {
-        bg: '#5D1046',
-        transitionBg: '#5D1046',
+        bg: '#5A0834',
+        transitionBg: '#5A0834',
         color: 'var(--pink)',
         bodyClass: 'theme-purple',
     },
     '/contact': {
-        bg: '#B7EBF7',
-        transitionBg: '#B7EBF7',
+        bg: '#c2e6ee',
+        transitionBg: '#c2e6ee',
         color: 'var(--blue)',
         bodyClass: 'theme-blue',
     },

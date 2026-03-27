@@ -54,7 +54,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <header>
+    <header :style="menuOpen ? { color: 'white' } : {}">
         <div class="blur-stack" aria-hidden="true">
             <div class="blur-layer blur-1"></div>
             <div class="blur-layer blur-2"></div>
@@ -79,7 +79,7 @@ onUnmounted(() => {
         </nav>
     </header>
     <SharedNav :open="menuOpen" @close="closeMenu" />
-    <section :class="{ 'hide-mobile': route.path === '/services' }">
+    <section :class="{ 'hide-mobile': route.path === '/services' || route.path === '/contact' }">
         <ul ref="taglineRef">
             <li>
                 <h1>{{ titleParts[0] }}</h1>

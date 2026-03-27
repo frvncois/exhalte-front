@@ -50,16 +50,10 @@ function handleClick(index: number) {
     const titleClone = fwdClones[2]
     if (titleClone) titleClone.style.justifyContent = 'flex-end'
 
-    // Fix lost scoped styles in other lis' details clones
+    // Details clones are position markers only — hide them to avoid duplicate h2 flicker
     otherLis.forEach((_, i) => {
         const detailsClone = fwdClones[3 + i * 2 + 1]
-        if (!detailsClone) return
-        const title = detailsClone.querySelector('.title') as HTMLElement | null
-        if (title) Object.assign(title.style, { display: 'flex', flexDirection: 'column', gap: '0.25em' })
-        const h2 = detailsClone.querySelector('h2') as HTMLElement | null
-        if (h2) h2.style.fontSize = 'var(--text-regular)'
-        const p = detailsClone.querySelector('p') as HTMLElement | null
-        if (p) Object.assign(p.style, { fontSize: 'var(--text-sm)', textTransform: 'uppercase' })
+        if (detailsClone) detailsClone.style.opacity = '0'
     })
 
     router.push(`/projects/${slugify(project.Title)}`)
@@ -118,7 +112,7 @@ onMounted(async () => {
 
     // [0] cover → clicked li cover
     flyTo(clones[0]!, clickedCover.getBoundingClientRect(), 0,
-        () => gsap.set(clickedCover, { opacity: 1 }))
+        () => { gsap.set(clickedCover, { opacity: 1 }); lenis.start() })
 
     // [1] span → position only
     if (clones[1]) {
@@ -252,7 +246,6 @@ li:hover .details {
 .title {
     display: flex;
     flex-direction: column;
-    gap: 0.25em;
 }
 
 
