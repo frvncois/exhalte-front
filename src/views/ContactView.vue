@@ -34,7 +34,7 @@ onUnmounted(() => {
     <SharedHeader />
     <main>
         <GridContact />
-        <div class="footer-content">
+        <div class="footer">
             <SharedFooter :address="false" :logo="false" />
         </div>
     </main>
@@ -46,7 +46,7 @@ main {
     display: flex;
     flex-direction: column;
 }
-.footer-content {
+.footer {
     position: fixed;
     bottom: 0;
     left: 0;

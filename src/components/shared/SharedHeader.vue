@@ -122,7 +122,7 @@ header {
     span:hover svg {
         transform: scaleX(1.1);
     }
-    button {
+    > button {
         all: unset;
         cursor: pointer;
         display: none;
@@ -158,9 +158,7 @@ h1, h2, p {
     text-transform: uppercase;
     line-height: 1;
 }
-button {
-    display: none;
-}
+
 
 @media (max-width: 900px) {
     section.hide-mobile {

@@ -104,6 +104,14 @@ a {
     position: relative;
 }
 
+button {
+    padding: unset;
+    border: unset;
+    background: none;
+    color: currentColor;
+    font-family: 'body';
+}
+
 header nav a.active::before,
 header nav a:hover::before {
     content: '';

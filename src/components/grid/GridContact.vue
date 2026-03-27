@@ -164,7 +164,7 @@ li {
                 transform: translateX(10%);
             }
         }
-    }
+}
 
 .circles {
     position: absolute;
@@ -208,23 +208,76 @@ li:nth-child(4) { grid-row: 3; grid-column: 2; }
 li:nth-child(5) { grid-row: 3; grid-column: 4; }
 li:nth-child(6) { grid-row: 4; grid-column: 3; }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     section {
-        position: static;
         height: auto;
-        margin: 6em 2em 0;
+        margin: 6em 1em 0;
+    }
+    .circles { 
+        display: none; 
     }
     ul {
-        grid-template-columns: 1fr 1fr;
-        padding-bottom: 4em;
+        display: flex;
+        flex-direction: column;
     }
+
     li {
-        padding-top: 2em;
-        transform: none !important;
-        text-align: left !important;
+    display: flex;
+    flex-direction: column;
+    padding-top: 4em;
+        &:nth-child(2) {
+            h4 {
+                text-align: right;
+                transform: translateX(2em);
+            }
+            a:first-of-type  {
+                    text-align: right;
+            }
+            a:nth-of-type(2)  {
+                    text-align: center;
+            }
+        }
+        &:nth-child(3) {
+            top: unset;
+            h4 {
+                text-align: right;
+                transform: translateX(2em);
+            }
+            a:first-of-type  {
+                    text-align: right;
+            }
+            a:nth-of-type(2)  {
+                    text-align: center;
+            }
+        }
+        &:nth-child(4) {
+            h3 {
+                transform: translateX(-10%);
+            }
+            h4 {
+                transform: translateX(2%);
+            }
+        }
+        &:nth-child(5) {
+            text-align: center;
+            h3 {
+                transform: translateX(-20%);
+            }
+            h4 {
+                transform: translateX(10%);
+            }
+        }
+        &:nth-child(6) {
+            h3 {
+                transform: translateX(15%);
+            }
+            h4 {
+                transform: translateX(10%);
+            }
+        }
     }
-    li:nth-child(n) { grid-row: auto; grid-column: auto; }
-    li:nth-child(n) h3, li:nth-child(n) h4 { transform: none !important; }
-    .circles { display: none; }
+    h4 {
+        max-width: unset;
+    }
 }
 </style>
