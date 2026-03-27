@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { gsap } from 'gsap'
 import MainIcon from '@/assets/MainIcon.vue'
 import {
@@ -13,6 +14,7 @@ const logoRef = ref<HTMLElement | null>(null)
 const navRef = ref<HTMLElement | null>(null)
 const taglineRef = ref<HTMLElement | null>(null)
 
+const route = useRoute()
 const sharedStore = useSharedStore()
 const localeStore = useLocaleStore()
 const titleParts = computed(() => (sharedStore.shared?.Title ?? '/').split('/'))
@@ -90,7 +92,7 @@ onUnmounted(() => {
             <button @click.stop="onLocaleToggle">{{ localeStore.nextLabel }}</button>
         </nav>
     </header>
-    <section>
+    <section :class="{ 'hide-mobile': route.path === '/services' }">
         <ul ref="taglineRef">
             <li>
                 <h1>{{ titleParts[0] }}</h1>
@@ -161,6 +163,10 @@ button {
 }
 
 @media (max-width: 900px) {
+    section.hide-mobile {
+        display: none;
+    }
+
     header {
         padding: 4em 1em 0em 1em;
         button {

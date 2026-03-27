@@ -60,7 +60,7 @@ defineExpose({ svgEl })
 </script>
 
 <template>
-    <div class="sticky-wrap" ref="wrapRef">
+    <div class="sticky" ref="wrapRef">
         <div class="hero">
             <MainPath />
         </div>
@@ -91,23 +91,6 @@ defineExpose({ svgEl })
 
 
 <style scoped>
-.sticky-wrap {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    padding-bottom: 2em;
-    display: flex;
-    flex-direction: column;
-}
-
-.hero {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 section {
     flex-shrink: 0;
     overflow: hidden;
@@ -144,23 +127,36 @@ svg {
         max-width: 45ch;
         margin-left: 2em;
     }
+    h2 {
+        font-family: 'body';
+        font-size: var(--font-sm);
+        text-transform: uppercase;
+    }
+}
+.sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding-bottom: 2em;
+    display: flex;
+    flex-direction: column;
 }
 
-@media (max-width: 768px) {
-    .col { flex-direction: column; gap: 2em; }
+.hero {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-
-h2 {
-    font-family: 'body';
-    text-transform: uppercase;
-    font-size: 1em;
-}
-
-h3 {
-    font-family: 'heading';
-}
-
-p {
-    font-size: 1.5em;
+@media (max-width: 900px) {
+    svg {
+        height: auto;
+    }
+    .col {
+        flex-direction: column;
+        gap: 4em;
+        padding: 1em;
+    }
 }
 </style>
