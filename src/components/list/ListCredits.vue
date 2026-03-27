@@ -9,9 +9,26 @@ defineProps<{
 }>()
 
 const sectionRef = ref<HTMLElement | null>(null)
+const ulRef = ref<HTMLElement | null>(null)
 let observer: IntersectionObserver | null = null
 let unregisterLeave: (() => void) | null = null
 onBeforeUnmount(() => unregisterLeave?.())
+
+const expanded = ref(false)
+
+function toggle() {
+    if (!ulRef.value) return
+    expanded.value = !expanded.value
+    if (expanded.value) {
+        gsap.set(ulRef.value, { display: 'flex', opacity: 0, y: -8 })
+        gsap.to(ulRef.value, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' })
+    } else {
+        gsap.to(ulRef.value, {
+            opacity: 0, y: -8, duration: 0.3, ease: 'power2.in',
+            onComplete: () => { gsap.set(ulRef.value, { display: 'none' }) },
+        })
+    }
+}
 
 onMounted(() => {
     const h3 = sectionRef.value?.querySelector('h3')
@@ -41,8 +58,11 @@ onUnmounted(() => observer?.disconnect())
 
 <template>
     <section ref="sectionRef">
-        <h3>{{ title }}</h3>
-        <ul>
+        <div class="header">
+            <h3>{{ title }}</h3>
+            <button class="toggle" @click="toggle">{{ expanded ? '(-)' : '(+)' }}</button>
+        </div>
+        <ul ref="ulRef">
             <li v-for="(item, i) in items" :key="i">
                 <h4>{{ item.label }}</h4>
                 <h5 v-if="item.sub">{{ item.sub }}</h5>
@@ -88,5 +108,42 @@ li::after {
 
 li:last-child::after {
   content: none;
+}
+
+.header {
+    display: contents;
+}
+
+.toggle {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    h4, h5 {
+        font-size: var(--text-sm);
+    }
+
+    .header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5em;
+    }
+
+    h3 {
+        text-align: center;
+    }
+
+    .toggle {
+        display: block;
+        all: unset;
+        cursor: pointer;
+        font-size: var(--text-sm);
+        text-transform: uppercase;
+    }
+
+    ul {
+        display: none;
+    }
 }
 </style>

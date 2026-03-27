@@ -17,24 +17,6 @@ async function animate() {
     const lis = ulRef.value?.querySelectorAll('li')
     if (!lis) return
 
-    lis.forEach((li, liIndex) => {
-        const targets = Array.from(li.querySelectorAll<HTMLElement>('h3, h4'))
-        const origX = targets.map(el => {
-            const t = window.getComputedStyle(el).transform
-            return t === 'none' ? 0 : new DOMMatrixReadOnly(t).m41
-        })
-
-        li.addEventListener('mouseenter', () => {
-            targets.forEach((el, i) => {
-                const hoverX = (liIndex === 1 || liIndex === 2) && el.tagName === 'H3' ? '2em' : 0
-                gsap.to(el, { x: hoverX, duration: 0.5, ease: 'power2.out' })
-            })
-        })
-        li.addEventListener('mouseleave', () => {
-            targets.forEach((el, i) => gsap.to(el, { x: origX[i], duration: 0.5, ease: 'power2.out' }))
-        })
-    })
-
     gsap.set(lis, { clipPath: 'inset(0 100% 0 0)' })
     gsap.to(lis, { clipPath: 'inset(0 0% 0 0)', duration: 0.75, ease: 'power3.out', stagger: 0.06, delay: 0.2 })
 

@@ -194,12 +194,18 @@ img {
 
 @media (max-width: 900px) {
     ul {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 8em;
     }
 
     li {
         grid-area: auto !important;
+        padding: 0 6em;
+    }
+
+    li:nth-child(n) .cover {
+        aspect-ratio: unset;
     }
 }
 </style>

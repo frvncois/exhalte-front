@@ -205,15 +205,13 @@ defineExpose({ taglineEl: taglineWrapRef })
         display: flex;
         flex-direction: column;
     }
-    li p {
-        font-size: var(--font-sm);
-        max-width: 45ch;
-        margin-left: 2em;
-    }
     h2 {
         font-family: 'body';
         font-size: var(--font-sm);
         text-transform: uppercase;
+    }
+    p {
+        font-size: var(--text-regular);
     }
 }
 

@@ -22,6 +22,7 @@ let unregisterLeave: (() => void) | null = null
 onBeforeUnmount(() => unregisterLeave?.())
 
 const isPlaying = ref(false)
+const inlineVideoSrc = ref<string | undefined>(undefined)
 const videoPaused = ref(true)
 const videoDuration = ref(0)
 const videoCurrentTime = ref(0)
@@ -50,11 +51,13 @@ function seek(e: MouseEvent) {
 }
 
 async function startPlay() {
+    inlineVideoSrc.value = activeProject.value?.Video ?? undefined
     isPlaying.value = true
     await nextTick()
     inlineVideoRef.value?.play()
     videoPaused.value = false
-    gsap.from(controlsRef.value, { opacity: 0, duration: 0.3, ease: 'power2.out' })
+    gsap.set(controlsRef.value, { opacity: 0 })
+    gsap.to(controlsRef.value, { opacity: 1, duration: 0.3, ease: 'power2.out' })
 }
 
 function openInLightbox() {
@@ -95,10 +98,19 @@ onMounted(() => {
 
     unregisterLeave = registerPageLeave((done) => {
         if (inlineVideoRef.value) { inlineVideoRef.value.pause(); videoPaused.value = true }
-        gsap.to([playBtnRef.value, controlsRef.value], { opacity: 0, duration: 0.2, ease: 'power2.in' })
-        gsap.to(imgRef.value, { opacity: 1, duration: 0.2, ease: 'power2.in' })
-        if (getRevClones().length) { done(); return }
-        gsap.to(coverRef.value, { clipPath: 'inset(0 0 100% 0)', duration: 0.5, ease: 'power2.in', onComplete: done })
+
+        const tl = gsap.timeline()
+
+        if (isPlaying.value) {
+            tl.to([inlineVideoRef.value, controlsRef.value], { opacity: 0, duration: 0.25, ease: 'power2.in' })
+            tl.to(imgRef.value, { opacity: 0.75, duration: 0.25, ease: 'power2.out' }, '<')
+        } else {
+            tl.to(playBtnRef.value, { opacity: 0, duration: 0.2, ease: 'power2.in' })
+            tl.to(imgRef.value, { opacity: 1, duration: 0.2, ease: 'power2.in' }, '<')
+        }
+
+        if (getRevClones().length) { tl.call(done); return }
+        tl.to(coverRef.value, { clipPath: 'inset(0 0 100% 0)', duration: 0.5, ease: 'power2.in', onComplete: done })
     })
 })
 </script>
@@ -114,9 +126,9 @@ onMounted(() => {
                 :class="{ faded: isPlaying }"
             />
             <video
-                v-if="isPlaying"
+                v-show="isPlaying"
                 ref="inlineVideoRef"
-                :src="activeProject?.Video"
+                :src="inlineVideoSrc"
                 playsinline
                 @timeupdate="onTimeUpdate"
                 @loadedmetadata="onLoadedMetadata"
@@ -124,7 +136,7 @@ onMounted(() => {
                 @click="togglePlay"
             />
             <button
-                v-if="activeProject?.Video && !isPlaying"
+                v-show="activeProject?.Video && !isPlaying"
                 ref="playBtnRef"
                 class="play-btn"
                 @click="startPlay"
@@ -132,7 +144,7 @@ onMounted(() => {
                 <span>▶</span>
                 <span class="label">Play</span>
             </button>
-            <div v-if="isPlaying" ref="controlsRef" class="controls">
+            <div v-show="isPlaying" ref="controlsRef" class="controls">
                 <button class="play-pause" @click="togglePlay">{{ videoPaused ? '▶' : '⏸' }}</button>
                 <span class="time">{{ formatTime(videoCurrentTime) }}</span>
                 <div class="progress-bar" @click.stop="seek">

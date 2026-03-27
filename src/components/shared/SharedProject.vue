@@ -359,7 +359,9 @@ p {
     li {
         scroll-snap-align: start;
         flex: 0 0 auto;
-        width: 60vw;
+        &:hover h3 { opacity: 0; }
+        &:hover { transform: none; }
+        &:hover .info--expandable { width: var(--info-base-w, max-content); }
     }
 }
 </style>
