@@ -2,7 +2,6 @@
 import SharedHeader from '@/components/shared/SharedHeader.vue';
 import GridProjects from '@/components/grid/GridProjects.vue';
 import SharedFooter from '@/components/shared/SharedFooter.vue';
-import AppLoad from '@/components/transition/AppLoad.vue';
 
 </script>
 
@@ -10,5 +9,4 @@ import AppLoad from '@/components/transition/AppLoad.vue';
     <SharedHeader />
     <GridProjects />
     <SharedFooter theme="theme-pink" />
-    <AppLoad/>
 </template>

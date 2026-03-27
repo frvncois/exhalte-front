@@ -10,6 +10,12 @@ import lenis from '@/lib/lenis'
 
 const router = useRouter()
 const ulEl = ref<HTMLUListElement | null>(null)
+
+function coverUrl(project: typeof projects.value[number]): string | null {
+    const img = coverImage(project)
+    if (!img) return null
+    return img.formats?.large?.url ?? img.url
+}
 const projectStore = useProjectStore()
 const { projects, activeProject } = storeToRefs(projectStore)
 
@@ -173,11 +179,7 @@ onMounted(async () => {
         <ul ref="ulEl">
             <li v-for="(project, index) in projects" :key="project.documentId" @click="handleClick(index)">
                 <div class="cover">
-                    <img
-                        v-if="coverImage(project)"
-                        :src="coverImage(project)!.formats?.large?.url ?? coverImage(project)!.url"
-                        :alt="project.Title"
-                    />
+                    <img v-if="coverUrl(project)" :src="coverUrl(project)!" :alt="project.Title" />
                 </div>
                 <div class="details">
                     <span>{{ String(index + 1).padStart(2, '0') }}</span>
@@ -226,7 +228,6 @@ p {
     background-color: var(--black);
     aspect-ratio: 4/3;
     flex: 1;
-    width: 100%;
     overflow: hidden;
     img {
         width: 100%;
@@ -253,8 +254,6 @@ li:hover .details {
     flex-direction: column;
     gap: 0.25em;
 }
-
-
 
 
 @media (max-width: 900px) {

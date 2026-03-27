@@ -42,6 +42,15 @@ onMounted(() => {
         gsap.timeline({ onComplete: done }).to([...els, ...lis], { clipPath: 'inset(0 0 100% 0)', duration: 0.4, stagger: 0.04, ease: 'power2.in' })
     })
 
+    if (type.value === 'gallery' && ulRef.value) {
+        const galleryLis = Array.from(ulRef.value.querySelectorAll('li')) as HTMLElement[]
+        galleryLis.forEach(li => {
+            const h3 = li.querySelector('h3') as HTMLElement | null
+            const w = h3 ? h3.offsetWidth : 0
+            li.style.setProperty('--h3-w', `-${w}px`)
+        })
+    }
+
     if (!clones.length) {
         if (!consumeProjectToProject()) {
             const lis = ulRef.value ? Array.from(ulRef.value.querySelectorAll('li')) : []
@@ -94,37 +103,41 @@ onMounted(() => {
             }
         })
     }
+
 })
 </script>
 
 <template>
     <section :class="{ 'is-gallery': type === 'gallery' }">
-        <div>
-            <span ref="spanRef" data-trans="span">{{ String(activeIndex + 1).padStart(2, '0') }}</span>
-        </div>
         <div class="details">
-            <div class="title" ref="titleRef" data-trans="title">
-                <h2>{{ activeProject?.Title }}</h2>
-                <p v-if="activeProject?.Subtitle">{{ activeProject.Subtitle }}</p>
+            <div class="left">
+                <span ref="spanRef" data-trans="span">{{ String(activeIndex + 1).padStart(2, '0') }}</span>
+                <div class="title" ref="titleRef" data-trans="title">
+                    <h2>{{ activeProject?.Title }}</h2>
+                    <p v-if="activeProject?.Subtitle">{{ activeProject.Subtitle }}</p>
+                </div>
+            </div>
+            <div class="slot">
+                <slot />
             </div>
             <ul ref="ulRef" data-trans="ul">
-               <li
-                    v-for="({ project, index }) in otherProjects"
-                    :key="project.documentId"
-                    @click="navigate(slugify(project.Title))"
-               >
-                    <div class="cover">
-                        <img
-                            v-if="coverImage(project)"
-                            :src="coverImage(project)!.formats?.large?.url ?? coverImage(project)!.url"
-                            :alt="project.Title"
-                        />
-                    </div>
-                    <div class="info">
-                        <span>{{ String(index).padStart(2, '0') }}</span>
-                        <h3>{{ project.Title }}</h3>
-                    </div>
-               </li>
+                <li
+                        v-for="({ project, index }) in otherProjects"
+                        :key="project.documentId"
+                        @click="navigate(slugify(project.Title))"
+                >
+                        <div class="cover">
+                            <img
+                                v-if="coverImage(project)"
+                                :src="coverImage(project)!.formats?.large?.url ?? coverImage(project)!.url"
+                                :alt="project.Title"
+                            />
+                        </div>
+                        <div class="info">
+                            <span>{{ String(index).padStart(2, '0') }}</span>
+                            <h3>{{ project.Title }}</h3>
+                        </div>
+                </li>
             </ul>
         </div>
     </section>
@@ -139,20 +152,55 @@ section {
 }
 
 section.is-gallery {
-    position: sticky;
-    top: 5em;
-    align-self: flex-start;
+    display: flex;
     flex-direction: row;
+    padding: 0em 2em;
+    flex: 1;
     .details {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        align-items: start;
+        inset: 0;
+        flex: 1;
         & ul {
+            position: sticky;
+            top: 0;
+            height: 100vh;
             display: flex;
-            flex-direction: column!important;
+            justify-content: center;
+            flex: unset;
+            flex-direction: column;
+            li {
+                position: relative;
+                width: 30em;
+                margin-left: -20em;
+                right: -20em;
+            }
+             h3 {
+                position: absolute;
+                bottom: 0;
+            }
+        }
+        .left {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            flex: unset;
+            flex-direction: column;
+            display: flex;
+            justify-content: center;
+            > .title {
+                flex: unset;
+            }
+        }
+        .slot {
+            flex: 1;
+            min-width: 0;
         }
     }
 }
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     section, section.is-gallery {
         position: static;
         flex-direction: column;
@@ -176,7 +224,7 @@ section.is-gallery {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    justify-content: end;
+    justify-content: center;
     gap: 0.25em;
 }
 
@@ -192,7 +240,6 @@ li {
     display: flex;
     gap: 0.75em;
     cursor: pointer;
-    transition: transform 0.3s ease;
 }
 
 h2 {
@@ -203,13 +250,20 @@ h2 {
 h3 {
     font-size: var(--text-regular);
     white-space: nowrap;
-    max-width: 0;
-    overflow: hidden;
-    transition: max-width 0.6s ease;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+li {
+    transition: transform 0.4s ease;
+}
+
+li:hover {
+    transform: translateX(var(--h3-w, 0px));
 }
 
 li:hover h3 {
-    max-width: 15ch;
+    opacity: 1;
 }
 
 p {

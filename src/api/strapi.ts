@@ -11,6 +11,7 @@ export interface StrapiMedia {
   width: number
   height: number
   alternativeText: string | null
+  mime: string
   formats: {
     thumbnail?: { url: string; width: number; height: number }
     small?: { url: string; width: number; height: number }
@@ -90,7 +91,7 @@ export interface Project {
   Video: string | null
   Details: DetailsBlock[]
   Cover: StrapiMedia | null
-  Slideshow: StrapiMedia | null
+  Slideshow: StrapiMedia[]
   Gallery: StrapiMedia[]
   Credit: Credit[]
   Awards: unknown[]
@@ -134,16 +135,19 @@ const PROJECT_POPULATE: Record<string, string> = {
   'populate[Cover][fields][2]': 'alternativeText',
   'populate[Cover][fields][3]': 'width',
   'populate[Cover][fields][4]': 'height',
+  'populate[Cover][fields][5]': 'mime',
   'populate[Slideshow][fields][0]': 'url',
   'populate[Slideshow][fields][1]': 'formats',
   'populate[Slideshow][fields][2]': 'alternativeText',
   'populate[Slideshow][fields][3]': 'width',
   'populate[Slideshow][fields][4]': 'height',
+  'populate[Slideshow][fields][5]': 'mime',
   'populate[Gallery][fields][0]': 'url',
   'populate[Gallery][fields][1]': 'formats',
   'populate[Gallery][fields][2]': 'alternativeText',
   'populate[Gallery][fields][3]': 'width',
   'populate[Gallery][fields][4]': 'height',
+  'populate[Gallery][fields][5]': 'mime',
   'populate[Credit][populate][Directory][fields][0]': 'Name',
   'populate[Credit][populate][Directory][fields][1]': 'Website',
   'populate[Remerciement][fields][0]': 'Name',

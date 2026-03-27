@@ -48,8 +48,10 @@ function handleRetour() {
 
 <style scoped>
 section {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 12;
     height: 6em;
     text-align: center;

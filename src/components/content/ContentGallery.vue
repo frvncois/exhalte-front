@@ -49,37 +49,54 @@ onMounted(() => {
 <template>
     <section>
         <div class="cover" ref="coverRef" data-trans="cover">
-            <img v-if="activeProject?.Gallery?.[0]" :src="activeProject.Gallery[0].formats?.large?.url ?? activeProject.Gallery[0].url" :alt="activeProject.Gallery[0].alternativeText ?? ''" />
+            <template v-if="activeProject?.Slideshow?.[0]">
+                <video
+                    v-if="activeProject.Slideshow[0].mime?.startsWith('video/')"
+                    :src="activeProject.Slideshow[0].url"
+                    autoplay loop muted playsinline
+                />
+                <img
+                    v-else
+                    :src="activeProject.Slideshow[0].formats?.large?.url ?? activeProject.Slideshow[0].url"
+                    :alt="activeProject.Slideshow[0].alternativeText ?? ''"
+                />
+            </template>
         </div>
         <div
-            v-for="(item, i) in (activeProject?.Gallery?.slice(1) ?? [])"
+            v-for="(item, i) in (activeProject?.Slideshow?.slice(1) ?? [])"
             :key="item.id ?? i"
             class="cover"
             :ref="el => extrasRef[i] = el as HTMLElement"
         >
-            <img :src="item.formats?.large?.url ?? item.url" :alt="item.alternativeText ?? ''" />
+            <video
+                v-if="item.mime?.startsWith('video/')"
+                :src="item.url"
+                autoplay loop muted playsinline
+            />
+            <img v-else :src="item.formats?.large?.url ?? item.url" :alt="item.alternativeText ?? ''" />
         </div>
     </section>
 </template>
 
 <style scoped>
 section {
-    margin: 0 2em;
-    flex: 2;
+    margin: 5em 2em;
     display: flex;
     flex-direction: column;
-    gap: 1em;
+    align-items: center;
+    gap: 4em;
 }
 
 .cover {
-    height: 80vh;
+    max-width: 80%;
     background: black;
     overflow: hidden;
 }
 
-.cover img {
-    width: 100%;
-    height: 100%;
+.cover img,
+.cover video {
+    max-width: 100%;
+    height: auto;
     object-fit: cover;
     display: block;
 }

@@ -51,9 +51,10 @@ const pressItems = computed(() =>
 <template>
     <ShareClose />
     <div :class="type === 'gallery' ? 'is-gallery' : 'is-video'">
-        <ContentGallery v-if="type === 'gallery'" />
-        <ContentVideo v-else />
-        <SharedProject />
+        <ContentVideo v-if="type !== 'gallery'" />
+        <SharedProject>
+            <ContentGallery v-if="type === 'gallery'" />
+        </SharedProject>
     </div>
     <Content1col />
     <GridGallery :items="activeProject?.Gallery ?? []" />
@@ -65,27 +66,27 @@ const pressItems = computed(() =>
 </template>
 
 <style scoped>
-.is-video {
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 6em);
-}
-
-.is-video :deep(section:first-child) {
-    flex: 1;
-    min-height: 0;
-}
-
-.is-video :deep(section:last-child) {
-    flex-shrink: 0;
-}
-.is-gallery {
-    display: flex;
-    flex-direction: row;
-}
-@media (max-width: 768px) {
-    .is-gallery {
+    .is-video {
+        display: flex;
         flex-direction: column;
+        height: calc(100vh - 6em);
     }
-}
+
+    .is-video :deep(section:first-child) {
+        flex: 1;
+        min-height: 0;
+    }
+
+    .is-video :deep(section:last-child) {
+        flex-shrink: 0;
+    }
+    .is-gallery {
+        display: flex;
+        flex-direction: row;
+    }
+    @media (max-width: 768px) {
+        .is-gallery {
+            flex-direction: column;
+        }
+    }
 </style>
