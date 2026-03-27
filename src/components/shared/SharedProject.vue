@@ -237,7 +237,7 @@ section.is-gallery {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: end;
 }
 
 .left {
@@ -337,16 +337,28 @@ p {
         gap: 2em;
         padding: 8em 1em 2em;
     }
+    section.is-gallery {
+        .details {
+            flex-direction: column;
+            ul {
+                flex-direction: row;
+                height: auto;
+            }
+            .left {
+                height: auto;
+            }
+        }
+    }
     .details {
-        flex-direction: column-reverse;
+        flex-direction: column;
         gap: 6em;
     }
-    .left {
-        display: flex;
-        flex-direction: row;
-        gap: 1em;
-    }
+    .left { order: 2; display: flex; flex-direction: row; gap: 1em; }
+    .slot { order: 3; }
     ul {
+        order: 1;
+        flex: none;
+        width: 100%;
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;

@@ -87,6 +87,7 @@ const pressItems = computed(() =>
         }
         .is-video {
             flex-direction: column-reverse;
+            height: auto;
         }
     }
 </style>

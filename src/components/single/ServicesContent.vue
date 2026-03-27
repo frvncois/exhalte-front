@@ -24,15 +24,22 @@ const taglines = computed(() => [
     service.value?.Tagline04 ?? '',
 ])
 
-const baseAngles  = [20, 80, 130, 160]
-const travelDegs  = [40, 65, 30, 55]
-const angles      = ref([...baseAngles])
+// startOffset % along path (converted from degrees: deg/360*100)
+const baseOffsets  = [20, 80, 130, 160].map(d => d / 360 * 100)
+const travelOffsets = [40, 65, 30, 55].map(d => d / 360 * 100)
+const offsets      = ref([...baseOffsets])
 const opacities   = ref([0, 0, 0, 0])
 const scale       = ref(1)
 
 const svgWidths   = [600, 700, 800, 900]
 const targetPx    = 18
 const fontSizes   = svgWidths.map(w => +(targetPx / (w / 100)).toFixed(3))
+
+const isMobile        = window.innerWidth <= 900
+const mobileSvgWs     = [0.6, 0.7, 0.8, 0.9].map(r => window.innerWidth * r)
+const mobileFontSizes = mobileSvgWs.map(w => +(targetPx * 0.75 / (w / 100)).toFixed(3))
+const desktopPath     = 'M 10,50 a 40,40 0 1,1 80,0 40,40 0 1,1 -80,0'
+const mobilePath      = 'M 20,50 a 30,46 0 1,1 60,0 30,46 0 1,1 -60,0'
 
 const fadeStarts  = [0, 0.08, 0.18, 0.28]
 const fadeDur     = 0.25
@@ -67,12 +74,19 @@ onMounted(async () => {
         gsap.to(wrapRef.value, { opacity: 0, x: 40, duration: 0.5, ease: 'power3.in', onComplete: done })
     })
 
+    const scaleRange = window.innerHeight
+
     const onContentScroll = ({ scroll }: { scroll: number }) => {
         if (!wrapRef.value || !col) return
         const progress = Math.min(Math.max(scroll / colHeight, 0), 1)
         col.style.transform = `translateY(${progress * 100}%)`
         col.style.opacity = `${1 - progress}`
         wrapRef.value.style.height = `${heroHeight + progress * colHeight}px`
+
+        if (svg) {
+            const phase2 = Math.min(Math.max((scroll - colHeight) / scaleRange, 0), 1)
+            gsap.set(svg, { scale: 1 - phase2 * 0.8 })
+        }
     }
 
     const onTaglineScroll = () => {
@@ -82,7 +96,7 @@ onMounted(async () => {
         if (scrollRange <= 0) return
         const p = Math.min(Math.max(-top / scrollRange, 0), 1)
 
-        angles.value    = baseAngles.map((base, i) => base + p * (travelDegs[i] ?? 0))
+        offsets.value   = baseOffsets.map((base, i) => base + p * (travelOffsets[i] ?? 0))
         opacities.value = fadeStarts.map(start => Math.min(Math.max((p - start) / fadeDur, 0), 1))
         scale.value     = 1 + Math.min(Math.max((p - 0.7) / 0.3, 0), 1) * 4
 
@@ -132,39 +146,39 @@ defineExpose({ taglineEl: taglineWrapRef })
         </div>
         <div class="tagline" ref="taglineWrapRef">
                 <div class="items">
-                    <svg viewBox="0 0 100 100" width="600" height="600" :style="{ transform: `rotate(${angles[0]}deg) scale(${scale})`, opacity: opacities[0] }">
+                    <svg viewBox="0 0 100 100" :width="isMobile ? mobileSvgWs[0] : 600" :height="isMobile ? mobileSvgWs[0] : 600" :style="{ transform: `scale(${scale})`, opacity: opacities[0] }">
                         <defs>
-                            <path id="cp1" d="M 10,50 a 40,40 0 1,1 80,0 40,40 0 1,1 -80,0" />
+                            <path id="cp1" :d="isMobile ? mobilePath : desktopPath" />
                         </defs>
-                        <text :font-size="fontSizes[0]" fill="currentColor">
-                            <textPath href="#cp1" startOffset="0%">{{ taglines[0] }}</textPath>
+                        <text :font-size="isMobile ? mobileFontSizes[0] : fontSizes[0]" fill="currentColor">
+                            <textPath href="#cp1" :startOffset="`${offsets[0]}%`">{{ taglines[0] }}</textPath>
                         </text>
                     </svg>
 
-                    <svg viewBox="0 0 100 100" width="700" height="700" :style="{ transform: `rotate(${angles[1]}deg) scale(${scale})`, opacity: opacities[1] }">
+                    <svg viewBox="0 0 100 100" :width="isMobile ? mobileSvgWs[1] : 700" :height="isMobile ? mobileSvgWs[1] : 700" :style="{ transform: `scale(${scale})`, opacity: opacities[1] }">
                         <defs>
-                            <path id="cp2" d="M 10,50 a 40,40 0 1,1 80,0 40,40 0 1,1 -80,0" />
+                            <path id="cp2" :d="isMobile ? mobilePath : desktopPath" />
                         </defs>
-                        <text :font-size="fontSizes[1]" fill="currentColor">
-                            <textPath href="#cp2" startOffset="0%">{{ taglines[1] }}</textPath>
+                        <text :font-size="isMobile ? mobileFontSizes[1] : fontSizes[1]" fill="currentColor">
+                            <textPath href="#cp2" :startOffset="`${offsets[1]}%`">{{ taglines[1] }}</textPath>
                         </text>
                     </svg>
 
-                    <svg viewBox="0 0 100 100" width="800" height="800" :style="{ transform: `rotate(${angles[2]}deg) scale(${scale})`, opacity: opacities[2] }">
+                    <svg viewBox="0 0 100 100" :width="isMobile ? mobileSvgWs[2] : 800" :height="isMobile ? mobileSvgWs[2] : 800" :style="{ transform: `scale(${scale})`, opacity: opacities[2] }">
                         <defs>
-                            <path id="cp3" d="M 10,50 a 40,40 0 1,1 80,0 40,40 0 1,1 -80,0" />
+                            <path id="cp3" :d="isMobile ? mobilePath : desktopPath" />
                         </defs>
-                        <text :font-size="fontSizes[2]" fill="currentColor">
-                            <textPath href="#cp3" startOffset="0%">{{ taglines[2] }}</textPath>
+                        <text :font-size="isMobile ? mobileFontSizes[2] : fontSizes[2]" fill="currentColor">
+                            <textPath href="#cp3" :startOffset="`${offsets[2]}%`">{{ taglines[2] }}</textPath>
                         </text>
                     </svg>
 
-                    <svg viewBox="0 0 100 100" width="900" height="900" :style="{ transform: `rotate(${angles[3]}deg) scale(${scale})`, opacity: opacities[3] }">
+                    <svg viewBox="0 0 100 100" :width="isMobile ? mobileSvgWs[3] : 900" :height="isMobile ? mobileSvgWs[3] : 900" :style="{ transform: `scale(${scale})`, opacity: opacities[3] }">
                         <defs>
-                            <path id="cp4" d="M 10,50 a 40,40 0 1,1 80,0 40,40 0 1,1 -80,0" />
+                            <path id="cp4" :d="isMobile ? mobilePath : desktopPath" />
                         </defs>
-                        <text :font-size="fontSizes[3]" fill="currentColor">
-                            <textPath href="#cp4" startOffset="0%">{{ taglines[3] }}</textPath>
+                        <text :font-size="isMobile ? mobileFontSizes[3] : fontSizes[3]" fill="currentColor">
+                            <textPath href="#cp4" :startOffset="`${offsets[3]}%`">{{ taglines[3] }}</textPath>
                         </text>
                     </svg>
                 </div>
@@ -232,7 +246,7 @@ defineExpose({ taglineEl: taglineWrapRef })
 
 .items {
     position: sticky;
-    top: 0;
+    top: -2em;
     height: 100vh;
     width: 100%;
     display: flex;

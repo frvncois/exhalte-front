@@ -144,6 +144,19 @@ li:last-child::after {
 
     ul {
         display: none;
+        flex-direction: column;
+        max-width: unset;
+        gap: 1em;
+    }
+    li {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        text-align: center;
+        &::after {
+            margin-left: 0;
+            margin-top: 2em;
+        }
     }
 }
 </style>

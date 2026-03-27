@@ -53,4 +53,10 @@ h2 {
     padding-left: 1.5em;
     margin-bottom: 1em;
 }
+
+@media (max-width: 900px) {
+    section {
+        padding: 8em 1em 4em;
+    }
+}
 </style>

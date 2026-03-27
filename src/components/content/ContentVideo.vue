@@ -99,7 +99,7 @@ section {
     height: 100%;
 }
 @media (max-width: 768px) {
-    section { margin: 0; }
+    section { margin: 0 1em; }
     .cover { height: 56vw; }
 }
 

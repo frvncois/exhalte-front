@@ -45,9 +45,13 @@ section {
     padding: 2em;
     display: grid;
     grid-template-columns: 1fr 1fr;
+    
 }
-@media (max-width: 768px) {
-    section { grid-template-columns: 1fr; }
+@media (max-width: 900px) {
+    section { grid-template-columns: 1fr; padding: 6em 1em;}
+    p {
+        font-size: var(--text-sm)!important;
+    }
 }
 
 div {

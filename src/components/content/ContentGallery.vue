@@ -159,8 +159,8 @@ section {
     object-fit: cover;
     display: block;
 }
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     section { margin: 0; flex: none; }
-    .cover { height: 56vw; }
+    .cover { height: 56vw; max-width: 100%;}
 }
 </style>
