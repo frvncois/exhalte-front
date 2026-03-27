@@ -45,7 +45,10 @@ watch(() => props.items, async (newItems) => {
 
         const obs = new IntersectionObserver(([entry]) => {
             if (!entry?.isIntersecting) return
-            gsap.to(cover, { clipPath: 'inset(0 0 0% 0)', duration: 2, ease: 'power3.out' })
+            gsap.fromTo(cover,
+                { clipPath: 'inset(0 0 100% 0)' },
+                { clipPath: 'inset(0 0 0% 0)', duration: 2, ease: 'power3.out' }
+            )
             obs.disconnect()
         }, { threshold: 0.75 })
 
@@ -161,12 +164,12 @@ li {
 .cover {
     flex: 1;
     height: 100%;
-    overflow: hidden;
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1em;
+    will-change: clip-path;
 }
 
 .index {

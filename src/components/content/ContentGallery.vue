@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { gsap } from 'gsap'
 import { getFwdClones, registerPageLeave } from '@/transitions/projectTransition'
 import lenis from '@/lib/lenis'
@@ -28,15 +28,25 @@ function onCoverDone() {
     coverDone = true
     pendingAnimations.forEach(fn => fn())
     pendingAnimations.length = 0
+    if (extrasRef.value.length) {
+        gsap.to(extrasRef.value, {
+            clipPath: 'inset(0% 0% 0% 0%)',
+            duration: 2,
+            ease: 'power3.out',
+            stagger: 0.15,
+        })
+    }
 }
 
 // waitForCover: hide immediately, but hold the reveal until onCoverDone fires
 function observeCover(cover: HTMLElement, duration = 2, onComplete?: () => void, waitForCover = false) {
-    gsap.set(cover, { clipPath: 'inset(0 0 100% 0)' })
     const obs = new IntersectionObserver(([entry]) => {
         if (!entry?.isIntersecting) return
         obs.disconnect()
-        const animate = () => gsap.to(cover, { clipPath: 'inset(0 0 0% 0)', duration, ease: 'power3.out', onComplete })
+        const animate = () => gsap.fromTo(cover,
+            { clipPath: 'inset(0% 0% 100% 0%)' },
+            { clipPath: 'inset(0% 0% 0% 0%)', duration, ease: 'power3.out', onComplete }
+        )
         if (!waitForCover || coverDone) {
             animate()
         } else {
@@ -47,22 +57,13 @@ function observeCover(cover: HTMLElement, duration = 2, onComplete?: () => void,
     observers.push(obs)
 }
 
-// Observe extras as soon as data is available — hides them before any paint,
-// but holds the reveal until the cover animation completes
-let extrasObserved = false
-watch(activeProject, async (val) => {
-    if (!val || extrasObserved) return
-    extrasObserved = true
-    await nextTick()
-    extrasRef.value.forEach(cover => observeCover(cover, 2, undefined, true))
-}, { immediate: true })
 
 onMounted(() => {
     unregisterLeave = registerPageLeave((done) => {
         const covers = sectionRef.value?.querySelectorAll('.cover')
         if (!covers?.length) { done(); return }
         gsap.timeline({ onComplete: done })
-            .to(covers, { clipPath: 'inset(100% 0 0% 0)', duration: 0.4, stagger: 0.04, ease: 'power2.in' })
+            .to(covers, { clipPath: 'inset(100% 0% 0% 0%)', duration: 0.4, stagger: 0.04, ease: 'power2.in' })
     })
 
     const clone = getFwdClones()[0]
@@ -108,18 +109,20 @@ onMounted(() => {
 <template>
     <section ref="sectionRef">
         <div class="cover" ref="coverRef" :style="hasFwdClone ? { opacity: 0 } : {}" data-trans="cover">
-            <template v-if="activeProject?.Cover">
-                <video
-                    v-if="activeProject.Cover.mime?.startsWith('video/')"
-                    :src="activeProject.Cover.url"
-                    autoplay loop muted playsinline
-                />
-                <img
-                    v-else
-                    :src="activeProject.Cover.formats?.large?.url ?? activeProject.Cover.url"
-                    :alt="activeProject.Cover.alternativeText ?? ''"
-                />
-            </template>
+            <div class="cover-inner">
+                <template v-if="activeProject?.Cover">
+                    <video
+                        v-if="activeProject.Cover.mime?.startsWith('video/')"
+                        :src="activeProject.Cover.url"
+                        autoplay loop muted playsinline
+                    />
+                    <img
+                        v-else
+                        :src="activeProject.Cover.formats?.large?.url ?? activeProject.Cover.url"
+                        :alt="activeProject.Cover.alternativeText ?? ''"
+                    />
+                </template>
+            </div>
         </div>
         <div
             v-for="(item, i) in (activeProject?.Slideshow ?? [])"
@@ -127,12 +130,14 @@ onMounted(() => {
             class="cover"
             :ref="el => extrasRef[i] = el as HTMLElement"
         >
-            <video
-                v-if="item.mime?.startsWith('video/')"
-                :src="item.url"
-                autoplay loop muted playsinline
-            />
-            <img v-else :src="item.formats?.large?.url ?? item.url" :alt="item.alternativeText ?? ''" />
+            <div class="cover-inner">
+                <video
+                    v-if="item.mime?.startsWith('video/')"
+                    :src="item.url"
+                    autoplay loop muted playsinline
+                />
+                <img v-else :src="item.formats?.large?.url ?? item.url" :alt="item.alternativeText ?? ''" />
+            </div>
         </div>
     </section>
 </template>
@@ -148,8 +153,12 @@ section {
 
 .cover {
     max-width: 80%;
-    background: black;
+    clip-path: inset(0% 0% 100% 0%);
+}
+
+.cover-inner {
     overflow: hidden;
+    background: black;
 }
 
 .cover img,
@@ -161,6 +170,7 @@ section {
 }
 @media (max-width: 900px) {
     section { margin: 0; flex: none; }
-    .cover { height: 56vw; max-width: 100%;}
+    .cover { height: 56vw; max-width: 100%; }
+    .cover-inner { height: 100%; }
 }
 </style>
