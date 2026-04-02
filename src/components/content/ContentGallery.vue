@@ -89,7 +89,7 @@ onMounted(() => {
             ease: 'power3.inOut',
             onComplete: () => {
                 clone.remove()
-                gsap.set(coverRef.value!, { opacity: 1 })
+                gsap.set(coverRef.value!, { opacity: 1, clipPath: 'inset(0% 0% 0% 0%)' })
                 onCoverDone()
                 lenis.start()
             },

@@ -102,7 +102,7 @@ li {
 
 li::after {
   content: '⬤';
-  font-size: var(--text-xs);
+  font-size: 0.6em;
   margin-left: 1em;
 }
 

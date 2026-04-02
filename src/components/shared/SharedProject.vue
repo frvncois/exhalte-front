@@ -49,7 +49,7 @@ function navigate(slug: string) {
     router.push(`/projects/${slug}`)
 }
 
-onMounted(() => {
+onMounted(async () => {
     const clones = getFwdClones()
 
     unregisterLeave = registerPageLeave((done) => {
@@ -58,6 +58,8 @@ onMounted(() => {
         const lis = ulRef.value ? Array.from(ulRef.value.querySelectorAll('li')) : []
         gsap.timeline({ onComplete: done }).to([...els, ...lis], { clipPath: 'inset(0 0 100% 0)', duration: 0.4, stagger: 0.04, ease: 'power2.in' })
     })
+
+    await document.fonts.ready
 
     if (ulRef.value?.closest('section.is-gallery')) {
         const galleryLis = Array.from(ulRef.value.querySelectorAll('li')) as HTMLElement[]

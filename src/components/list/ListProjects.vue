@@ -133,6 +133,10 @@ section {
     padding: 6em 2em;
 }
 
+p {
+    text-transform: uppercase;
+}
+
 ul {
     display: flex;
     gap: 1.5em;

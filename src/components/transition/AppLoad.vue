@@ -50,16 +50,16 @@ onMounted(async () => {
         attr: { startOffset: (_i: number) => offsets.value[_i]! + pathLength },
         duration: 6,
         ease: 'power2.in'
-    }, '+=0.2')
+    }, 0)
     tl.to(tp2, {
         attr: { startOffset: (_i: number) => offsets.value[_i]! - pathLength2 },
         duration: 6,
         ease: 'power2.in'
-    }, '<')
+    }, 0)
     const logoSvg = splashRef.value!.querySelector(':scope > svg')
-    tl.to(sectionRef.value, { backgroundColor: 'var(--medium)', color: 'var(--pink)', duration: 0.8, ease: 'power2.inOut' })
-    tl.to(splashRef.value, { opacity: 1, duration: 0.8, ease: 'power2.out' }, '<')
-    tl.fromTo(logoSvg, { clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)', duration: 1, ease: 'power3.out' }, '<')
+    tl.to(sectionRef.value, { backgroundColor: 'var(--medium)', color: 'var(--pink)', duration: 1.8, ease: 'power2.inOut' })
+    tl.to(splashRef.value, { opacity: 1, duration: 1.8, ease: 'power2.out' }, '<')
+    tl.fromTo(logoSvg, { clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)', duration: 2, ease: 'power3.out' }, '<+=0.25')
 
     const exit = () => {
         sectionRef.value?.removeEventListener('click', exit)
