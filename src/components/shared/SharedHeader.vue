@@ -4,12 +4,14 @@ import { useRoute } from 'vue-router'
 import { gsap } from 'gsap'
 import MainIcon from '@/assets/MainIcon.vue'
 import SharedNav from '@/components/shared/SharedNav.vue'
+import ManifestoSheet from '@/components/content/ManifestoSheet.vue'
 import {
     getHeaderToHeader, setHeaderToHeader,
     registerHeaderLeave, clearHeaderLeave,
 } from '@/transitions/projectTransition'
 import { useSharedStore } from '@/stores/shared'
 import { useLocaleStore } from '@/stores/locale'
+import { themes } from '@/transitions/themes'
 
 const logoRef = ref<HTMLElement | null>(null)
 const navRef = ref<HTMLElement | null>(null)
@@ -24,6 +26,13 @@ const taglineParts = computed(() => (sharedStore.shared?.Tagline ?? '/').split('
 const menuOpen = ref(false)
 function toggleMenu() { menuOpen.value = !menuOpen.value }
 function closeMenu() { menuOpen.value = false }
+
+const manifestoOpen = ref(false)
+
+const currentThemeBg = computed(() => {
+    const path = route.path.startsWith('/projects/') ? '/projects/:slug' : route.path
+    return themes[path]?.bg ?? ''
+})
 
 onMounted(() => {
     sharedStore.fetchShared()
@@ -54,7 +63,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <header :style="menuOpen ? { color: 'white' } : {}">
+    <header :style="manifestoOpen ? { color: currentThemeBg } : (menuOpen ? { color: 'white' } : {})">
         <div class="blur-stack" aria-hidden="true">
             <div class="blur-layer blur-1"></div>
             <div class="blur-layer blur-2"></div>
@@ -71,16 +80,17 @@ onUnmounted(() => {
                 <MainIcon />
             </RouterLink>
         </span>
-        <nav ref="navRef">
-            <RouterLink to="/" @click="closeMenu">Index</RouterLink>
+        <nav ref="navRef" @click="manifestoOpen = false">
+            <RouterLink to="/projects" @click="closeMenu">Projects</RouterLink>
             <RouterLink to="/services" @click="closeMenu">Services</RouterLink>
             <RouterLink to="/contact" @click="closeMenu">Contact</RouterLink>
             <button @click.stop="localeStore.toggle">{{ localeStore.nextLabel }}</button>
         </nav>
     </header>
     <SharedNav :open="menuOpen" @close="closeMenu" />
-    <section :class="{ 'hide-mobile': route.path === '/services' || route.path === '/contact' }">
-        <ul ref="taglineRef">
+    <ManifestoSheet :open="manifestoOpen" @close="manifestoOpen = false" />
+    <section :class="{ 'hide-mobile': route.path === '/services' || route.path === '/contact' }" :style="manifestoOpen ? { color: currentThemeBg } : {}">
+        <ul ref="taglineRef" @click.stop="manifestoOpen = !manifestoOpen">
             <li>
                 <h1>{{ titleParts[0] }}</h1>
                 <h2>{{ titleParts[1] }}</h2>
@@ -106,6 +116,10 @@ header {
     z-index: 20;
     padding: 2em;
     transition: color 0.4s ease;
+    pointer-events: none;
+    > span, > nav {
+        pointer-events: auto;
+    }
     span:hover svg {
         transform: scaleX(1.1);
     }
@@ -113,6 +127,7 @@ header {
         all: unset;
         cursor: pointer;
         display: none;
+        pointer-events: auto;
     }
 }
 nav {
@@ -137,10 +152,11 @@ section {
         margin-left: 15vw;
         padding: 2em;
         gap: 6em;
+        cursor: pointer;
     }
 }
 h1, h2, p {
-    font-size: var(--text-small);
+    font-size: var(--text-sm);
     font-family: 'body';
     text-transform: uppercase;
     line-height: 1;

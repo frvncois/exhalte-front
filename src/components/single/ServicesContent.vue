@@ -1,20 +1,24 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, onBeforeUnmount, nextTick, computed } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue'
 import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { storeToRefs } from 'pinia'
 import MainPath from '@/assets/MainPath.vue'
 import lenis from '@/lib/lenis'
-import { registerPageLeave } from '@/transitions/projectTransition'
 import { useServiceStore } from '@/stores/service'
+import {
+    CIRCULAR_DESKTOP_PATH, CIRCULAR_MOBILE_PATH,
+    CIRCULAR_SVG_WIDTHS, CIRCULAR_FONT_SIZES,
+    CIRCULAR_BASE_OFFSETS, CIRCULAR_TRAVEL_OFFSETS,
+    circularMobileSvgWidths, circularMobileFontSizes,
+} from '@/lib/textOnPath'
 
-const wrapRef = ref<HTMLElement | null>(null)
-const sectionRef = ref<HTMLElement | null>(null)
-const svgEl = ref<SVGElement | null>(null)
-const taglineWrapRef = ref<HTMLElement | null>(null)
+gsap.registerPlugin(ScrollTrigger)
+
+const sceneRef  = ref<HTMLElement | null>(null)
+const heroRef   = ref<HTMLElement | null>(null)
+const svgEl     = ref<SVGElement | null>(null)
 const serviceStore = useServiceStore()
-let observer: IntersectionObserver | null = null
-let unregisterLeave: (() => void) | null = null
-onBeforeUnmount(() => unregisterLeave?.())
 
 const { service } = storeToRefs(serviceStore)
 const taglines = computed(() => [
@@ -24,105 +28,118 @@ const taglines = computed(() => [
     service.value?.Tagline04 ?? '',
 ])
 
-// startOffset % along path (converted from degrees: deg/360*100)
-const baseOffsets  = [20, 80, 130, 160].map(d => d / 360 * 100)
-const travelOffsets = [40, 65, 30, 55].map(d => d / 360 * 100)
-const offsets      = ref([...baseOffsets])
-const opacities   = ref([0, 0, 0, 0])
-const scale       = ref(1)
-
-const svgWidths   = [600, 700, 800, 900]
-const targetPx    = 18
-const fontSizes   = svgWidths.map(w => +(targetPx / (w / 100)).toFixed(3))
+const offsets   = ref([...CIRCULAR_BASE_OFFSETS])
+const opacities = ref([0, 0, 0, 0])
+const scale     = ref(1)
 
 const isMobile        = window.innerWidth <= 900
-const mobileSvgWs     = [0.6, 0.7, 0.8, 0.9].map(r => window.innerWidth * r)
-const mobileFontSizes = mobileSvgWs.map(w => +(targetPx * 0.75 / (w / 100)).toFixed(3))
-const desktopPath     = 'M 10,50 a 40,40 0 1,1 80,0 40,40 0 1,1 -80,0'
-const mobilePath      = 'M 20,50 a 30,46 0 1,1 60,0 30,46 0 1,1 -60,0'
-
-const fadeStarts  = [0, 0.08, 0.18, 0.28]
-const fadeDur     = 0.25
+const mobileSvgWs     = circularMobileSvgWidths(window.innerWidth)
+const mobileFontSizes = circularMobileFontSizes(window.innerWidth)
+const desktopPath     = CIRCULAR_DESKTOP_PATH
+const mobilePath      = CIRCULAR_MOBILE_PATH
+const svgWidths       = CIRCULAR_SVG_WIDTHS
+const fontSizes       = CIRCULAR_FONT_SIZES
 
 onMounted(async () => {
     await serviceStore.fetchService()
     await nextTick()
 
-    const svg = wrapRef.value?.querySelector('svg') as SVGElement | null
+    const svg = heroRef.value?.querySelector('svg') as SVGElement | null
     svgEl.value = svg
-    const col = sectionRef.value?.querySelector('.col') as HTMLElement | null
+    gsap.set(svg, { opacity: 0, scale: 0.35 })
 
-    const colHeight = col?.offsetHeight ?? 0
-    const heroHeight = window.innerHeight - colHeight
-    if (wrapRef.value) wrapRef.value.style.height = `${heroHeight}px`
+    // ── Entrance animation ────────────────────────────────────────────────────
+    const taglineSvgs  = Array.from(sceneRef.value?.querySelectorAll('.tagline-items svg') ?? [])
+    const textPaths    = Array.from(sceneRef.value?.querySelectorAll('.tagline-items textPath') ?? [])
 
-    gsap.set(svg, { opacity: 0 })
-    gsap.from(wrapRef.value, { opacity: 0, x: 40, duration: 1, delay: 0.5, ease: 'power3.out' })
-    gsap.to(svg, { opacity: 1, duration: 0.6, ease: 'power2.out', delay: 0.65 })
-
-    gsap.set(col, { opacity: 0, x: 40 })
-    observer = new IntersectionObserver(([entry]) => {
-        if (entry?.isIntersecting) {
-            gsap.to(col, { opacity: 1, x: 0, duration: 1, ease: 'power2.out' })
-            observer?.disconnect()
+    let entranceDone = false
+    const entryTl = gsap.timeline({ delay: 0.2, onComplete: () => { entranceDone = true } })
+    taglineSvgs.forEach((el, i) => {
+        const baseOffset = CIRCULAR_BASE_OFFSETS[i] ?? 0
+        const proxy = { v: 0 }
+        entryTl.to(proxy, {
+            v: 1,
+            duration: 0.8,
+            ease: 'power2.out',
+            onUpdate: () => { opacities.value[i] = proxy.v },
+            onComplete: () => { opacities.value[i] = 1 },
+        }, i * 0.15)
+        if (textPaths[i]) {
+            entryTl.from(textPaths[i], {
+                attr: { startOffset: `${baseOffset - 15}%` },
+                duration: 1.4,
+                ease: 'power3.out',
+            }, i * 0.15)
         }
-    }, { threshold: 0.2 })
-    observer.observe(col!)
+    })
+    entryTl.to(svg, { opacity: 1, duration: 0.8, ease: 'power2.out' }, 0.5)
 
-    unregisterLeave = registerPageLeave((done) => {
-        gsap.to(svg, { opacity: 0, duration: 0.3, ease: 'power2.in' })
-        gsap.to(wrapRef.value, { opacity: 0, x: 40, duration: 0.5, ease: 'power3.in', onComplete: done })
+    const lenisUpdate = () => ScrollTrigger.update()
+    lenis.on('scroll', lenisUpdate)
+
+    const st = ScrollTrigger.create({
+        trigger: sceneRef.value,
+        start: 'top top',
+        end: '+=300vh',
+        pin: true,
+        pinSpacing: true,
+        onUpdate: (self) => {
+            const p = self.progress
+
+            offsets.value = CIRCULAR_BASE_OFFSETS.map((base, i) => base + p * (CIRCULAR_TRAVEL_OFFSETS[i] ?? 0))
+            scale.value   = 1 + Math.min(Math.max((p - 0.5) / 0.5, 0), 1) * 4
+
+            if (entranceDone) {
+                const fadeOut   = 1 - Math.min(Math.max((p - 0.5) / 0.5, 0), 1)
+                opacities.value = [fadeOut, fadeOut, fadeOut, fadeOut]
+            }
+
+            if (svgEl.value) {
+                const scaleProgress = Math.min(Math.max((p - 0.5) / 0.5, 0), 1)
+                gsap.to(svgEl.value, { scale: 0.35 + scaleProgress * 0.65, duration: 0.1, overwrite: 'auto' })
+            }
+        },
     })
 
-    const scaleRange = window.innerHeight
-
-    const onContentScroll = ({ scroll }: { scroll: number }) => {
-        if (!wrapRef.value || !col) return
-        const progress = Math.min(Math.max(scroll / colHeight, 0), 1)
-        col.style.transform = `translateY(${progress * 100}%)`
-        col.style.opacity = `${1 - progress}`
-        wrapRef.value.style.height = `${heroHeight + progress * colHeight}px`
-
-        if (svg) {
-            const phase2 = Math.min(Math.max((scroll - colHeight) / scaleRange, 0), 1)
-            gsap.set(svg, { scale: 1 - phase2 * 0.8 })
-        }
-    }
-
-    const onTaglineScroll = () => {
-        if (!taglineWrapRef.value) return
-        const { top } = taglineWrapRef.value.getBoundingClientRect()
-        const scrollRange = taglineWrapRef.value.offsetHeight - window.innerHeight
-        if (scrollRange <= 0) return
-        const p = Math.min(Math.max(-top / scrollRange, 0), 1)
-
-        offsets.value   = baseOffsets.map((base, i) => base + p * (travelOffsets[i] ?? 0))
-        opacities.value = fadeStarts.map(start => Math.min(Math.max((p - start) / fadeDur, 0), 1))
-        scale.value     = 1 + Math.min(Math.max((p - 0.7) / 0.3, 0), 1) * 4
-
-        if (svgEl.value) {
-            const opacity = 1 - Math.min(Math.max((p - 0.7) / 0.3, 0), 1)
-            gsap.to(svgEl.value, { opacity, duration: 0.1, overwrite: true })
-        }
-    }
-
-    lenis.on('scroll', onContentScroll)
-    lenis.on('scroll', onTaglineScroll)
     onUnmounted(() => {
-        lenis.off('scroll', onContentScroll)
-        lenis.off('scroll', onTaglineScroll)
+        st.kill()
+        lenis.off('scroll', lenisUpdate)
     })
 })
-
-onUnmounted(() => observer?.disconnect())
-
-defineExpose({ taglineEl: taglineWrapRef })
 </script>
 
 <template>
-    <section ref="sectionRef">
-        <div ref="wrapRef" class="hero">
-            <MainPath />
+    <section>
+        <div class="scene" ref="sceneRef">
+            <div class="tagline-items">
+                <svg viewBox="0 0 100 100" :width="isMobile ? mobileSvgWs[0] : 600" :height="isMobile ? mobileSvgWs[0] : 600" :style="{ transform: `scale(${scale})`, opacity: opacities[0] }">
+                    <defs><path id="cp1" :d="isMobile ? mobilePath : desktopPath" /></defs>
+                    <text :font-size="isMobile ? mobileFontSizes[0] : fontSizes[0]" fill="currentColor">
+                        <textPath href="#cp1" :startOffset="`${offsets[0]}%`">{{ taglines[0] }}</textPath>
+                    </text>
+                </svg>
+                <svg viewBox="0 0 100 100" :width="isMobile ? mobileSvgWs[1] : 700" :height="isMobile ? mobileSvgWs[1] : 700" :style="{ transform: `scale(${scale})`, opacity: opacities[1] }">
+                    <defs><path id="cp2" :d="isMobile ? mobilePath : desktopPath" /></defs>
+                    <text :font-size="isMobile ? mobileFontSizes[1] : fontSizes[1]" fill="currentColor">
+                        <textPath href="#cp2" :startOffset="`${offsets[1]}%`">{{ taglines[1] }}</textPath>
+                    </text>
+                </svg>
+                <svg viewBox="0 0 100 100" :width="isMobile ? mobileSvgWs[2] : 800" :height="isMobile ? mobileSvgWs[2] : 800" :style="{ transform: `scale(${scale})`, opacity: opacities[2] }">
+                    <defs><path id="cp3" :d="isMobile ? mobilePath : desktopPath" /></defs>
+                    <text :font-size="isMobile ? mobileFontSizes[2] : fontSizes[2]" fill="currentColor">
+                        <textPath href="#cp3" :startOffset="`${offsets[2]}%`">{{ taglines[2] }}</textPath>
+                    </text>
+                </svg>
+                <svg viewBox="0 0 100 100" :width="isMobile ? mobileSvgWs[3] : 900" :height="isMobile ? mobileSvgWs[3] : 900" :style="{ transform: `scale(${scale})`, opacity: opacities[3] }">
+                    <defs><path id="cp4" :d="isMobile ? mobilePath : desktopPath" /></defs>
+                    <text :font-size="isMobile ? mobileFontSizes[3] : fontSizes[3]" fill="currentColor">
+                        <textPath href="#cp4" :startOffset="`${offsets[3]}%`">{{ taglines[3] }}</textPath>
+                    </text>
+                </svg>
+            </div>
+            <div class="hero" ref="heroRef">
+                <MainPath />
+            </div>
         </div>
         <div class="col">
             <div>
@@ -144,67 +161,53 @@ defineExpose({ taglineEl: taglineWrapRef })
                 >{{ block.children.map((c: { text: string }) => c.text).join('') }}</p>
             </div>
         </div>
-        <div class="tagline" ref="taglineWrapRef">
-                <div class="items">
-                    <svg viewBox="0 0 100 100" :width="isMobile ? mobileSvgWs[0] : 600" :height="isMobile ? mobileSvgWs[0] : 600" :style="{ transform: `scale(${scale})`, opacity: opacities[0] }">
-                        <defs>
-                            <path id="cp1" :d="isMobile ? mobilePath : desktopPath" />
-                        </defs>
-                        <text :font-size="isMobile ? mobileFontSizes[0] : fontSizes[0]" fill="currentColor">
-                            <textPath href="#cp1" :startOffset="`${offsets[0]}%`">{{ taglines[0] }}</textPath>
-                        </text>
-                    </svg>
-
-                    <svg viewBox="0 0 100 100" :width="isMobile ? mobileSvgWs[1] : 700" :height="isMobile ? mobileSvgWs[1] : 700" :style="{ transform: `scale(${scale})`, opacity: opacities[1] }">
-                        <defs>
-                            <path id="cp2" :d="isMobile ? mobilePath : desktopPath" />
-                        </defs>
-                        <text :font-size="isMobile ? mobileFontSizes[1] : fontSizes[1]" fill="currentColor">
-                            <textPath href="#cp2" :startOffset="`${offsets[1]}%`">{{ taglines[1] }}</textPath>
-                        </text>
-                    </svg>
-
-                    <svg viewBox="0 0 100 100" :width="isMobile ? mobileSvgWs[2] : 800" :height="isMobile ? mobileSvgWs[2] : 800" :style="{ transform: `scale(${scale})`, opacity: opacities[2] }">
-                        <defs>
-                            <path id="cp3" :d="isMobile ? mobilePath : desktopPath" />
-                        </defs>
-                        <text :font-size="isMobile ? mobileFontSizes[2] : fontSizes[2]" fill="currentColor">
-                            <textPath href="#cp3" :startOffset="`${offsets[2]}%`">{{ taglines[2] }}</textPath>
-                        </text>
-                    </svg>
-
-                    <svg viewBox="0 0 100 100" :width="isMobile ? mobileSvgWs[3] : 900" :height="isMobile ? mobileSvgWs[3] : 900" :style="{ transform: `scale(${scale})`, opacity: opacities[3] }">
-                        <defs>
-                            <path id="cp4" :d="isMobile ? mobilePath : desktopPath" />
-                        </defs>
-                        <text :font-size="isMobile ? mobileFontSizes[3] : fontSizes[3]" fill="currentColor">
-                            <textPath href="#cp4" :startOffset="`${offsets[3]}%`">{{ taglines[3] }}</textPath>
-                        </text>
-                    </svg>
-                </div>
-        </div>
     </section>
 </template>
 
 
 <style scoped>
-.sticky section {
-    flex-shrink: 0;
+.scene {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
     overflow: hidden;
 }
 
-.hero svg {
-    width: 90%;
-    height: 100%;
-    display: block;
+.tagline-items {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.tagline-items svg {
+    position: absolute;
     color: currentColor;
 }
 
+.hero {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+}
+
+.hero svg {
+    display: block;
+    width: calc(100% - 2em);
+    height: 100%;
+    color: currentColor;
+    padding-left: 2em;
+    padding-top: 1em;
+}
+
 .col {
+    margin-bottom: 18em;
     padding: 2em;
     display: flex;
     div:first-child {
-        flex: 1;
+        flex: 0.95;
         display: flex;
         flex-direction: column;
         gap: 1em;
@@ -229,40 +232,7 @@ defineExpose({ taglineEl: taglineWrapRef })
     }
 }
 
-
-.hero {
-    position: sticky;
-    top: 0;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.tagline {
-    height: 400vh;
-    position: relative;
-}
-
-.items {
-    position: sticky;
-    top: -2em;
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.items svg {
-    position: absolute;
-    color: currentColor;
-}
-
 @media (max-width: 900px) {
-    .hero svg {
-        height: auto;
-    }
     .col {
         flex-direction: column;
         gap: 4em;

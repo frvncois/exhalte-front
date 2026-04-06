@@ -67,7 +67,7 @@ function navigate(to: string) {
     <Teleport to="body">
         <nav ref="navRef">
             <div class="top" ref="linksRef">
-                <a @click.prevent="navigate('/')">Index</a>
+                <a @click.prevent="navigate('/projects')">Index</a>
                 <a @click.prevent="navigate('/services')">Services</a>
                 <a @click.prevent="navigate('/contact')">Contact</a>
             </div>

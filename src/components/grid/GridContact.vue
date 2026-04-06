@@ -10,6 +10,11 @@ const ulRef = ref<HTMLElement | null>(null)
 const circlesRef = ref<HTMLElement | null>(null)
 const contactStore = useContactStore()
 const { locale } = storeToRefs(useLocaleStore())
+const shuffledTeam = ref<NonNullable<typeof contactStore.contact>['Team']>([])
+
+function shuffleArray<T>(arr: T[]): T[] {
+    return [...arr].sort(() => Math.random() - 0.5)
+}
 let tl: gsap.core.Timeline | null = null
 let unregisterLeave: (() => void) | null = null
 onBeforeUnmount(() => unregisterLeave?.())
@@ -23,22 +28,62 @@ async function animate() {
     gsap.set(lis, { clipPath: 'inset(0 100% 0 0)' })
     gsap.to(lis, { clipPath: 'inset(0 0% 0 0)', duration: 0.75, ease: 'power3.out', stagger: 0.06, delay: 0.2 })
 
-    const rows = circlesRef.value?.querySelectorAll('div')
-    if (!rows) return
+    const rowEls = circlesRef.value?.querySelectorAll('div')
+    if (!rowEls) return
 
-    const midSpans = Array.from(rows).map(row => row.querySelectorAll('span')[2])
-    const leftSpans = Array.from(rows).flatMap(row => [row.querySelectorAll('span')[0], row.querySelectorAll('span')[1]])
-    const rightSpans = Array.from(rows).flatMap(row => [row.querySelectorAll('span')[3], row.querySelectorAll('span')[4]])
-
+    const byRow = Array.from(rowEls).map(row => Array.from(row.querySelectorAll('span')))
+    const byCol = [0, 1, 2, 3, 4].map(i => byRow.map(row => row[i]))
     const allSpans = circlesRef.value!.querySelectorAll('span')
+
     gsap.set(allSpans, { opacity: 0, backgroundColor: 'var(--blue)' })
-    gsap.set(leftSpans, { x: '30vw' })
-    gsap.set(rightSpans, { x: '-30vw' })
+
+    const dx = window.innerWidth * 0.35
+    const dy = window.innerHeight * 0.35
 
     tl = gsap.timeline({ delay: 1 })
-    tl.to(midSpans, { opacity: 1, duration: 0.5, stagger: 0.08, ease: 'power2.out' }, '-=0.3')
-    tl.to(leftSpans, { opacity: 1, x: 0, duration: 1, stagger: 0.06, ease: 'power3.out' }, '-=0.3')
-    tl.to(rightSpans, { opacity: 1, x: 0, duration: 1, stagger: 0.06, ease: 'power3.out' }, '<')
+    const variant = Math.floor(Math.random() * 6) + 1
+
+    if (variant === 1) { // top → down
+        gsap.set(allSpans, { y: -dy })
+        byRow.forEach((rowSpans, i) => {
+            tl!.to(rowSpans, { opacity: 1, y: 0, duration: 1, ease: 'power3.out', stagger: 0.04 }, i * 0.12)
+        })
+    } else if (variant === 2) { // bottom → up
+        gsap.set(allSpans, { y: dy })
+        const reversed = [...byRow].reverse()
+        reversed.forEach((rowSpans, i) => {
+            tl!.to(rowSpans, { opacity: 1, y: 0, duration: 1, ease: 'power3.out', stagger: 0.04 }, i * 0.12)
+        })
+    } else if (variant === 3) { // left → right
+        gsap.set(allSpans, { x: -dx })
+        byCol.forEach((colSpans, i) => {
+            tl!.to(colSpans, { opacity: 1, x: 0, duration: 1, ease: 'power3.out', stagger: 0.04 }, i * 0.12)
+        })
+    } else if (variant === 4) { // right → left
+        gsap.set(allSpans, { x: dx })
+        const reversed = [...byCol].reverse()
+        reversed.forEach((colSpans, i) => {
+            tl!.to(colSpans, { opacity: 1, x: 0, duration: 1, ease: 'power3.out', stagger: 0.04 }, i * 0.12)
+        })
+    } else if (variant === 5) { // horizontal middle → expand top and bottom
+        gsap.set(byRow[0] ?? [], { y: dy * 0.4 })
+        gsap.set(byRow[1] ?? [], { y: dy * 0.2 })
+        gsap.set(byRow[3] ?? [], { y: -dy * 0.2 })
+        gsap.set(byRow[4] ?? [], { y: -dy * 0.4 })
+        tl!.to(byRow[2] ?? [], { opacity: 1, duration: 0.5, stagger: 0.06, ease: 'power2.out' })
+        tl!.to([...(byRow[1] ?? []), ...(byRow[3] ?? [])], { opacity: 1, y: 0, duration: 0.9, stagger: 0.04, ease: 'power3.out' }, '-=0.3')
+        tl!.to([...(byRow[0] ?? []), ...(byRow[4] ?? [])], { opacity: 1, y: 0, duration: 0.9, stagger: 0.04, ease: 'power3.out' }, '-=0.6')
+    } else { // variant 6 — vertical middle → expand left and right
+        const midSpans = byRow.map(row => row[2])
+        const leftSpans = byRow.flatMap(row => [row[0], row[1]])
+        const rightSpans = byRow.flatMap(row => [row[3], row[4]])
+        gsap.set(leftSpans, { x: dx * 0.4 })
+        gsap.set(rightSpans, { x: -dx * 0.4 })
+        tl!.to(midSpans, { opacity: 1, duration: 0.5, stagger: 0.08, ease: 'power2.out' }, '-=0.3')
+        tl!.to(leftSpans, { opacity: 1, x: 0, duration: 1, stagger: 0.06, ease: 'power3.out' }, '-=0.3')
+        tl!.to(rightSpans, { opacity: 1, x: 0, duration: 1, stagger: 0.06, ease: 'power3.out' }, '<')
+    }
+
     tl.to(allSpans, { backgroundColor: 'transparent', duration: 1, ease: 'power2.out' }, '-=0.3')
 }
 
@@ -46,6 +91,7 @@ onMounted(async () => {
     gsap.set(ulRef.value, { visibility: 'hidden' })
     gsap.set(circlesRef.value, { visibility: 'hidden' })
     await contactStore.fetchContact()
+    shuffledTeam.value = shuffleArray(contactStore.contact?.Team ?? [])
     gsap.set(ulRef.value, { visibility: 'visible' })
     gsap.set(circlesRef.value, { visibility: 'visible' })
     animate()
@@ -71,7 +117,7 @@ onMounted(async () => {
                     <p>{{ line }}</p>
                 </template>
             </li>
-            <li v-for="member in contactStore.contact?.Team" :key="member.id">
+            <li v-for="member in shuffledTeam" :key="member.id">
                 <h3>{{ member.Name }}</h3>
                 <h4>{{ member.Title }}</h4>
                 <a :href="`tel:${member.Phone}`">{{ member.Phone }}</a>
@@ -99,57 +145,23 @@ section {
     margin: 6em 2em -6em 2em;
 }
 ul {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
     position: relative;
     z-index: 2;
     flex: 1;
-    padding-bottom: 14em;
 }
 
 li {
+    position: absolute;
     display: flex;
     flex-direction: column;
-    padding-top: 4em;
-        &:nth-child(2) {
-            h4 {
-                transform: translateX(2em);
-            }
-        }
-        &:nth-child(3) {
-            position: relative;
-            top: -5.5em;
-            h4 {
-                transform: translateX(2em);
-            }
-        }
-        &:nth-child(4) {
-            text-align: center;
-            h3 {
-                transform: translateX(-10%);
-            }
-            h4 {
-                transform: translateX(2%);
-            }
-        }
-        &:nth-child(5) {
-            text-align: center;
-            h3 {
-                transform: translateX(-20%);
-            }
-            h4 {
-                transform: translateX(10%);
-            }
-        }
-        &:nth-child(6) {
-            h3 {
-                transform: translateX(15%);
-            }
-            h4 {
-                transform: translateX(10%);
-            }
-        }
 }
+
+li:nth-child(1) { top: 4em; left: 0; }
+li:nth-child(2) { top: 4em; left: 25%; }
+li:nth-child(3) { top: 28.5%; left: 50%; }
+li:nth-child(4) { top: 50.5%; left: 25%; }
+li:nth-child(5) { top: 50.5%; left: 75%; }
+li:nth-child(6) { top: 72.5%; left: 50%; }
 
 .circles {
     position: absolute;
@@ -158,11 +170,11 @@ li {
     display: flex;
     flex-direction: column;
     pointer-events: none;
+    height: 102vh;
     div {
         flex: 1;
         display: flex;
         justify-content: space-between;
-        position: relative;
         span {
             height: 0.5em;
             width: 0.5em;
@@ -186,81 +198,23 @@ h4 {
     max-width: 29ch;
 }
 
-li:nth-child(1) { grid-row: 1; grid-column: 1; }
-li:nth-child(2) { grid-row: 1; grid-column: 2; }
-li:nth-child(3) { grid-row: 2; grid-column: 3; }
-li:nth-child(4) { grid-row: 3; grid-column: 2; }
-li:nth-child(5) { grid-row: 3; grid-column: 4; }
-li:nth-child(6) { grid-row: 4; grid-column: 3; }
-
 @media (max-width: 900px) {
     section {
         height: auto;
         margin: 6em 1em 0;
     }
-    .circles { 
-        display: none; 
+    .circles {
+        display: none;
     }
     ul {
+        position: static;
         display: flex;
         flex-direction: column;
         gap: 1em;
     }
-
     li {
-    display: flex;
-    flex-direction: column;
-    padding-top: 1.5em;
-        &:nth-child(2) {
-            h4 {
-                text-align: right;
-                transform: translateX(0em);
-            }
-            a:first-of-type  {
-                    text-align: right;
-            }
-            a:nth-of-type(2)  {
-                    text-align: center;
-            }
-        }
-        &:nth-child(3) {
-            top: unset;
-            h4 {
-                text-align: right;
-                transform: translateX(0em);
-            }
-            a:first-of-type  {
-                    text-align: right;
-            }
-            a:nth-of-type(2)  {
-                    text-align: center;
-            }
-        }
-        &:nth-child(4) {
-            h3 {
-                transform: translateX(-10%);
-            }
-            h4 {
-                transform: translateX(0%);
-            }
-        }
-        &:nth-child(5) {
-            text-align: left;
-            h3 {
-                transform: translateX(10%);
-            }
-            h4 {
-                transform: translateX(20%);
-            }
-        }
-        &:nth-child(6) {
-            h3 {
-                transform: translateX(0%);
-            }
-            h4 {
-                transform: translateX(0%);
-            }
-        }
+        position: static;
+        padding-top: 1.5em;
     }
     h4 {
         max-width: unset;

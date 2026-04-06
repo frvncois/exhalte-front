@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { gsap } from 'gsap'
+import { ref, watch } from 'vue'
 import AppLoad from '@/components/transition/AppLoad.vue'
 import RouteTransition from '@/components/transition/RouteTransition.vue'
 import ShareClose from '@/components/shared/ShareClose.vue'
@@ -9,39 +8,40 @@ import { useServiceStore } from '@/stores/service'
 import { useContactStore } from '@/stores/contact'
 import { useSharedStore } from '@/stores/shared'
 import { usePolicyStore } from '@/stores/policyContent'
-import { registerReload, triggerPageLeave, triggerHeaderLeave } from '@/transitions/projectTransition'
+import { useManifestoStore } from '@/stores/manifesto'
+import { useLocaleStore } from '@/stores/locale'
 
-const skipAppLoad = sessionStorage.getItem('skip-appload') === '1'
-if (skipAppLoad) sessionStorage.removeItem('skip-appload')
-const viewReady = ref(skipAppLoad || document.body.classList.contains('app-loaded'))
-const reloadOverlayRef = ref<HTMLElement | null>(null)
+const viewReady = ref(false)
+const appLoadDone = ref(false)
+const localeKey = ref(0)
 
-useProjectStore().fetchProjects()
-useServiceStore().fetchService()
-useContactStore().fetchContact()
-useSharedStore().fetchShared()
-usePolicyStore().fetchPolicies()
+const projectStore = useProjectStore()
+const serviceStore = useServiceStore()
+const contactStore = useContactStore()
+const sharedStore = useSharedStore()
+const policyStore = usePolicyStore()
+const manifestoStore = useManifestoStore()
 
-onMounted(() => {
-    registerReload(() => {
-        Promise.all([
-            new Promise<void>(resolve => triggerHeaderLeave(resolve)),
-            new Promise<void>(resolve => triggerPageLeave(resolve)),
-        ]).then(() => {
-            gsap.to(reloadOverlayRef.value, {
-                opacity: 1,
-                duration: 0.5,
-                ease: 'power2.in',
-                onComplete: () => window.location.reload(),
-            })
-        })
-    })
+function fetchAll() {
+    projectStore.fetchProjects()
+    serviceStore.fetchService()
+    contactStore.fetchContact()
+    sharedStore.fetchShared()
+    policyStore.fetchPolicies()
+    manifestoStore.fetchManifesto()
+}
+
+fetchAll()
+
+watch(() => useLocaleStore().locale, () => {
+    fetchAll()
+    localeKey.value++
 })
 </script>
 
 <template>
-    <AppLoad v-if="!skipAppLoad" @ready="viewReady = true" />
+    <AppLoad v-if="!appLoadDone" @ready="viewReady = true" @done="appLoadDone = true" />
     <ShareClose v-if="viewReady && $route.name === 'single'" />
-    <RouterView v-if="viewReady" :key="$route.fullPath" />
+    <RouterView v-if="viewReady" :key="$route.fullPath + localeKey" />
     <RouteTransition />
 </template>

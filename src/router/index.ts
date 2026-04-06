@@ -15,6 +15,12 @@ const router = createRouter({
       meta: { hasHeader: true },
     },
     {
+      path: '/projects',
+      name: 'projects',
+      component: () => import('../views/ProjectsView.vue'),
+      meta: { hasHeader: true },
+    },
+    {
       path: '/projects/:slug',
       name: 'single',
       component: () => import('../views/SingleView.vue'),
@@ -50,7 +56,7 @@ router.beforeEach(async (to, from) => {
     const isP2P = from.path.startsWith('/projects/') && to.path.startsWith('/projects/')
     setProjectToProject(isP2P)
     if (isP2P) clearFwdClones()
-    if (to.path === '/' && !from.path.startsWith('/projects/')) clearRevClones()
+    if ((to.path === '/' || to.path === '/projects') && !from.path.startsWith('/projects/')) clearRevClones()
     if (!to.path.startsWith('/projects/')) clearFwdClones()
 
     const themePath = to.path.startsWith('/projects/') ? '/projects/:slug' : to.path

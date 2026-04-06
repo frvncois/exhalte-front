@@ -171,7 +171,7 @@ export function getService(locale = 'en'): Promise<Service> {
 }
 
 export function getContact(locale = 'en'): Promise<Contact> {
-  return strapiGet<Contact>('/contact', { populate: '*', locale })
+  return strapiGet<Contact>('/contact', { populate: 'Team', locale })
 }
 
 export function getShared(locale = 'en'): Promise<Shared> {
@@ -187,4 +187,14 @@ export interface Policy {
 
 export function getPolicies(locale = 'fr'): Promise<Policy[]> {
   return strapiGet<Policy[]>('/policies', { locale })
+}
+
+export interface Manifesto {
+  id: number
+  documentId: string
+  Content: DetailsBlock[]
+}
+
+export function getManifesto(locale = 'fr'): Promise<Manifesto> {
+  return strapiGet<Manifesto>('/manifesto', { locale })
 }

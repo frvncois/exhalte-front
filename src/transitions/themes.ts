@@ -1,5 +1,11 @@
 export const themes: Record<string, { bg: string; transitionBg?: string; color: string; bodyClass?: string }> = {
     '/': {
+        bg: '#FF4DFB',
+        transitionBg: '#FF4DFB',
+        color: 'var(--light)',
+        bodyClass: 'theme-pink',
+    },
+    '/projects': {
         bg: '#f9f9f9',
         color: 'var(--black)',
     },

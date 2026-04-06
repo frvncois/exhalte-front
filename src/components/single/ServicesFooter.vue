@@ -1,36 +1,42 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { gsap } from 'gsap'
-import { storeToRefs } from 'pinia'
-import { useLocaleStore } from '@/stores/locale'
 import MainLogo from '@/assets/MainLogo.vue'
+import lenis from '@/lib/lenis'
 
-const { locale } = storeToRefs(useLocaleStore())
-
-const parenLeftRef = ref<HTMLElement | null>(null)
-const parenRightRef = ref<HTMLElement | null>(null)
+const logoRef = ref<HTMLElement | null>(null)
 
 onMounted(() => {
-    gsap.set([parenLeftRef.value, parenRightRef.value], { opacity: 0 })
+    if (!logoRef.value) return
+
+    gsap.set(logoRef.value, { clipPath: 'inset(0 0 100% 0)' })
+
+    let triggered = false
+    const check = () => {
+        if (triggered || !logoRef.value) return
+        const rect = logoRef.value.getBoundingClientRect()
+        if (rect.top < window.innerHeight * 0.85) {
+            triggered = true
+            gsap.to(logoRef.value, {
+                clipPath: 'inset(0 0 0% 0)',
+                duration: 1.2,
+                ease: 'power3.out',
+            })
+        }
+    }
+
+    lenis.on('scroll', check)
+    check()
+
+    onUnmounted(() => lenis.off('scroll', check))
 })
-
-function onEnter() {
-    gsap.fromTo(parenLeftRef.value, { opacity: 0, x: -6 }, { opacity: 1, x: 0, duration: 0.35, ease: 'power2.out' })
-    gsap.fromTo(parenRightRef.value, { opacity: 0, x: 6 }, { opacity: 1, x: 0, duration: 0.35, ease: 'power2.out' })
-}
-
-function onLeave() {
-    gsap.to(parenLeftRef.value, { opacity: 0, x: -6, duration: 0.25, ease: 'power2.in' })
-    gsap.to(parenRightRef.value, { opacity: 0, x: 6, duration: 0.25, ease: 'power2.in' })
-}
 </script>
 
 <template>
     <section>
-        <RouterLink to="/contact" @mouseenter="onEnter" @mouseleave="onLeave">
-            <span ref="parenLeftRef">(</span>( {{ locale === 'fr' ? 'Contactez-nous' : 'Contact us' }} )<span ref="parenRightRef">)</span>
-        </RouterLink>
-        <MainLogo />
+        <div class="logo" ref="logoRef">
+            <MainLogo />
+        </div>
     </section>
 </template>
 
@@ -39,13 +45,16 @@ section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8em;
-    padding: 2em;
+    padding: 4em 2em;
 }
 
-a {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
+.logo {
+    width: 100%;
+}
+
+:deep(svg) {
+    width: 100%;
+    height: auto;
+    display: block;
 }
 </style>

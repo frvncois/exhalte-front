@@ -1,0 +1,27 @@
+// ─── AppLoad ──────────────────────────────────────────────────────────────────
+
+export const APPLOAD_PHRASE = ' / Le mouvement est une pensée'
+export const APPLOAD_COPIES = 14
+export const APPLOAD_PATH_1 = 'M328.408 0.0610046C323.408 40.7277 276.308 122.061 127.908 122.061C-57.5919 122.061 -25.5919 29.061 127.908 29.061C281.408 29.061 328.408 101.5 328.408 155.061C328.408 208.622 280.908 281.061 127.908 281.061C-25.0919 281.061 -49.5919 187.561 127.908 187.561C294 187.561 328.408 272.122 328.408 316.561C328.408 361 289 445.061 127.908 445.061C-49.5919 445.061 -29.0919 351.061 127.908 351.061C284.908 351.061 328.408 440.561 328.408 470.561'
+export const APPLOAD_PATH_2 = 'M329.592 0.0610046C334.592 40.7277 381.692 122.061 530.092 122.061C715.5919 122.061 683.5919 29.061 530.092 29.061C376.592 29.061 329.592 101.5 329.592 155.061C329.592 208.622 377.092 281.061 530.092 281.061C683.0919 281.061 707.5919 187.561 530.092 187.561C364 187.561 329.592 272.122 329.592 316.561C329.592 361 369 445.061 530.092 445.061C707.5919 445.061 687.0919 351.061 530.092 351.061C373.092 351.061 329.592 440.561 329.592 470.561'
+
+// ─── Services circular paths ──────────────────────────────────────────────────
+
+export const CIRCULAR_DESKTOP_PATH = 'M 10,50 a 40,40 0 1,1 80,0 40,40 0 1,1 -80,0'
+export const CIRCULAR_MOBILE_PATH  = 'M 20,50 a 30,46 0 1,1 60,0 30,46 0 1,1 -60,0'
+
+const TARGET_PX = 18
+
+export const CIRCULAR_SVG_WIDTHS = [600, 700, 800, 900]
+export const CIRCULAR_FONT_SIZES = CIRCULAR_SVG_WIDTHS.map(w => +(TARGET_PX / (w / 100)).toFixed(3))
+
+export const CIRCULAR_BASE_OFFSETS   = [20, 80, 130, 160].map(d => d / 360 * 100)
+export const CIRCULAR_TRAVEL_OFFSETS = [40, 65,  30,  55].map(d => d / 360 * 100)
+
+export function circularMobileSvgWidths(innerWidth: number) {
+    return [0.6, 0.7, 0.8, 0.9].map(r => innerWidth * r)
+}
+
+export function circularMobileFontSizes(innerWidth: number) {
+    return circularMobileSvgWidths(innerWidth).map(w => +(TARGET_PX * 0.75 / (w / 100)).toFixed(3))
+}

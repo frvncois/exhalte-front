@@ -54,7 +54,7 @@ function handleRetour() {
         y: '-100%',
         duration: 0.5,
         ease: 'power3.in',
-        onComplete: () => { router.push('/') },
+        onComplete: () => { router.push('/projects') },
     })
 }
 </script>
