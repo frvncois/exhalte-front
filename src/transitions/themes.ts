@@ -20,9 +20,9 @@ export const themes: Record<string, { bg: string; transitionBg?: string; color: 
         bodyClass: 'theme-purple',
     },
     '/contact': {
-        bg: '#c2e6ee',
-        transitionBg: '#c2e6ee',
-        color: 'var(--blue)',
-        bodyClass: 'theme-blue',
+        bg: '#989e25',
+        transitionBg: '#989e25',
+        color: 'var(--white)',
+        bodyClass: 'theme-yellow',
     },
 }

@@ -1,9 +1,9 @@
 :root {
-    --olive: #989e25;
+    --olive: #898E15;
     --lime: #D3FDCD;
 
-    --blue: #43A7FF;
-    --babyblue: #c2e6ee;
+    --blue: #3D86C7;
+    --babyblue: #B7EBF7;
 
     --light: #dcdcdc;
     --medium: #CFCFCF;
@@ -59,13 +59,13 @@ body.theme-purple {
 }
 
 body.theme-yellow {
-    background: var(--lime);
-    color: var(--olive);
+    background: var(--olive);
+    color: var(--white);
 }
 
 body.theme-blue {
-    background: var(--babyblue);
-    color: var(--blue);
+    background: var(--blue);
+    color: var(--babyblue);
 }
 
 body.theme-gray {

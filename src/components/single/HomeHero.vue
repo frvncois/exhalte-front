@@ -1,14 +1,25 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { gsap } from 'gsap'
+import { storeToRefs } from 'pinia'
 import MainLogo from '@/assets/MainLogo.vue'
 import { registerPageLeave } from '@/transitions/projectTransition'
+import { useServiceStore } from '@/stores/service'
+
+const { service } = storeToRefs(useServiceStore())
 
 const sectionRef = ref<HTMLElement | null>(null)
 const logoRef    = ref<HTMLElement | null>(null)
+const h1Ref      = ref<HTMLElement | null>(null)
 let unregisterPageLeave: (() => void) | null = null
 
 onMounted(() => {
+    const outer = h1Ref.value?.querySelectorAll('.po')
+    const inner = h1Ref.value?.querySelectorAll('.pi')
+    gsap.set([outer, inner], { opacity: 0 })
+    gsap.to(outer, { opacity: 1, duration: 0.8, ease: 'power2.out', delay: 0.3 })
+    gsap.to(inner, { opacity: 1, duration: 0.8, ease: 'power2.out', delay: 0.7 })
+
     gsap.set(logoRef.value, { clipPath: 'inset(0 0 100% 0)' })
     gsap.to(logoRef.value, {
         clipPath: 'inset(0 0 0% 0)',
@@ -29,7 +40,7 @@ onUnmounted(() => {
 
 <template>
     <section ref="sectionRef">
-        <h1>Lorem ipsum dolor sit amet<br>consecteur ipsum dolor</h1>
+        <h1 ref="h1Ref"><span class="po">(</span><span class="pi">(</span> welcome <span class="pi">)</span><span class="po">)</span></h1>
         <div class="logo" ref="logoRef">
             <MainLogo />
         </div>

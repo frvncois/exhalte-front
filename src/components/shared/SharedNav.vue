@@ -67,7 +67,7 @@ function navigate(to: string) {
     <Teleport to="body">
         <nav ref="navRef">
             <div class="top" ref="linksRef">
-                <a @click.prevent="navigate('/projects')">Index</a>
+                <a @click.prevent="navigate('/projects')">Projects</a>
                 <a @click.prevent="navigate('/services')">Services</a>
                 <a @click.prevent="navigate('/contact')">Contact</a>
             </div>
@@ -96,9 +96,7 @@ nav {
     position: fixed;
     inset: 0;
     z-index: 19;
-    background: color-mix(in srgb, #2099BA 50%, transparent);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: var(--blue);
     display: flex;
     flex-direction: column;
     justify-content: space-between;

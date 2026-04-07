@@ -57,13 +57,13 @@ watch(() => props.open, (isOpen) => {
     if (isOpen) {
         const theme = currentTheme()
         gsap.set(el, { display: 'block', clipPath: 'inset(0 0 100% 0)', backgroundColor: theme?.color ?? 'var(--gray)', color: theme?.bg ?? '' })
-        gsap.to(el, { clipPath: 'inset(0 0 0% 0)', duration: 0.8, ease: 'power4.out' })
+        gsap.to(el, { clipPath: 'inset(0 0 0% 0)', duration: 2, ease: 'power4.inOut' })
         nextTick(() => document.addEventListener('click', handleOutsideClick))
     } else {
         document.removeEventListener('click', handleOutsideClick)
         gsap.to(el, {
             clipPath: 'inset(0 0 100% 0)',
-            duration: 0.6,
+            duration: 1,
             ease: 'power3.in',
             onComplete: () => { gsap.set(el, { display: 'none' }) },
         })
@@ -88,8 +88,8 @@ watch(() => props.open, (isOpen) => {
     z-index: 15;
     padding-top: 8em;
     padding-right: 20vw;
-    padding-bottom: 8em;
-    padding-left: 17vw;
+    padding-bottom: 6em;
+    padding-left: 16.65vw;
     overflow-y: auto;
     max-height: 100vh;
     div {

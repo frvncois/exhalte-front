@@ -30,7 +30,7 @@ const taglines = computed(() => [
 
 const offsets   = ref([...CIRCULAR_BASE_OFFSETS])
 const opacities = ref([0, 0, 0, 0])
-const scale     = ref(1)
+const scale     = ref(1.15)
 
 const isMobile        = window.innerWidth <= 900
 const mobileSvgWs     = circularMobileSvgWidths(window.innerWidth)
@@ -46,11 +46,13 @@ onMounted(async () => {
 
     const svg = heroRef.value?.querySelector('svg') as SVGElement | null
     svgEl.value = svg
-    gsap.set(svg, { opacity: 0, scale: 0.35 })
+    gsap.set(svg, { opacity: 0, scaleX: 0.18, scaleY: 0.18 })
 
     // ── Entrance animation ────────────────────────────────────────────────────
     const taglineSvgs  = Array.from(sceneRef.value?.querySelectorAll('.tagline-items svg') ?? [])
     const textPaths    = Array.from(sceneRef.value?.querySelectorAll('.tagline-items textPath') ?? [])
+    const textEls      = Array.from(sceneRef.value?.querySelectorAll('.tagline-items text') ?? [])
+    const heroPaths    = Array.from(heroRef.value?.querySelectorAll('path') ?? [])
 
     let entranceDone = false
     const entryTl = gsap.timeline({ delay: 0.2, onComplete: () => { entranceDone = true } })
@@ -87,16 +89,18 @@ onMounted(async () => {
             const p = self.progress
 
             offsets.value = CIRCULAR_BASE_OFFSETS.map((base, i) => base + p * (CIRCULAR_TRAVEL_OFFSETS[i] ?? 0))
-            scale.value   = 1 + Math.min(Math.max((p - 0.5) / 0.5, 0), 1) * 4
+            scale.value   = 1.15 + Math.min(Math.max((p - 0.5) / 0.5, 0), 1) * 4
 
             if (entranceDone) {
-                const fadeOut   = 1 - Math.min(Math.max((p - 0.5) / 0.5, 0), 1)
-                opacities.value = [fadeOut, fadeOut, fadeOut, fadeOut]
+                const fadeProgress = Math.min(Math.max((p - 0.3) / 0.7, 0), 1)
+                const alpha = 1 - fadeProgress
+                gsap.set(textEls, { fill: `rgba(255, 77, 251, ${alpha})` })
+                gsap.set(heroPaths, { fillOpacity: alpha })
             }
 
             if (svgEl.value) {
                 const scaleProgress = Math.min(Math.max((p - 0.5) / 0.5, 0), 1)
-                gsap.to(svgEl.value, { scale: 0.35 + scaleProgress * 0.65, duration: 0.1, overwrite: 'auto' })
+                gsap.to(svgEl.value, { scaleX: 0.18 + scaleProgress * 0.82, scaleY: 0.18 + scaleProgress * 0.57, duration: 0.1, overwrite: 'auto' })
             }
         },
     })
@@ -114,25 +118,25 @@ onMounted(async () => {
             <div class="tagline-items">
                 <svg viewBox="0 0 100 100" :width="isMobile ? mobileSvgWs[0] : 600" :height="isMobile ? mobileSvgWs[0] : 600" :style="{ transform: `scale(${scale})`, opacity: opacities[0] }">
                     <defs><path id="cp1" :d="isMobile ? mobilePath : desktopPath" /></defs>
-                    <text :font-size="isMobile ? mobileFontSizes[0] : fontSizes[0]" fill="currentColor">
+                    <text :font-size="isMobile ? mobileFontSizes[0] : fontSizes[0]" fill="#FF4DFB">
                         <textPath href="#cp1" :startOffset="`${offsets[0]}%`">{{ taglines[0] }}</textPath>
                     </text>
                 </svg>
                 <svg viewBox="0 0 100 100" :width="isMobile ? mobileSvgWs[1] : 700" :height="isMobile ? mobileSvgWs[1] : 700" :style="{ transform: `scale(${scale})`, opacity: opacities[1] }">
                     <defs><path id="cp2" :d="isMobile ? mobilePath : desktopPath" /></defs>
-                    <text :font-size="isMobile ? mobileFontSizes[1] : fontSizes[1]" fill="currentColor">
+                    <text :font-size="isMobile ? mobileFontSizes[1] : fontSizes[1]" fill="#FF4DFB">
                         <textPath href="#cp2" :startOffset="`${offsets[1]}%`">{{ taglines[1] }}</textPath>
                     </text>
                 </svg>
                 <svg viewBox="0 0 100 100" :width="isMobile ? mobileSvgWs[2] : 800" :height="isMobile ? mobileSvgWs[2] : 800" :style="{ transform: `scale(${scale})`, opacity: opacities[2] }">
                     <defs><path id="cp3" :d="isMobile ? mobilePath : desktopPath" /></defs>
-                    <text :font-size="isMobile ? mobileFontSizes[2] : fontSizes[2]" fill="currentColor">
+                    <text :font-size="isMobile ? mobileFontSizes[2] : fontSizes[2]" fill="#FF4DFB">
                         <textPath href="#cp3" :startOffset="`${offsets[2]}%`">{{ taglines[2] }}</textPath>
                     </text>
                 </svg>
                 <svg viewBox="0 0 100 100" :width="isMobile ? mobileSvgWs[3] : 900" :height="isMobile ? mobileSvgWs[3] : 900" :style="{ transform: `scale(${scale})`, opacity: opacities[3] }">
                     <defs><path id="cp4" :d="isMobile ? mobilePath : desktopPath" /></defs>
-                    <text :font-size="isMobile ? mobileFontSizes[3] : fontSizes[3]" fill="currentColor">
+                    <text :font-size="isMobile ? mobileFontSizes[3] : fontSizes[3]" fill="#FF4DFB">
                         <textPath href="#cp4" :startOffset="`${offsets[3]}%`">{{ taglines[3] }}</textPath>
                     </text>
                 </svg>
@@ -170,7 +174,6 @@ onMounted(async () => {
     position: relative;
     width: 100vw;
     height: 100vh;
-    overflow: hidden;
 }
 
 .tagline-items {
@@ -180,32 +183,35 @@ onMounted(async () => {
     align-items: center;
     justify-content: center;
     z-index: 1;
+    margin-left: -5.5em;
 }
 
 .tagline-items svg {
     position: absolute;
     color: currentColor;
+    transform-origin: center;
+    transform-box: fill-box;
 }
 
 .hero {
     position: absolute;
     inset: 0;
     z-index: 2;
+    padding-left: 2em;
 }
 
 .hero svg {
     display: block;
-    width: calc(100% - 2em);
+    width: 100%;
     height: 100%;
     color: currentColor;
-    padding-left: 2em;
-    padding-top: 1em;
 }
 
 .col {
     margin-bottom: 18em;
     padding: 2em;
     display: flex;
+    margin-top: -10em;
     div:first-child {
         flex: 0.95;
         display: flex;

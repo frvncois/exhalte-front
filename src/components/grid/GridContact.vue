@@ -35,7 +35,7 @@ async function animate() {
     const byCol = [0, 1, 2, 3, 4].map(i => byRow.map(row => row[i]))
     const allSpans = circlesRef.value!.querySelectorAll('span')
 
-    gsap.set(allSpans, { opacity: 0, backgroundColor: 'var(--blue)' })
+    gsap.set(allSpans, { opacity: 0, backgroundColor: 'var(--light)' })
 
     const dx = window.innerWidth * 0.35
     const dy = window.innerHeight * 0.35
@@ -120,8 +120,8 @@ onMounted(async () => {
             <li v-for="member in shuffledTeam" :key="member.id">
                 <h3>{{ member.Name }}</h3>
                 <h4>{{ member.Title }}</h4>
-                <a :href="`tel:${member.Phone}`">{{ member.Phone }}</a>
-                <a :href="`mailto:${member.Email}`">{{ member.Email }}</a>
+                <a class="phone" :href="`tel:${member.Phone}`">{{ member.Phone }}</a>
+                <a class="email" :href="`mailto:${member.Email}`">{{ member.Email }}</a>
             </li>
         </ul>
         <div class="circles" ref="circlesRef">
@@ -154,14 +154,66 @@ li {
     position: absolute;
     display: flex;
     flex-direction: column;
+    flex: 1;
+     min-width: 25%;
+}
+
+h3, h4, .email, .phone {
+    transition: transform 0.4s ease;
 }
 
 li:nth-child(1) { top: 4em; left: 0; }
-li:nth-child(2) { top: 4em; left: 25%; }
-li:nth-child(3) { top: 28.5%; left: 50%; }
-li:nth-child(4) { top: 50.5%; left: 25%; }
-li:nth-child(5) { top: 50.5%; left: 75%; }
-li:nth-child(6) { top: 72.5%; left: 50%; }
+
+li:nth-child(2) {
+    top: 4em; left: 25%;
+    & .email { text-align: left; }
+    & .phone  { text-align: right; }
+    & h4      { text-align: center; }
+    &:hover .email { transform: translateX(15%); }
+    &:hover .phone { transform: translateX(-15%); }
+    &:hover h4     { transform: translateX(5%); }
+    &:hover h3     { transform: translate(10%);}
+}
+li:nth-child(3) {
+    top: 28.5%; left: 50%;
+    & .email { text-align: right; }
+    & .phone  { text-align: right; }
+    & h4      { text-align: center; }
+    &:hover .email { transform: translateX(-12%); }
+    &:hover .phone { transform: translateX(-8%); }
+    &:hover h4     { transform: translateX(5%); }
+    &:hover h3     { transform: translate(10%);}
+}
+li:nth-child(4) {
+    top: 50.5%; left: 25%;
+    & .email { text-align: left; }
+    & .phone  { text-align: left; }
+    & h4      { text-align: center; }
+    &:hover .email { transform: translateX(10%); }
+    &:hover .phone { transform: translateX(5%); }
+    &:hover h4     { transform: translateX(-15%); }
+    &:hover h3     { transform: translate(10%);}
+}
+li:nth-child(5) {
+    top: 50.5%; left: 75%;
+    & .email { text-align: right; }
+    & .phone  { text-align: right; }
+    & h4      { text-align: center; }
+    &:hover .email { transform: translateX(-5%); }
+    &:hover .phone { transform: translateX(-10%); }
+    &:hover h4     { transform: translateX(-15%); }
+    &:hover h3     { transform: translate(10%);}
+}
+li:nth-child(6) {
+    top: 72.5%; left: 50%;
+    & .email { text-align: right; }
+    & .phone  { text-align: right; }
+    & h4      { text-align: center; }
+    &:hover .email { transform: translateX(-15%); }
+    &:hover .phone { transform: translateX(-5%); }
+    &:hover h4     { transform: translateX(15%); }
+    &:hover h3     { transform: translate(10%);}
+}
 
 .circles {
     position: absolute;
@@ -192,10 +244,6 @@ h2, h3 {
 
 h4, p, a {
     font-family: var(--heading);
-}
-
-h4 {
-    max-width: 29ch;
 }
 
 @media (max-width: 900px) {

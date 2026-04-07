@@ -5,7 +5,7 @@ import SharedFooter from '@/components/shared/SharedFooter.vue';
 import GridContact from '@/components/grid/GridContact.vue';
 import lenis from '@/lib/lenis'
 
-const themes = ['theme-blue', 'theme-purple', 'theme-yellow', 'theme-gray'] as const
+const themes = ['theme-yellow', 'theme-gray', 'theme-purple', 'theme-blue'] as const
 
 function getThemeIndex() {
     const vh = window.innerHeight
