@@ -14,8 +14,8 @@ const h1Ref      = ref<HTMLElement | null>(null)
 let unregisterPageLeave: (() => void) | null = null
 
 onMounted(() => {
-    const outer = h1Ref.value?.querySelectorAll('.po') ?? []
-    const inner = h1Ref.value?.querySelectorAll('.pi') ?? []
+    const outer = h1Ref.value ? h1Ref.value.querySelectorAll('.po') : []
+    const inner = h1Ref.value ? h1Ref.value.querySelectorAll('.pi') : []
     gsap.set([outer, inner], { opacity: 0 })
     gsap.to(outer, { opacity: 1, duration: 0.8, ease: 'power2.out', delay: 0.3 })
     gsap.to(inner, { opacity: 1, duration: 0.8, ease: 'power2.out', delay: 0.7 })
