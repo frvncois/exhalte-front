@@ -41,6 +41,10 @@ const svgWidths       = CIRCULAR_SVG_WIDTHS
 const fontSizes       = CIRCULAR_FONT_SIZES
 
 onMounted(async () => {
+    // Set initial SVG state immediately to prevent stretched appearance before fetch resolves
+    const svgEarly = heroRef.value?.querySelector('svg') as SVGElement | null
+    if (svgEarly) gsap.set(svgEarly, { opacity: 0, scaleX: 0.18, scaleY: 0.18, height: 'auto' })
+
     await serviceStore.fetchService()
     await nextTick()
 
@@ -56,7 +60,7 @@ onMounted(async () => {
 
     let entranceDone = false
     const entryTl = gsap.timeline({ delay: 0.2, onComplete: () => { entranceDone = true } })
-    taglineSvgs.forEach((el, i) => {
+    taglineSvgs.forEach((_el, i) => {
         const baseOffset = CIRCULAR_BASE_OFFSETS[i] ?? 0
         const proxy = { v: 0 }
         entryTl.to(proxy, {
@@ -100,7 +104,7 @@ onMounted(async () => {
 
             if (svgEl.value) {
                 const scaleProgress = Math.min(Math.max((p - 0.5) / 0.5, 0), 1)
-                gsap.to(svgEl.value, { scaleX: 0.18 + scaleProgress * 0.82, scaleY: 0.18 + scaleProgress * 0.57, duration: 0.1, overwrite: 'auto' })
+                gsap.to(svgEl.value, { scaleX: 0.18 + scaleProgress * 0.82, scaleY: 0.18 + scaleProgress * 0.57, height: '100%', duration: 0.1, overwrite: 'auto' })
             }
         },
     })
@@ -250,6 +254,9 @@ section {
         p {
             font-size: var(--text-sm);
         }
+    }
+    .tagline-items {
+    margin-left: -2.5em;
     }
 }
 </style>
