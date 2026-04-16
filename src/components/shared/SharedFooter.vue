@@ -142,7 +142,7 @@ import { registerPageLeave } from '@/transitions/projectTransition'
                 <span @click="toggleCredits"><span ref="parenLeftRef">(</span>( Credits )<span ref="parenRightRef">)</span></span>
                 <div ref="creditsContentRef">
                     <a href="https://hayleylim.com/" target="_blank">Branding / Hayley Lim</a>
-                    <a href="https://www.lab-a.me/" target="_blank">Web design / Hayley Lim</a>
+                    <a href="https://www.lab-a.me/" target="_blank">Web design / Amélie Labrosse</a>
                     <a href="https://frvncois.com" target="_blank">Web development/ Francois Lemieux</a>
                 </div>
             </div>
