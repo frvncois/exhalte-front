@@ -249,7 +249,7 @@ h4, p, a {
 @media (max-width: 900px) {
     section {
         height: auto;
-        margin: 6em 1em 0;
+        margin: 8em 1em 0;
     }
     .circles {
         display: none;
@@ -259,6 +259,7 @@ h4, p, a {
         display: flex;
         flex-direction: column;
         gap: 1em;
+        font-size: 0.75em;
     }
     li {
         position: static;
