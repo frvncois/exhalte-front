@@ -262,7 +262,16 @@ h4, p, a {
     }
     li {
         position: static;
-        padding-top: 1.5em;
+        padding-top: 0;
+        text-align: left !important;
+        flex: unset;
+    }
+    li * {
+        text-align: left !important;
+        transform: none !important;
+    }
+    li:hover * {
+        transform: none !important;
     }
     h4 {
         max-width: unset;

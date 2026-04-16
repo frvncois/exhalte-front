@@ -234,12 +234,24 @@ import { registerPageLeave } from '@/transitions/projectTransition'
             align-items: center;
             justify-content: center;
             text-align: center;
-            gap: 2em;
+            gap: 1em;
             nav {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 0;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0em;
+                width: 30ch;
+                a {
+                    text-align: center;
+                    padding: 0 0.5em;
+                }
             }
+        }
+        .policies {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5em;
         }
         .credits {
             position: relative;
