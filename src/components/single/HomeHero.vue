@@ -5,8 +5,10 @@ import { storeToRefs } from 'pinia'
 import MainLogo from '@/assets/MainLogo.vue'
 import { registerPageLeave } from '@/transitions/projectTransition'
 import { useServiceStore } from '@/stores/service'
+import { useLocaleStore } from '@/stores/locale'
 
 const { service } = storeToRefs(useServiceStore())
+const { locale } = storeToRefs(useLocaleStore())
 
 const sectionRef = ref<HTMLElement | null>(null)
 const logoRef    = ref<HTMLElement | null>(null)
@@ -40,7 +42,7 @@ onUnmounted(() => {
 
 <template>
     <section ref="sectionRef">
-        <h1 ref="h1Ref"><span class="po">(</span><span class="pi">(</span> welcome <span class="pi">)</span><span class="po">)</span></h1>
+        <h1 ref="h1Ref"><span class="po">(</span><span class="pi">(</span> {{ locale === 'fr' ? 'Bienvenue' : 'welcome' }} <span class="pi">)</span><span class="po">)</span></h1>
         <div class="logo" ref="logoRef">
             <MainLogo />
         </div>

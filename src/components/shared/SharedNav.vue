@@ -67,7 +67,7 @@ function navigate(to: string) {
     <Teleport to="body">
         <nav ref="navRef">
             <div class="top" ref="linksRef">
-                <a @click.prevent="navigate('/projects')">Projects</a>
+                <a @click.prevent="navigate('/projects')">{{ localeStore.locale === 'fr' ? 'Projets' : 'Projects' }}</a>
                 <a @click.prevent="navigate('/services')">Services</a>
                 <a @click.prevent="navigate('/contact')">Contact</a>
             </div>

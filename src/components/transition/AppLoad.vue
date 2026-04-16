@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
 import { gsap } from 'gsap'
-import { APPLOAD_PHRASE, APPLOAD_COPIES, APPLOAD_PATH_1, APPLOAD_PATH_2 } from '@/lib/textOnPath'
+import { APPLOAD_COPIES, APPLOAD_PATH_1, APPLOAD_PATH_2 } from '@/lib/textOnPath'
+import { useLocaleStore } from '@/stores/locale'
 
 const emit = defineEmits(['ready', 'done'])
 
-const phrase = APPLOAD_PHRASE
+const localeStore = useLocaleStore()
+const phrase = localeStore.locale === 'en' ? 'Movement as method' : 'Le mouvement est une pensée'
 const COPIES = APPLOAD_COPIES
 const sectionRef = ref<HTMLElement | null>(null)
 const svgRef = ref<SVGSVGElement | null>(null)
