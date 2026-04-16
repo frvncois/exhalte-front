@@ -121,8 +121,8 @@ import { registerPageLeave } from '@/transitions/projectTransition'
             <p style="white-space: pre-line">{{ contactStore.contact?.Address }}</p>
             <p>{{ contactStore.contact?.Phone }}</p>
             <nav>
-                <a :href="contactStore.contact?.Instagram ?? '#'">IN</a>
-                <a :href="contactStore.contact?.Linkedin ?? '#'">LKN</a>
+                <a target="_blank" rel="noopener noreferrer" :href="contactStore.contact?.Instagram ?? '#'">IN</a>
+                <a target="_blank" rel="noopener noreferrer" :href="contactStore.contact?.Linkedin ?? '#'">LKN</a>
             </nav>
         </address>
         <div class="bottom" ref="bottomRef">

@@ -113,10 +113,10 @@ onMounted(async () => {
         <ul ref="ulRef">
             <li>
                 <h2>{{ locale === 'fr' ? 'Adresse' : 'Address' }}</h2>
+                <a href="https://www.labellefacon.fr/" target="_blank" rel="noopener noreferrer">La Belle Façon ></a>
                 <template v-for="line in (contactStore.contact?.Address ?? '').split('\n')" :key="line">
                     <p>{{ line }}</p>
                 </template>
-                <a href="https://www.labellefacon.fr/" target="_blank" rel="noopener noreferrer">La belle façon</a>
             </li>
             <li v-for="member in shuffledTeam" :key="member.id">
                 <h3>{{ member.Name }}</h3>
