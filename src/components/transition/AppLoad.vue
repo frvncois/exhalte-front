@@ -8,7 +8,7 @@ const emit = defineEmits(['ready', 'done'])
 
 const localeStore = useLocaleStore()
 const phrase = localeStore.locale === 'en' ? 'Movement as method' : 'Le mouvement est une pensée'
-const COPIES = localeStore.locale === 'en' ? APPLOAD_COPIES * 2 : APPLOAD_COPIES
+const COPIES = localeStore.locale === 'en' ? APPLOAD_COPIES * 1.5 : APPLOAD_COPIES
 const sectionRef = ref<HTMLElement | null>(null)
 const svgRef = ref<SVGSVGElement | null>(null)
 const group1Ref = ref<SVGGElement | null>(null)
