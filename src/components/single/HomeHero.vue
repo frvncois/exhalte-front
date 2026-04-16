@@ -84,4 +84,9 @@ h1 {
     height: auto;
     display: block;
 }
+    @media (max-width: 900px) {
+    .logo {
+        padding: 1em;
+    }
+}
 </style>
