@@ -52,6 +52,10 @@ function navigate(slug: string) {
 onMounted(async () => {
     const clones = getFwdClones()
 
+    // Eagerly hide fly-animated elements before any async gap to prevent flash
+    if (clones[1] && spanRef.value)  gsap.set(spanRef.value,  { opacity: 0 })
+    if (clones[2] && titleRef.value) gsap.set(titleRef.value, { opacity: 0 })
+
     unregisterLeave = registerPageLeave((done) => {
         if (getRevClones().length) { done(); return }
         const els = [spanRef.value, titleRef.value].filter(Boolean)
