@@ -64,12 +64,12 @@ onUnmounted(() => {
 
 <template>
     <header :style="manifestoOpen ? { color: currentThemeBg } : (menuOpen ? { color: 'white' } : {})">
-        <button @click="toggleMenu"></button>
         <span ref="logoRef">
             <RouterLink to="/">
                 <MainIcon />
             </RouterLink>
         </span>
+        <button @click="toggleMenu"></button>
         <nav ref="navRef" @click="manifestoOpen = false">
             <RouterLink to="/projects" @click="closeMenu">{{ localeStore.locale === 'fr' ? 'Projets' : 'Projects' }}</RouterLink>
             <RouterLink to="/services" @click="closeMenu">Services</RouterLink>
