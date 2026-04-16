@@ -37,10 +37,8 @@ function currentTheme() {
     return themes[path]
 }
 
-function handleOutsideClick(e: MouseEvent) {
-    if (sheetRef.value && !sheetRef.value.contains(e.target as Node)) {
-        emit('close')
-    }
+function handleOutsideClick() {
+    emit('close')
 }
 
 onMounted(() => {
@@ -73,7 +71,7 @@ watch(() => props.open, (isOpen) => {
 
 <template>
     <Teleport to="body">
-        <div ref="sheetRef" class="sheet" @click.stop>
+        <div ref="sheetRef" class="sheet">
             <div v-html="html" />
         </div>
     </Teleport>
