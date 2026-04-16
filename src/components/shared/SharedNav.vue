@@ -96,7 +96,7 @@ nav {
     position: fixed;
     inset: 0;
     z-index: 19;
-    background: var(--blue);
+    background: var(--olive);
     display: flex;
     flex-direction: column;
     justify-content: space-between;

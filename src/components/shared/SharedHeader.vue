@@ -64,16 +64,6 @@ onUnmounted(() => {
 
 <template>
     <header :style="manifestoOpen ? { color: currentThemeBg } : (menuOpen ? { color: 'white' } : {})">
-        <div class="blur-stack" aria-hidden="true">
-            <div class="blur-layer blur-1"></div>
-            <div class="blur-layer blur-2"></div>
-            <div class="blur-layer blur-3"></div>
-            <div class="blur-layer blur-4"></div>
-            <div class="blur-layer blur-5"></div>
-            <div class="blur-layer blur-6"></div>
-            <div class="blur-layer blur-7"></div>
-            <div class="blur-layer blur-8"></div>
-        </div>
         <button @click="toggleMenu"></button>
         <span ref="logoRef">
             <RouterLink to="/">
@@ -81,7 +71,7 @@ onUnmounted(() => {
             </RouterLink>
         </span>
         <nav ref="navRef" @click="manifestoOpen = false">
-            <RouterLink to="/projects" @click="closeMenu">Projects</RouterLink>
+            <RouterLink to="/projects" @click="closeMenu">{{ localeStore.locale === 'fr' ? 'Projets' : 'Projects' }}</RouterLink>
             <RouterLink to="/services" @click="closeMenu">Services</RouterLink>
             <RouterLink to="/contact" @click="closeMenu">Contact</RouterLink>
             <button @click.stop="localeStore.toggle">{{ localeStore.nextLabel }}</button>
@@ -90,12 +80,12 @@ onUnmounted(() => {
     <SharedNav :open="menuOpen" @close="closeMenu" />
     <ManifestoSheet :open="manifestoOpen" @close="manifestoOpen = false" />
     <section :class="{ 'hide-mobile': route.path === '/services' || route.path === '/contact' }" :style="manifestoOpen ? { color: currentThemeBg } : {}">
-        <ul ref="taglineRef" @click.stop="manifestoOpen = !manifestoOpen">
-            <li>
+        <ul ref="taglineRef">
+            <li @click.stop="manifestoOpen = !manifestoOpen">
                 <h1>{{ titleParts[0] }}</h1>
                 <h2>{{ titleParts[1] }}</h2>
             </li>
-            <li>
+            <li @click.stop="manifestoOpen = !manifestoOpen">
                 <p>{{ taglineParts[0] }}</p>
                 <p>{{ taglineParts[1] }}</p>
             </li>
@@ -115,7 +105,6 @@ header {
     right: 0;
     z-index: 20;
     padding: 2em;
-    transition: color 0.4s ease;
     pointer-events: none;
     > span, > nav {
         pointer-events: auto;
@@ -162,77 +151,7 @@ h1, h2, p {
     line-height: 1;
 }
 
-
-.blur-stack {
-    display: none;
-}
-
 @media (max-width: 900px) {
-    .blur-stack {
-        display: block;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: -1;
-    }
-    .blur-layer {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
-    .blur-1 {
-        backdrop-filter: blur(2px);
-        -webkit-backdrop-filter: blur(2px);
-        mask-image: linear-gradient(to bottom, black 0%, transparent 12.5%);
-        -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 12.5%);
-    }
-    .blur-2 {
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
-        mask-image: linear-gradient(to bottom, black 0%, transparent 25%);
-        -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 25%);
-    }
-    .blur-3 {
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        mask-image: linear-gradient(to bottom, black 0%, transparent 37.5%);
-        -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 37.5%);
-    }
-    .blur-4 {
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        mask-image: linear-gradient(to bottom, black 0%, transparent 50%);
-        -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 50%);
-    }
-    .blur-5 {
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        mask-image: linear-gradient(to bottom, black 0%, transparent 62.5%);
-        -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 62.5%);
-    }
-    .blur-6 {
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        mask-image: linear-gradient(to bottom, black 0%, transparent 75%);
-        -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 75%);
-    }
-    .blur-7 {
-        backdrop-filter: blur(32px);
-        -webkit-backdrop-filter: blur(32px);
-        mask-image: linear-gradient(to bottom, black 0%, transparent 87.5%);
-        -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 87.5%);
-    }
-    .blur-8 {
-        backdrop-filter: blur(40px);
-        -webkit-backdrop-filter: blur(40px);
-        mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
-        -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
-    }
 
     section.hide-mobile {
         display: none;

@@ -82,7 +82,7 @@ onMounted(async () => {
     const st = ScrollTrigger.create({
         trigger: sceneRef.value,
         start: 'top top',
-        end: '+=300vh',
+        end: '+=1000vh',
         pin: true,
         pinSpacing: true,
         onUpdate: (self) => {
@@ -170,6 +170,10 @@ onMounted(async () => {
 
 
 <style scoped>
+section {
+    overflow: hidden;
+}
+
 .scene {
     position: relative;
     width: 100vw;
