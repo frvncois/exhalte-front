@@ -117,6 +117,10 @@ onMounted(async () => {
                 <template v-for="line in (contactStore.contact?.Address ?? '').split('\n')" :key="line">
                     <p>{{ line }}</p>
                 </template>
+                <div>
+                    <a target="_blank" rel="noopener noreferrer" :href="contactStore.contact?.Instagram ?? '#'">IN</a>
+                    <a target="_blank" rel="noopener noreferrer" :href="contactStore.contact?.Linkedin ?? '#'">LKN</a>
+                    </div>
             </li>
             <li v-for="member in shuffledTeam" :key="member.id">
                 <h3>{{ member.Name }}</h3>
@@ -163,7 +167,12 @@ h3, h4, .email, .phone {
     transition: transform 0.4s ease;
 }
 
-li:nth-child(1) { top: 4em; left: 0; }
+li:nth-child(1) { top: 4em; left: 0; 
+div {
+    display: flex;
+    gap: 1em;
+    margin-top: 0.5em;
+}}
 
 li:nth-child(2) {
     top: 4em; left: 25%;
