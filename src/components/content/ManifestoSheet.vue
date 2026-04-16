@@ -111,4 +111,10 @@ watch(() => props.open, (isOpen) => {
 .sheet :deep(li) {
     display: list-item;
 }
+
+@media (max-width: 900px) {
+    .sheet {
+        padding: 18em 1em 4em 1em;
+    }
+}
 </style>

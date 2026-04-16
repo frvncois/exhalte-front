@@ -118,6 +118,8 @@ import { registerPageLeave } from '@/transitions/projectTransition'
             <MainLogo />
         </div>
         <address v-if="address" ref="addressRef">
+
+            <a href="https://www.labellefacon.fr/" target="_blank" rel="noopener noreferrer">© La Belle Façon ></a>
             <p style="white-space: pre-line">{{ contactStore.contact?.Address }}</p>
             <p>{{ contactStore.contact?.Phone }}</p>
             <nav>
@@ -229,28 +231,30 @@ import { registerPageLeave } from '@/transitions/projectTransition'
     }
 
     @media (max-width: 900px) {
+        footer {
+            padding: 1em;
+        }
         .bottom {
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
+            flex-direction: row;
+            align-items: flex-end;
+            justify-content: flex-start;
             gap: 1em;
             nav {
                 display: flex;
                 flex-wrap: wrap;
-                justify-content: center;
+                justify-content: start;
                 gap: 0em;
                 width: 30ch;
                 a {
-                    text-align: center;
-                    padding: 0 0.5em;
+                    text-align: left;
+                    padding: 0 0.5em 0 0;
                 }
             }
         }
         .policies {
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: start;
             gap: 0.5em;
         }
         .credits {
@@ -258,7 +262,8 @@ import { registerPageLeave } from '@/transitions/projectTransition'
             right: auto;
             left: auto;
             bottom: auto;
-            align-items: center;
+            align-items: end;
+            flex: 1;
             div {
                 align-items: center;
             }

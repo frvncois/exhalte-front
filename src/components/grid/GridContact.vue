@@ -269,7 +269,7 @@ h4, p, a {
         display: flex;
         flex-direction: column;
         gap: 1em;
-        font-size: 0.75em;
+        font-size: 0.85em;
     }
     li {
         position: static;
