@@ -120,6 +120,7 @@ watch(visible, async (v) => {
         animateOpen()
         if (mode.value === 'video' && videoRef.value) {
             videoRef.value.src = videoUrl.value
+            videoRef.value.play().then(() => { videoPaused.value = false }).catch(() => {})
         }
     }
 })
