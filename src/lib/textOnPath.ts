@@ -19,7 +19,7 @@ export const CIRCULAR_BASE_OFFSETS   = [20, 80, 130, 160].map(d => d / 360 * 100
 export const CIRCULAR_TRAVEL_OFFSETS = [40, 65,  30,  55].map(d => d / 360 * 100)
 
 export function circularMobileSvgWidths(innerWidth: number) {
-    return [0.6, 0.7, 0.8, 0.9].map(r => innerWidth * r)
+    return [0.7, 0.87, 1.03, 1.2].map(r => innerWidth * r)
 }
 
 export function circularMobileFontSizes(innerWidth: number) {

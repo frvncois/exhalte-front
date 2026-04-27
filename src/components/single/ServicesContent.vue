@@ -32,13 +32,21 @@ const offsets   = ref([...CIRCULAR_BASE_OFFSETS])
 const opacities = ref([0, 0, 0, 0])
 const scale     = ref(1.15)
 
-const isMobile        = window.innerWidth <= 900
-const mobileSvgWs     = circularMobileSvgWidths(window.innerWidth)
-const mobileFontSizes = circularMobileFontSizes(window.innerWidth)
+const isMobile        = ref(window.innerWidth <= 900)
+const mobileSvgWs     = ref(circularMobileSvgWidths(window.innerWidth))
+const mobileFontSizes = ref(circularMobileFontSizes(window.innerWidth))
 const desktopPath     = CIRCULAR_DESKTOP_PATH
 const mobilePath      = CIRCULAR_MOBILE_PATH
 const svgWidths       = CIRCULAR_SVG_WIDTHS
 const fontSizes       = CIRCULAR_FONT_SIZES
+
+const onResize = () => {
+    isMobile.value        = window.innerWidth <= 900
+    mobileSvgWs.value     = circularMobileSvgWidths(window.innerWidth)
+    mobileFontSizes.value = circularMobileFontSizes(window.innerWidth)
+}
+window.addEventListener('resize', onResize)
+onUnmounted(() => window.removeEventListener('resize', onResize))
 
 onMounted(async () => {
     // Set initial SVG state immediately to prevent stretched appearance before fetch resolves
@@ -104,7 +112,7 @@ onMounted(async () => {
 
             if (svgEl.value) {
                 const scaleProgress = Math.min(Math.max((p - 0.5) / 0.5, 0), 1)
-                gsap.to(svgEl.value, { scaleX: 0.18 + scaleProgress * 0.82, scaleY: 0.18 + scaleProgress * 0.57, height: '100%', duration: 0.1, overwrite: 'auto' })
+                gsap.to(svgEl.value, { scaleX: 0.18 + scaleProgress * 0.82, scaleY: 0.18 + scaleProgress * 0.57, height: isMobile.value ? 'auto' : '100%', duration: 0.1, overwrite: 'auto' })
             }
         },
     })
@@ -256,7 +264,21 @@ section {
         }
     }
     .tagline-items {
-    margin-left: -2.5em;
+    margin-left: 0;
     }
+    .hero svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    color: currentColor;
+    padding-left: 1em;
+    padding-right: 0.75em;
+}
+
+.hero {
+    padding-left: 0em;
+    display: flex;
+    align-items: center;
+}
 }
 </style>
