@@ -57,4 +57,9 @@ section {
     height: auto;
     display: block;
 }
+@media (max-width: 900px) {
+    section {
+        padding: 1em;
+    }
+}
 </style>
